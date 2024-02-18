@@ -15,7 +15,7 @@ plugins {
     id("java")
     id("eclipse")
     id("idea")
-    id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
     id('net.neoforged.gradle') version '[6.0.13, 6.2)'
     id('maven-publish')
 }
@@ -250,7 +250,7 @@ publishMods {
 
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
-        content = changelog.map { "# A new version of Modular Routers has been released! \n" + it}
+        content = changelog.map { "# # Version ${version} of of Modular Routers has been released! \n" + it}
 //        setPlatforms(platforms.curseforge, platforms.modrinth)
     }
 }
