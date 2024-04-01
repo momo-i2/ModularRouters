@@ -102,13 +102,10 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
     private RouterRedstoneBehaviour redstoneBehaviour = RouterRedstoneBehaviour.ALWAYS;
 
     private final BufferHandler bufferHandler = new BufferHandler(this);
-//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> bufferHandler);
-//
     private final ItemStackHandler modulesHandler = new ModuleHandler();
     private final ItemStackHandler upgradesHandler = new UpgradeHandler();
 
     private final RouterEnergyBuffer energyStorage = new RouterEnergyBuffer(0);
-//    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
 
     public final TrackedEnergy trackedEnergy = new TrackedEnergy();
     private EnergyDirection energyDirection = EnergyDirection.FROM_ROUTER;
