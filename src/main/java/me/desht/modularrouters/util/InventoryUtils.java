@@ -2,6 +2,7 @@ package me.desht.modularrouters.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -11,11 +12,11 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 
 public class InventoryUtils {
+    private static final double MOTION_SCALE = 0.05;
+
     /**
      * Drop all items from the given item handler into the world as item entities with random offsets & motions.
      *
@@ -24,25 +25,16 @@ public class InventoryUtils {
      * @param itemHandler the item handler
      */
     public static void dropInventoryItems(Level world, BlockPos pos, IItemHandler itemHandler) {
-        Random random = new Random();
+        RandomSource random = world.random;
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             ItemStack itemStack = itemHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                float offsetX = random.nextFloat() * 0.8f + 0.1f;
-                float offsetY = random.nextFloat() * 0.8f + 0.1f;
-                float offsetZ = random.nextFloat() * 0.8f + 0.1f;
-                while (!itemStack.isEmpty()) {
-                    int stackSize = Math.min(itemStack.getCount(), random.nextInt(21) + 10);
-                    ItemEntity entityitem = new ItemEntity(world, pos.getX() + (double) offsetX, pos.getY() + (double) offsetY, pos.getZ() + (double) offsetZ, new ItemStack(itemStack.getItem(), stackSize));
-                    if (itemStack.hasTag()) {
-                        entityitem.getItem().setTag(Objects.requireNonNull(itemStack.getTag()).copy());
-                    }
-                    itemStack.shrink(stackSize);
-
-                    float motionScale = 0.05f;
-                    entityitem.setDeltaMovement(random.nextGaussian() * (double) motionScale, random.nextGaussian() * (double) motionScale + 0.2, random.nextGaussian() * (double) motionScale);
-                    world.addFreshEntity(entityitem);
-                }
+                double offsetX = random.nextDouble() * 0.8 + 0.1;
+                double offsetY = random.nextDouble() * 0.8 + 0.1;
+                double offsetZ = random.nextDouble() * 0.8 + 0.1;
+                ItemEntity entityitem = new ItemEntity(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, itemStack.copy());
+                entityitem.setDeltaMovement(random.nextGaussian() * MOTION_SCALE, random.nextGaussian() * MOTION_SCALE + 0.2, random.nextGaussian() * 0.05);
+                world.addFreshEntity(entityitem);
             }
         }
     }
