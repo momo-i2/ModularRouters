@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.20.2
 
+### [12.3.2]
+
+* Fixed items losing NeoForge attachment data when dropped from a router that's just been broken
+
 ### [12.3.1]
 
 * Fixed a couple of bugs with Template Frame (Extruder Mk2 fake blocks) NBT load/save
