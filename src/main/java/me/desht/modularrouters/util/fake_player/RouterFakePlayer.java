@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -40,5 +41,12 @@ public class RouterFakePlayer extends FakePlayer {
             getAttributes().addTransientAttributeModifiers(getMainHandItem().getAttributeModifiers(EquipmentSlot.MAINHAND));
             prevHeldStack = getMainHandItem().copy();
         }
+    }
+
+    @Override
+    public void giveExperiencePoints(int amount) {
+        Vec3 pos = Vec3.atCenterOf(router.getBlockPos().above());
+        ExperienceOrb orb = new ExperienceOrb(router.nonNullLevel(), pos.x, pos.y, pos.z, amount);
+        router.nonNullLevel().addFreshEntity(orb);
     }
 }
