@@ -4,7 +4,11 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.20.2
+## Minecraft 1.20.4
+
+### [12.3.3]
+
+* Router fake player will now accept XP given to it, and use it to create experience orbs near the router
 
 ### [12.3.2]
 
@@ -18,6 +22,8 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * Initial port to Minecraft 1.20.4
   * This release is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
+
+## Minecraft 1.20.2
 
 ### [12.2.0]
 
