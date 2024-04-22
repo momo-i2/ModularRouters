@@ -33,6 +33,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -59,6 +60,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -114,7 +116,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
     private byte recompileNeeded = COMPILE_MODULES | COMPILE_UPGRADES;
     private int tickRate = ConfigHolder.common.router.baseTickRate.get();
     private int itemsPerTick = 1;
-    private final Map<Item, Integer> upgradeCount = new HashMap<>();
+    private final Map<UpgradeItem, Integer> upgradeCount = new HashMap<>();
 
     private int fluidTransferRate;  // mB/t
     private int fluidTransferRemainingIn = 0;
@@ -186,6 +188,13 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
             if (nEnergy > 0) {
                 tag.putInt(NBT_ENERGY_UPGRADES, nEnergy);
             }
+
+            getAllUpgrades().keySet().forEach(item -> {
+                final var updateTag = item.createUpdateTag(this);
+                if (updateTag != null) {
+                    tag.put(BuiltInRegistries.ITEM.getKey(item).toString(), updateTag);
+                }
+            });
         });
     }
 
@@ -214,6 +223,11 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         }
 
         energyStorage.updateForEnergyUpgrades(compound.getInt(NBT_ENERGY_UPGRADES));
+
+        getAllUpgrades().keySet().forEach(item -> {
+            final var updateTag = compound.get(BuiltInRegistries.ITEM.getKey(item).toString());
+            item.processClientSync(this, (CompoundTag) updateTag);
+        });
     }
 
     @Override
@@ -397,7 +411,24 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
 
         for (CompiledIndexedModule cim : compiledModules) {
             CompiledModule cm = cim.compiledModule;
-            if (cm != null && cm.hasTarget() && cm.getEnergyCost() <= getEnergyStorage().getEnergyStored() && cm.shouldRun(powered, pulsed))
+            if (cm != null && cm.hasTarget() && cm.getEnergyCost() <= getEnergyStorage().getEnergyStored() && cm.shouldRun(powered, pulsed)) {
+                var event = cm.getEvent();
+                if (event != null) {
+                    event.setExecuted(false);
+                    event.setCanceled(false);
+                    NeoForge.EVENT_BUS.post(event);
+                    if (event.isExecuted()) {
+                        newActive = true;
+                    }
+
+                    if (event.isCanceled()) {
+                        if ((newActive && cm.termination() == ModuleItem.Termination.RAN) || cm.termination() == ModuleItem.Termination.NOT_RAN) {
+                            break;
+                        }
+                        continue;
+                    }
+                }
+
                 if (cm.execute(this)) {
                     cm.getFilter().cycleRoundRobin().ifPresent(counter -> {
                         ItemStack moduleStack = modulesHandler.getStackInSlot(cim.index);
@@ -411,6 +442,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
                 } else if (cm.termination() == ModuleItem.Termination.NOT_RAN) {
                     break;
                 }
+            }
         }
         return newActive;
     }
@@ -550,7 +582,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
             for (int i = 0; i < N_UPGRADE_SLOTS; i++) {
                 ItemStack stack = upgradesHandler.getStackInSlot(i);
                 if (stack.getItem() instanceof UpgradeItem upgradeItem) {
-                    upgradeCount.put(stack.getItem(), getUpgradeCount(stack.getItem()) + stack.getCount());
+                    upgradeCount.put(upgradeItem, getUpgradeCount(stack.getItem()) + stack.getCount());
                     upgradeItem.onCompiled(stack, this);
                 }
             }
@@ -605,7 +637,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         return upgradeCount.getOrDefault(type, 0);
     }
 
-    public Map<Item,Integer> getAllUpgrades() {
+    public Map<UpgradeItem, Integer> getAllUpgrades() {
         return Collections.unmodifiableMap(upgradeCount);
     }
 
@@ -984,11 +1016,18 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            // can't have the same upgrade in more than one slot
+            if (!super.isItemValid(slot, stack)) return false;
+            UpgradeItem item = (UpgradeItem) stack.getItem();
             for (int i = 0; i < getSlots(); i++) {
-                if (slot != i && stack.getItem() == getStackInSlot(i).getItem()) return false;
+                ItemStack inSlot = getStackInSlot(i);
+                if (inSlot.isEmpty() || slot == i) continue;
+                // can't have the same upgrade in more than one slot
+                // incompatible upgrades can't coexist
+                if (stack.getItem() == inSlot.getItem() || !((UpgradeItem) inSlot.getItem()).isCompatibleWith(item)) {
+                    return false;
+                }
             }
-            return super.isItemValid(slot, stack);
+            return true;
         }
 
         @Override
