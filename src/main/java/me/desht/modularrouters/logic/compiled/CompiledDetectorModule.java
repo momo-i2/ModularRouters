@@ -1,26 +1,25 @@
 package me.desht.modularrouters.logic.compiled;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.DetectorModule;
-import me.desht.modularrouters.util.ModuleHelper;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
 public class CompiledDetectorModule extends CompiledModule {
-    public static final String NBT_SIGNAL_LEVEL = "SignalLevel";
-    public static final String NBT_STRONG_SIGNAL = "StrongSignal";
-
-    private final int signalLevel;
-    private final boolean strongSignal;
+    private final DetectorSettings settings;
 
     public CompiledDetectorModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        CompoundTag compound = ModuleHelper.validateNBT(stack);
-        signalLevel = compound.contains(NBT_SIGNAL_LEVEL) ? compound.getByte(NBT_SIGNAL_LEVEL) : 15;
-        strongSignal = compound.getBoolean(NBT_STRONG_SIGNAL);
+        settings = stack.getOrDefault(ModDataComponents.DETECTOR_SETTINGS, DetectorSettings.DEFAULT);
     }
 
     @Override
@@ -42,11 +41,11 @@ public class CompiledDetectorModule extends CompiledModule {
     }
 
     public int getSignalLevel() {
-        return signalLevel;
+        return settings.signalLevel;
     }
 
     public boolean isStrongSignal() {
-        return strongSignal;
+        return settings.strongSignal;
     }
 
     @Override
@@ -59,5 +58,20 @@ public class CompiledDetectorModule extends CompiledModule {
     public void cleanup(ModularRouterBlockEntity router) {
         super.cleanup(router);
         router.setAllowRedstoneEmission(false);
+    }
+
+    public record DetectorSettings(int signalLevel, boolean strongSignal) {
+        public static final DetectorSettings DEFAULT = new DetectorSettings(15, false);
+
+        public static final Codec<DetectorSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                ExtraCodecs.intRange(0, 15).optionalFieldOf("signal_level", 15).forGetter(DetectorSettings::signalLevel),
+                Codec.BOOL.optionalFieldOf("strong", false).forGetter(DetectorSettings::strongSignal)
+        ).apply(builder, DetectorSettings::new));
+
+        public static final StreamCodec<FriendlyByteBuf,DetectorSettings> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, DetectorSettings::signalLevel,
+                ByteBufCodecs.BOOL, DetectorSettings::strongSignal,
+                DetectorSettings::new
+        );
     }
 }

@@ -24,7 +24,7 @@ public class CompiledCreativeModule extends CompiledModule {
             if (pos >= stacks.size()) {
                 pos = 0;
             }
-            ItemStack stack = ItemHandlerHelper.copyStackWithSize(stacks.get(pos), getItemsPerTick(router));
+            ItemStack stack = stacks.get(pos).copyWithCount(getItemsPerTick(router));
             pos++;
             ItemStack inserted = router.insertBuffer(stack);
             if (inserted.getCount() < stack.getCount()) {

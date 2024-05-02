@@ -6,7 +6,7 @@
       "item": "minecraft:cauldron"
     },
     "G": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "M": {
       "item": "modularrouters:blank_module"
@@ -17,6 +17,7 @@
     "GMG"
   ],
   "result": {
-    "item": "modularrouters:fluid_module"
+    "count": 1,
+    "id": "modularrouters:fluid_module"
   }
 }

@@ -12,10 +12,10 @@
       "item": "modularrouters:blank_module"
     },
     "Q": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "R": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -24,6 +24,7 @@
     "RQR"
   ],
   "result": {
-    "item": "modularrouters:activator_module"
+    "count": 1,
+    "id": "modularrouters:activator_module"
   }
 }

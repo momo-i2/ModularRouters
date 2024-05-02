@@ -2,12 +2,17 @@ package me.desht.modularrouters.network.messages;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.EnergyDirection;
-import me.desht.modularrouters.logic.RouterRedstoneBehaviour;
+import me.desht.modularrouters.core.ModBlockEntities;
+import me.desht.modularrouters.logic.settings.RedstoneBehaviour;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Received on: BOTH
@@ -16,27 +21,36 @@ import net.minecraft.resources.ResourceLocation;
  *  <p>
  * Sent by server to sync router settings when GUI is opened
  */
-public record RouterSettingsMessage(boolean ecoMode, RouterRedstoneBehaviour redstoneBehaviour, EnergyDirection energyDirection, BlockPos pos) implements CustomPacketPayload {
-    public static final ResourceLocation ID = MiscUtil.RL("router_settings");
+public record RouterSettingsMessage(boolean ecoMode, RedstoneBehaviour redstoneBehaviour,
+                                    EnergyDirection energyDirection, BlockPos pos) implements CustomPacketPayload
+{
+    public static final Type<RouterSettingsMessage> TYPE = new Type<>(MiscUtil.RL("router_settings"));
 
-    public RouterSettingsMessage(ModularRouterBlockEntity router) {
-        this(router.getEcoMode(), router.getRedstoneBehaviour(), router.getEnergyDirection(), router.getBlockPos());
-    }
+    public static final StreamCodec<FriendlyByteBuf,RouterSettingsMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BOOL, RouterSettingsMessage::ecoMode,
+            NeoForgeStreamCodecs.enumCodec(RedstoneBehaviour.class), RouterSettingsMessage::redstoneBehaviour,
+            NeoForgeStreamCodecs.enumCodec(EnergyDirection.class), RouterSettingsMessage::energyDirection,
+            BlockPos.STREAM_CODEC, RouterSettingsMessage::pos,
+            RouterSettingsMessage::new
+    );
 
-    public RouterSettingsMessage(FriendlyByteBuf buffer) {
-        this(buffer.readBoolean(), buffer.readEnum(RouterRedstoneBehaviour.class), buffer.readEnum(EnergyDirection.class), buffer.readBlockPos());
+    public static RouterSettingsMessage forRouter(ModularRouterBlockEntity router) {
+        return new RouterSettingsMessage(router.getEcoMode(), router.getRedstoneBehaviour(), router.getEnergyDirection(), router.getBlockPos());
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBoolean(ecoMode);
-        buffer.writeByte(redstoneBehaviour.ordinal());
-        buffer.writeEnum(energyDirection);
-        buffer.writeBlockPos(pos);
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public static void handleData(RouterSettingsMessage message, IPayloadContext context) {
+        Level level = context.player().level();
+        if (level.isLoaded(message.pos())) {
+            level.getBlockEntity(message.pos(), ModBlockEntities.MODULAR_ROUTER.get()).ifPresent(router -> {
+                router.setRedstoneBehaviour(message.redstoneBehaviour());
+                router.setEcoMode(message.ecoMode());
+                router.setEnergyDirection(message.energyDirection());
+            });
+        }
     }
 }

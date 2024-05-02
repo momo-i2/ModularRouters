@@ -128,7 +128,7 @@ public class ModularRouterBER implements BlockEntityRenderer<ModularRouterBlockE
             matrixStack.pushPose();
             matrixStack.translate(ix, iy - 0.15, iz);
             matrixStack.mulPose(Axis.of(ROTATION).rotationDegrees(progress * 360));
-            if (beam.isItemFade()) {
+            if (beam.fade()) {
                 matrixStack.translate(0, 0.15, 0);
                 matrixStack.scale(1.15f - progress, 1.15f - progress, 1.15f - progress);
                 if (progress > 0.95 && world.random.nextInt(3) == 0) {
@@ -136,7 +136,7 @@ public class ModularRouterBER implements BlockEntityRenderer<ModularRouterBlockE
                 }
             }
             Minecraft.getInstance().getItemRenderer()
-                    .renderStatic(beam.getStack(), ItemDisplayContext.GROUND, 0x00F000F0, OverlayTexture.NO_OVERLAY, matrixStack, buffer, world, 0);
+                    .renderStatic(beam.stack(), ItemDisplayContext.GROUND, 0x00F000F0, OverlayTexture.NO_OVERLAY, matrixStack, buffer, world, 0);
             matrixStack.popPose();
         }
     }
@@ -153,21 +153,21 @@ public class ModularRouterBER implements BlockEntityRenderer<ModularRouterBlockE
         VertexConsumer builder = buffer.getBuffer(ModRenderTypes.BEAM_LINE_THICK);
         ClientUtil.posF(builder, positionMatrix, startPos)
                 .color(colors[0], colors[1], colors[2], alpha)
-                .normal(matrixStack.last().normal(), xn, yn, zn)
+                .normal(matrixStack.last(), xn, yn, zn)
                 .endVertex();
         ClientUtil.posF(builder, positionMatrix, endPos)
                 .color(colors[0], colors[1], colors[2], alpha)
-                .normal(matrixStack.last().normal(), xn, yn, zn)
+                .normal(matrixStack.last(), xn, yn, zn)
                 .endVertex();
 
         VertexConsumer builder2 = buffer.getBuffer(ModRenderTypes.BEAM_LINE_THIN);
         ClientUtil.posF(builder2, positionMatrix, startPos)
                 .color(colors[0], colors[1], colors[2], 192)
-                .normal(matrixStack.last().normal(), xn, yn, zn)
+                .normal(matrixStack.last(), xn, yn, zn)
                 .endVertex();
         ClientUtil.posF(builder2, positionMatrix, endPos)
                 .color(colors[0], colors[1], colors[2], 192)
-                .normal(matrixStack.last().normal(), xn, yn, zn)
+                .normal(matrixStack.last(), xn, yn, zn)
                 .endVertex();
     }
 

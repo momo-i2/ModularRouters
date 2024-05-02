@@ -17,35 +17,13 @@
               "source": "block_entity"
             },
             {
-              "function": "minecraft:copy_nbt",
-              "ops": [
-                {
-                  "op": "replace",
-                  "source": "Modules",
-                  "target": "BlockEntityTag.Modules"
-                },
-                {
-                  "op": "replace",
-                  "source": "Upgrades",
-                  "target": "BlockEntityTag.Upgrades"
-                },
-                {
-                  "op": "replace",
-                  "source": "Redstone",
-                  "target": "BlockEntityTag.Redstone"
-                }
+              "function": "minecraft:copy_components",
+              "include": [
+                "modularrouters:saved_redstone",
+                "modularrouters:saved_modules",
+                "modularrouters:saved_upgrades"
               ],
               "source": "block_entity"
-            },
-            {
-              "type": "modularrouters:modular_router",
-              "entries": [
-                {
-                  "type": "minecraft:dynamic",
-                  "name": "minecraft:contents"
-                }
-              ],
-              "function": "minecraft:set_contents"
             }
           ],
           "name": "modularrouters:modular_router"

@@ -4,20 +4,22 @@ import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModSounds;
-import me.desht.modularrouters.logic.RouterRedstoneBehaviour;
+import me.desht.modularrouters.logic.settings.RedstoneBehaviour;
 import me.desht.modularrouters.network.messages.RouterSettingsMessage;
 import me.desht.modularrouters.network.messages.RouterUpgradesSyncMessage;
 import me.desht.modularrouters.util.InventoryUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -109,15 +111,16 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter player, List<Component> tooltip, TooltipFlag advanced) {
-        if (stack.hasTag()) {
-            CompoundTag compound = stack.getTag().getCompound("BlockEntityTag");
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
+        HolderLookup.Provider lookupProvider = context.registries();
+        if (lookupProvider != null && stack.has(DataComponents.BLOCK_ENTITY_DATA)) {
+            CompoundTag compound = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag();
             tooltip.add(xlate("modularrouters.itemText.misc.routerConfigured")
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
             if (compound.contains(NBT_MODULES)) {
                 List<Component> moduleText = new ArrayList<>();
                 ItemStackHandler modulesHandler = new ItemStackHandler(9);
-                modulesHandler.deserializeNBT(compound.getCompound(NBT_MODULES));
+                modulesHandler.deserializeNBT(lookupProvider, compound.getCompound(NBT_MODULES));
                 for (int i = 0; i < modulesHandler.getSlots(); i++) {
                     ItemStack moduleStack = modulesHandler.getStackInSlot(i);
                     if (!moduleStack.isEmpty()) {
@@ -134,7 +137,7 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
             }
             if (compound.contains(NBT_UPGRADES)) {
                 ItemStackHandler upgradesHandler = new ItemStackHandler();
-                upgradesHandler.deserializeNBT(compound.getCompound(NBT_UPGRADES));
+                upgradesHandler.deserializeNBT(lookupProvider, compound.getCompound(NBT_UPGRADES));
                 List<Component> upgradeText = new ArrayList<>();
                 for (int i = 0; i < upgradesHandler.getSlots(); i++) {
                     ItemStack upgradeStack = upgradesHandler.getStackInSlot(i);
@@ -152,7 +155,7 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
             }
             if (compound.contains(NBT_REDSTONE_MODE)) {
                 try {
-                    RouterRedstoneBehaviour rrb = RouterRedstoneBehaviour.valueOf(compound.getString(NBT_REDSTONE_MODE));
+                    RedstoneBehaviour rrb = RedstoneBehaviour.valueOf(compound.getString(NBT_REDSTONE_MODE));
                     tooltip.add(xlate("modularrouters.guiText.tooltip.redstone.label")
                             .append(": ")
                             .withStyle(ChatFormatting.YELLOW)
@@ -166,13 +169,13 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockRayTraceResult) {
-        if (!player.isSteppingCarefully()) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult blockRayTraceResult) {
+        if (!player.isShiftKeyDown()) {
             return world.getBlockEntity(pos, ModBlockEntities.MODULAR_ROUTER.get()).map(router -> {
                 if (player instanceof ServerPlayer sp && router.isPermitted(player)) {
                     // TODO combine into one packet?
-                    PacketDistributor.PLAYER.with(sp).send(new RouterSettingsMessage(router));
-                    PacketDistributor.PLAYER.with(sp).send(RouterUpgradesSyncMessage.forRouter(router));
+                    PacketDistributor.sendToPlayer(sp, RouterSettingsMessage.forRouter(router));
+                    PacketDistributor.sendToPlayer(sp, RouterUpgradesSyncMessage.forRouter(router));
                     sp.openMenu(router, pos);
                 } else if (!router.isPermitted(player) && world.isClientSide) {
                     player.displayClientMessage(xlate("modularrouters.chatText.security.accessDenied").withStyle(ChatFormatting.RED), false);

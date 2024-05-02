@@ -8,6 +8,7 @@ import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.container.RouterMenu;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.ModuleFilterHandler;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.item.MRBaseItem;
@@ -17,11 +18,10 @@ import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
 import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
 import me.desht.modularrouters.logic.filter.matchers.SimpleItemMatcher;
+import me.desht.modularrouters.logic.settings.*;
 import me.desht.modularrouters.util.MFLocator;
-import me.desht.modularrouters.util.ModuleHelper;
-import me.desht.modularrouters.util.TranslatableEnum;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,14 +29,16 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -49,95 +51,32 @@ import static me.desht.modularrouters.client.util.ClientUtil.colorText;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintable {
-    public enum ModuleFlags {
-        BLACKLIST(true, "F_blacklist"),
-        IGNORE_DAMAGE(false, "F_ignoreDamage"),
-        IGNORE_NBT(true, "F_ignoreNBT"),
-        IGNORE_TAGS(true, "F_ignoreTags");
-
-        private final boolean defaultValue;
-        private final String name;
-
-        ModuleFlags(boolean defaultValue, String name) {
-            this.defaultValue = defaultValue;
-            this.name = name;
-        }
-
-        public boolean getDefaultValue() {
-            return defaultValue;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getTextureY() {
-            return 32;
-        }
-    }
-
-    // Direction relative to the facing of the router this module is installed in
-    public enum RelativeDirection {
-        NONE(0x00, " "),
-        DOWN(0x01, "▼"),
-        UP(0x02, "▲"),
-        LEFT(0x04, "◀"),
-        RIGHT(0x08, "▶"),
-        FRONT(0x10, "▣"),
-        BACK(0x20, "▤");
-
-        private final byte mask;
-        private final String symbol;
-
-        RelativeDirection(int mask, String symbol) {
-            this.mask = (byte) mask;
-            this.symbol = symbol;
-        }
-
-        public Direction toAbsolute(Direction current) {
-            return switch (this) {
-                case UP -> Direction.UP;
-                case DOWN -> Direction.DOWN;
-                case LEFT -> current.getClockWise();
-                case BACK -> current.getOpposite();
-                case RIGHT -> current.getCounterClockWise();
-                default -> current; // including FRONT
-            };
-        }
-
-        public String getSymbol() {
-            return symbol;
-        }
-
-        public byte getMask() {
-            return mask;
-        }
-
-        public int getTextureX(boolean toggled) {
-            return ordinal() * 32 + (toggled ? 16 : 0);
-        }
-
-        public int getTextureY() {
-            return 48;
-        }
-    }
-
-    public enum Termination implements TranslatableEnum {
-        NONE,
-        RAN,
-        NOT_RAN;
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.guiText.tooltip.terminate." + this;
-        }
-    }
-
-    final BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler;
+    private final BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler;
 
     public ModuleItem(Properties props, BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler) {
         super(props);
         this.compiler = compiler;
+    }
+
+    public static ModuleSettings getCommonSettings(ItemStack moduleStack) {
+        return moduleStack.getOrDefault(ModDataComponents.COMMON_MODULE_SETTINGS, ModuleSettings.DEFAULT);
+    }
+
+    public static void setRoundRobinCounter(ItemStack moduleStack, int counter) {
+        moduleStack.set(ModDataComponents.RR_COUNTER, counter);
+    }
+
+    public static int getRoundRobinCounter(ItemStack moduleStack) {
+        return moduleStack.getOrDefault(ModDataComponents.RR_COUNTER, 0);
+    }
+
+    public static RedstoneBehaviour getRedstoneBehaviour(ItemStack moduleStack) {
+        return getCommonSettings(moduleStack).redstoneBehaviour();
+    }
+
+    public static int getRangeModifier(ItemStack stack) {
+        AugmentCounter counter = new AugmentCounter(stack);
+        return counter.getAugmentCount(ModItems.RANGE_UP_AUGMENT.get()) - counter.getAugmentCount(ModItems.RANGE_DOWN_AUGMENT.get());
     }
 
     final public CompiledModule compile(ModularRouterBlockEntity router, ItemStack stack) {
@@ -192,8 +131,8 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(stack, world, list, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
+        super.appendHoverText(stack, context, list, flag);
 
         if (ClientUtil.getHoveredSlot() instanceof RouterMenu.InstalledModuleSlot && !ClientUtil.isKeyDown(ClientSetup.keybindModuleInfo)) {
             Component key = ClientSetup.keybindConfigure.getKey().getDisplayName().copy().withStyle(ChatFormatting.DARK_AQUA);
@@ -208,56 +147,61 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
         addAugmentInformation(stack, list);
     }
 
-    protected void addSettingsInformation(ItemStack itemstack, List<Component> list) {
+    protected void addSettingsInformation(ItemStack stack, List<Component> list) {
+        ModuleSettings settings = getCommonSettings(stack);
+
         if (isDirectional()) {
-            RelativeDirection dir = ModuleHelper.getRelativeDirection(itemstack);
-            MutableComponent itc = xlate(isOmniDirectional() && dir == RelativeDirection.NONE ?
-                    "modularrouters.guiText.tooltip.allDirections" : "modularrouters.guiText.tooltip." + dir.toString());
+            MutableComponent dirStr = getDirectionString(settings.facing());
             list.add(xlate("modularrouters.guiText.label.direction").withStyle(ChatFormatting.YELLOW)
                     .append(Component.literal(": "))
-                    .append(itc.withStyle(ChatFormatting.AQUA)));
+                    .append(dirStr.withStyle(ChatFormatting.AQUA)));
         }
-        addFilterInformation(itemstack, list);
+        addFilterInformation(stack, list);
 
-        Component flags = formatFlag("IGNORE_DAMAGE", ModuleHelper.ignoreDamage(itemstack))
-                .append(" | ")
-                .append(formatFlag("IGNORE_NBT", ModuleHelper.ignoreNBT(itemstack)))
-                .append(" | ")
-                .append(formatFlag("IGNORE_TAGS", ModuleHelper.ignoreTags(itemstack)));
-        list.add(xlate("modularrouters.itemText.misc.flags").withStyle(ChatFormatting.YELLOW).append(": ").append(flags));
+        ModuleFlags flags = ModuleFlags.forItem(stack);
 
-        boolean matchAll = ModuleHelper.isMatchAll(itemstack);
+        Component flagText = formatFlag("match_damage", flags.matchDamage())
+                .append(" | ")
+                .append(formatFlag("match_components", flags.matchComponents()))
+                .append(" | ")
+                .append(formatFlag("match_item_tags", flags.matchItemTags()));
+        list.add(xlate("modularrouters.itemText.misc.flags").withStyle(ChatFormatting.YELLOW).append(": ").append(flagText));
+
         list.add(xlate("modularrouters.itemText.misc.match").withStyle(ChatFormatting.YELLOW)
                 .append(": ")
-                .append(xlate("modularrouters.itemText.misc." + (matchAll ? "matchAll" : "matchAny"))
+                .append(xlate("modularrouters.itemText.misc." + (flags.matchAllItems() ? "matchAll" : "matchAny"))
                         .withStyle(ChatFormatting.AQUA)));
 
         if (this instanceof IRangedModule rm) {
-            int curRange = rm.getCurrentRange(itemstack);
+            int curRange = rm.getCurrentRange(stack);
             ChatFormatting col = curRange > rm.getBaseRange() ?
                     ChatFormatting.GREEN : curRange < rm.getBaseRange() ?
                     ChatFormatting.RED : ChatFormatting.AQUA;
             list.add(xlate("modularrouters.itemText.misc.rangeInfo",
-                    colorText(rm.getCurrentRange(itemstack), col),
+                    colorText(rm.getCurrentRange(stack), col),
                     colorText(rm.getBaseRange(), ChatFormatting.AQUA),
                     colorText(rm.getHardMaxRange(), ChatFormatting.AQUA)
             ).withStyle(ChatFormatting.YELLOW));
         }
 
-        Termination termination = ModuleHelper.getTermination(itemstack);
-        if (termination != Termination.NONE) {
+        ModuleTermination termination = settings.termination();
+        if (termination != ModuleTermination.NONE) {
             list.add(xlate(termination.getTranslationKey() + ".header").withStyle(ChatFormatting.YELLOW));
         }
 
         if (this instanceof IPickaxeUser pickaxeUser) {
-            ItemStack pick = pickaxeUser.getPickaxe(itemstack);
+            ItemStack pick = pickaxeUser.getPickaxe(stack);
             list.add(xlate("modularrouters.itemText.misc.breakerPick").withStyle(ChatFormatting.YELLOW)
                     .append(pick.getHoverName().plainCopy().withStyle(ChatFormatting.AQUA)));
-            EnchantmentHelper.getEnchantments(pick).forEach((ench, level) ->
-                    list.add(Component.literal("▶ ").append(ench.getFullname(level).plainCopy().withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.YELLOW)));
+            pick.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).entrySet().forEach(holder -> {
+                Enchantment ench = holder.getKey().value();
+                list.add(Component.literal("▶ ")
+                        .append(ench.getFullname(holder.getIntValue()).copy().withStyle(ChatFormatting.AQUA))
+                        .withStyle(ChatFormatting.YELLOW));
+            });
         }
 
-        int energy = getEnergyCost(itemstack);
+        int energy = getEnergyCost(stack);
         if (energy != 0) {
             list.add(xlate("modularrouters.itemText.misc.energyUsage", colorText(energy, ChatFormatting.AQUA)).withStyle(ChatFormatting.YELLOW));
         }
@@ -287,12 +231,12 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
     public MutableComponent getDirectionString(RelativeDirection dir) {
         return isOmniDirectional() && dir == RelativeDirection.NONE ?
                 xlate("modularrouters.guiText.tooltip.allDirections") :
-                xlate("modularrouters.guiText.tooltip." + dir.toString());
+                xlate(dir.getTranslationKey());
     }
 
     private MutableComponent formatFlag(String key, boolean flag) {
         return xlate("modularrouters.itemText.misc." + key)
-                .withStyle(flag ? ChatFormatting.DARK_GRAY : ChatFormatting.AQUA);
+                .withStyle(flag ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY);
     }
 
     protected Component getFilterItemDisplayName(ItemStack stack) {
@@ -300,7 +244,8 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
     }
 
     protected MutableComponent itemListHeader(ItemStack itemstack) {
-        return xlate("modularrouters.itemText.misc." + (ModuleHelper.isBlacklist(itemstack) ? "blacklist" : "whitelist")).withStyle(ChatFormatting.YELLOW);
+        boolean whiteList = ModuleFlags.forItem(itemstack).whiteList();
+        return xlate("modularrouters.itemText.misc." + (whiteList ? "whitelist" : "blacklist")).withStyle(ChatFormatting.YELLOW);
     }
 
     private void addFilterInformation(ItemStack itemstack, List<Component> list) {
@@ -347,7 +292,7 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
     public boolean isFoil(ItemStack stack) {
         if (stack.getItem() instanceof IPickaxeUser pickaxeUser) {
             ItemStack pick = pickaxeUser.getPickaxe(stack);
-            return !pick.isEmpty() && !EnchantmentHelper.getEnchantments(pick).isEmpty();
+            return !pick.isEmpty() && EnchantmentHelper.hasAnyEnchantments(pick);
         }
         return false;
     }
@@ -358,11 +303,6 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
 
     public InteractionResultHolder<ItemStack> onSneakRightClick(ItemStack stack, Level world, Player player, InteractionHand hand) {
         return new InteractionResultHolder<>(InteractionResult.PASS, stack);
-    }
-
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
-        return false;
     }
 
     /**

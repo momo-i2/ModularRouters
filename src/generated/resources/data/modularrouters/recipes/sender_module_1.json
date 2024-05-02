@@ -13,6 +13,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:sender_module_1"
+    "count": 1,
+    "id": "modularrouters:sender_module_1"
   }
 }

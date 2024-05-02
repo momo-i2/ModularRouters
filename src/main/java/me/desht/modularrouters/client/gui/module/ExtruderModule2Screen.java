@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ExtruderModule2Screen extends AbstractModuleScreen {
+public class ExtruderModule2Screen extends ModuleScreen {
     public ExtruderModule2Screen(ModuleMenu container, Inventory inv, Component displayName) {
         super(container, inv, displayName);
     }

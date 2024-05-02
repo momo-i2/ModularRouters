@@ -1,10 +1,13 @@
 package me.desht.modularrouters.logic.compiled;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.ModularRoutersTags;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.config.ConfigHolder;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.util.MiscUtil;
 import me.desht.modularrouters.util.TranslatableEnum;
@@ -13,12 +16,16 @@ import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -32,23 +39,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Predicate;
 
 public class CompiledActivatorModule extends CompiledModule {
-    public static final String NBT_ACTION_TYPE = "ActionType2";
-    public static final String NBT_LOOK_DIRECTION = "LookDirection";
-    public static final String NBT_SNEAKING = "Sneaking";
-    public static final String NBT_ENTITY_MODE = "EntityMode";
-
-    private final ActionType actionType;
-    private final LookDirection lookDirection;
-    private final EntityMode entityMode;
-    private final boolean sneaking;
+    private final ActivatorSettings settings;
     private int entityIdx;
 
     private final Set<String> BLOCK_METHODS = ImmutableSet.of(
@@ -62,70 +61,10 @@ public class CompiledActivatorModule extends CompiledModule {
     private static final Set<Item> itemBlacklist = new HashSet<>();
     private static final Set<Block> blockBlacklist = new HashSet<>();
 
-    public enum ActionType implements TranslatableEnum {
-        ITEM_OR_BLOCK(false),
-        USE_ITEM_ON_ENTITY(true),
-        ATTACK_ENTITY(true);
-
-        private final boolean entity;
-
-        ActionType(boolean entity) {
-            this.entity = entity;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.itemText.activator.action." + this;
-        }
-
-        public boolean isEntityTarget() {
-            return entity;
-        }
-    }
-
-    public enum LookDirection implements TranslatableEnum {
-        LEVEL(0f),
-        ABOVE(-45f),
-        BELOW(45f);
-
-        private final float pitch;
-
-        LookDirection(float pitch) {
-            this.pitch = pitch;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.itemText.activator.direction." + this;
-        }
-    }
-
-    public enum EntityMode implements TranslatableEnum {
-        NEAREST,
-        RANDOM,
-        ROUND_ROBIN;
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.itemText.activator.entityMode." + this;
-        }
-    }
-
     public CompiledActivatorModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        CompoundTag compound = stack.getTagElement(ModularRouters.MODID);
-        if (compound != null) {
-            actionType = ActionType.values()[compound.getInt(NBT_ACTION_TYPE)];
-            lookDirection = LookDirection.values()[compound.getInt(NBT_LOOK_DIRECTION)];
-            entityMode = EntityMode.values()[compound.getInt(NBT_ENTITY_MODE)];
-            sneaking = compound.getBoolean(NBT_SNEAKING);
-        } else {
-            actionType = ActionType.ITEM_OR_BLOCK;
-            lookDirection = LookDirection.LEVEL;
-            entityMode = EntityMode.NEAREST;
-            sneaking = false;
-        }
+        settings = stack.getOrDefault(ModDataComponents.ACTIVATOR_SETTINGS, ActivatorSettings.DEFAULT);
     }
 
     @Override
@@ -136,18 +75,18 @@ public class CompiledActivatorModule extends CompiledModule {
 
         // we'll allow an empty stack, since right-clicking with an empty hand is a valid operation
         // - but only if there's an empty or blacklist filter
-        if (!stack.isEmpty() && !getFilter().test(stack) || stack.isEmpty() && !getFilter().isEmpty() && !getFilter().isBlacklist()) {
+        if (!stack.isEmpty() && !getFilter().test(stack) || stack.isEmpty() && !getFilter().isEmpty() && getFilter().isWhiteList()) {
             return false;
         }
 
         RouterFakePlayer fakePlayer = router.getFakePlayer();
         Vec3 centre = Vec3.atCenterOf(router.getBlockPos());
         // place the fake player just outside the router, on the correct face
-        fakePlayer.setPos(centre.x() + getFacing().getStepX() * 0.501, centre.y() + getFacing().getStepY() * 0.501, centre.z() + getFacing().getStepZ() * 0.501);
-        fakePlayer.setShiftKeyDown(sneaking);
+        fakePlayer.setPos(centre.x() + getAbsoluteFacing().getStepX() * 0.501, centre.y() + getAbsoluteFacing().getStepY() * 0.501, centre.z() + getAbsoluteFacing().getStepZ() * 0.501);
+        fakePlayer.setShiftKeyDown(settings.sneaking);
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
 
-        boolean didWork = switch (actionType) {
+        boolean didWork = switch (settings.actionType) {
             case ITEM_OR_BLOCK -> doUseItem(router, fakePlayer);
             case USE_ITEM_ON_ENTITY -> doUseItemOnEntity(router, fakePlayer);
             case ATTACK_ENTITY -> doAttackEntity(router, fakePlayer);
@@ -165,8 +104,8 @@ public class CompiledActivatorModule extends CompiledModule {
         BlockPos pos = router.getBlockPos();
         Level world = Objects.requireNonNull(router.getLevel());
         ItemStack stack = router.getBufferItemStack();
-        fakePlayer.setYRot(MiscUtil.getYawFromFacing(getFacing()));
-        fakePlayer.setXRot(getFacing().getAxis() == Direction.Axis.Y ? getFacing().getStepY() * -90 : lookDirection.pitch);
+        fakePlayer.setYRot(MiscUtil.getYawFromFacing(getAbsoluteFacing()));
+        fakePlayer.setXRot(getAbsoluteFacing().getAxis() == Direction.Axis.Y ? getAbsoluteFacing().getStepY() * -90 : settings.lookDirection.pitch);
         BlockHitResult hitResult = doRayTrace(pos, fakePlayer);
         BlockState state = world.getBlockState(hitResult.getBlockPos());
         if (hitResult.getType() != HitResult.Type.MISS && blockBlacklist.contains(state.getBlock())) {
@@ -202,11 +141,12 @@ public class CompiledActivatorModule extends CompiledModule {
     private BlockHitResult doRayTrace(BlockPos routerPos, FakePlayer fp) {
         Vec3 fpVec = fp.position(); // ray trace starts at this point
 
-        int xOff = getFacing().getStepX();
-        int yOff = getFacing().getStepY();
-        int zOff = getFacing().getStepZ();
+        int xOff = getAbsoluteFacing().getStepX();
+        int yOff = getAbsoluteFacing().getStepY();
+        int zOff = getAbsoluteFacing().getStepZ();
 
-        BlockPos.MutableBlockPos targetPos = routerPos.relative(getFacing()).mutable();
+        BlockPos.MutableBlockPos targetPos = routerPos.relative(getAbsoluteFacing()).mutable();
+        LookDirection lookDirection = settings.lookDirection;
         if (lookDirection != LookDirection.LEVEL
                 && Block.isShapeFullBlock(fp.level().getBlockState(targetPos).getShape(fp.level(), targetPos)))
         {
@@ -238,7 +178,7 @@ public class CompiledActivatorModule extends CompiledModule {
             if (shape.isEmpty()) {
                 continue;
             }
-            Vec3 targetVec = shape.toAabbs().get(0).getCenter().add(Vec3.atLowerCornerOf(targetPos));
+            Vec3 targetVec = shape.toAabbs().getFirst().getCenter().add(Vec3.atLowerCornerOf(targetPos));
             BlockHitResult res = fp.level().clip(
                     new ClipContext(fpVec, targetVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.SOURCE_ONLY, fp)
             );
@@ -247,12 +187,12 @@ public class CompiledActivatorModule extends CompiledModule {
             }
         }
 
-        return BlockHitResult.miss(fpVec.add(fp.getLookAngle()), getFacing().getOpposite(), routerPos.relative(getFacing()));
+        return BlockHitResult.miss(fpVec.add(fp.getLookAngle()), getAbsoluteFacing().getOpposite(), routerPos.relative(getAbsoluteFacing()));
     }
 
     private double getPlayerReachDistance(Player player) {
         if (player != null) {
-            AttributeInstance attr = player.getAttribute(NeoForgeMod.BLOCK_REACH.value());
+            AttributeInstance attr = player.getAttribute(getActionType().isEntityTarget() ? Attributes.ENTITY_INTERACTION_RANGE : Attributes.BLOCK_INTERACTION_RANGE);
             if (attr != null) return attr.getValue() + 1D;
         }
         return 4.5D;
@@ -282,7 +222,7 @@ public class CompiledActivatorModule extends CompiledModule {
     }
 
     private <T extends Entity> T findEntity(ModularRouterBlockEntity router, Class<T> cls, Predicate<Entity> blacklistChecker) {
-        Direction face = getFacing();
+        Direction face = getAbsoluteFacing();
         final BlockPos pos = router.getBlockPos();
         Vec3 vec = Vec3.atCenterOf(pos);
         AABB box = new AABB(vec, vec)
@@ -293,12 +233,12 @@ public class CompiledActivatorModule extends CompiledModule {
             return null;
         }
 
-        switch (entityMode) {
+        switch (settings.entityMode) {
             case RANDOM:
                 return l.get(router.getLevel().random.nextInt(l.size()));
             case NEAREST:
                 l.sort(Comparator.comparingDouble(o -> o.distanceToSqr(pos.getX(), pos.getY(), pos.getZ())));
-                return l.get(0);
+                return l.getFirst();
             case ROUND_ROBIN:
                 l.sort(Comparator.comparingDouble(o -> o.distanceToSqr(pos.getX(), pos.getY(), pos.getZ())));
                 entityIdx = (entityIdx + 1) % l.size();
@@ -321,7 +261,7 @@ public class CompiledActivatorModule extends CompiledModule {
         // the world, since the router has no access to them, and the player would otherwise lose them
         // e.g. milking a cow with a stack of buckets in the router slot
         NonNullList<ItemStack> inv = fakePlayer.getInventory().items;
-        Vec3 where = Vec3.atCenterOf(router.getBlockPos().relative(getFacing()));
+        Vec3 where = Vec3.atCenterOf(router.getBlockPos().relative(getAbsoluteFacing()));
         // start at slot 1, since slot 0 is always used for the fake player's held item, which doesn't get dropped
         Level level = Objects.requireNonNull(router.getLevel());
         for (int i = 1; i < inv.size() && !inv.get(i).isEmpty(); i++) {
@@ -332,30 +272,134 @@ public class CompiledActivatorModule extends CompiledModule {
     }
 
     public ActionType getActionType() {
-        return actionType;
+        return settings.actionType;
     }
 
     public LookDirection getLookDirection() {
-        return lookDirection;
+        return settings.lookDirection;
     }
 
     public EntityMode getEntityMode() {
-        return entityMode;
+        return settings.entityMode;
     }
 
     public boolean isSneaking() {
-        return sneaking;
+        return settings.sneaking;
     }
 
     @Override
     public int getEnergyCost() {
-        return actionType == ActionType.ATTACK_ENTITY ?
+        return settings.actionType == ActionType.ATTACK_ENTITY ?
                 ConfigHolder.common.energyCosts.activatorModuleEnergyCostAttack.get() :
                 ConfigHolder.common.energyCosts.activatorModuleEnergyCost.get();
     }
 
     @Override
     public boolean careAboutItemAttributes() {
-        return actionType == ActionType.ATTACK_ENTITY;
+        return settings.actionType == ActionType.ATTACK_ENTITY;
+    }
+
+    public enum ActionType implements TranslatableEnum, StringRepresentable {
+        ITEM_OR_BLOCK("item_or_block", false),
+        USE_ITEM_ON_ENTITY("use_item_on_entity", true),
+        ATTACK_ENTITY("attack_entity", true);
+
+        private final boolean entity;
+        private final String name;
+
+        ActionType(String name, boolean entity) {
+            this.entity = entity;
+            this.name = name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "modularrouters.itemText.activator.action." + name;
+        }
+
+        public boolean isEntityTarget() {
+            return entity;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
+    public enum LookDirection implements TranslatableEnum, StringRepresentable {
+        LEVEL("level", 0f),
+        ABOVE("above", -45f),
+        BELOW("below", 45f);
+
+        private final String name;
+        private final float pitch;
+
+        LookDirection(String name, float pitch) {
+            this.name = name;
+            this.pitch = pitch;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "modularrouters.itemText.activator.direction." + name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
+    public enum EntityMode implements TranslatableEnum, StringRepresentable {
+        NEAREST("nearest"),
+        RANDOM("random"),
+        ROUND_ROBIN("round_robin");
+
+        private final String name;
+
+        EntityMode(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "modularrouters.itemText.activator.entityMode." + getSerializedName();
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
+    public record ActivatorSettings(ActionType actionType, LookDirection lookDirection, EntityMode entityMode, boolean sneaking)
+    {
+        public static final ActivatorSettings DEFAULT = new ActivatorSettings(
+                ActionType.ITEM_OR_BLOCK, LookDirection.LEVEL, EntityMode.NEAREST, false
+        );
+
+        public static final Codec<ActivatorSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                StringRepresentable.fromEnum(ActionType::values)
+                        .optionalFieldOf("action", ActionType.USE_ITEM_ON_ENTITY)
+                        .forGetter(ActivatorSettings::actionType),
+                StringRepresentable.fromEnum(LookDirection::values)
+                        .optionalFieldOf("action", LookDirection.LEVEL)
+                        .forGetter(ActivatorSettings::lookDirection),
+                StringRepresentable.fromEnum(EntityMode::values)
+                        .optionalFieldOf("action", EntityMode.NEAREST)
+                        .forGetter(ActivatorSettings::entityMode),
+                Codec.BOOL
+                        .optionalFieldOf("sneaking", false)
+                        .forGetter(ActivatorSettings::sneaking)
+        ).apply(builder, ActivatorSettings::new));
+
+        public static final StreamCodec<FriendlyByteBuf,ActivatorSettings> STREAM_CODEC = StreamCodec.composite(
+                NeoForgeStreamCodecs.enumCodec(ActionType.class), ActivatorSettings::actionType,
+                NeoForgeStreamCodecs.enumCodec(LookDirection.class), ActivatorSettings::lookDirection,
+                NeoForgeStreamCodecs.enumCodec(EntityMode.class), ActivatorSettings::entityMode,
+                ByteBufCodecs.BOOL, ActivatorSettings::sneaking,
+                ActivatorSettings::new
+        );
     }
 }

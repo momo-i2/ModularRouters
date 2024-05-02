@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "modularrouters:fluid_module"
-            ]
+            "items": "modularrouters:fluid_module"
           }
         ]
       },

@@ -10,7 +10,7 @@ public class VoidModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(255, 0, 0);
 
     public VoidModule() {
-        super(ModItems.defaultProps(), CompiledVoidModule::new);
+        super(ModItems.moduleProps(), CompiledVoidModule::new);
     }
 
     @Override

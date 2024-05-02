@@ -6,10 +6,11 @@
       "item": "modularrouters:blank_module"
     },
     {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   ],
   "result": {
-    "item": "modularrouters:extruder_module_2"
+    "count": 1,
+    "id": "modularrouters:extruder_module_2"
   }
 }

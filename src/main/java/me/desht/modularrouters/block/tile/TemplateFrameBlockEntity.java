@@ -5,6 +5,7 @@ import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.util.Scheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -63,15 +64,15 @@ public class TemplateFrameBlockEntity extends BlockEntity implements ICamouflage
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        camouflage = getCamoStateFromNBT(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        super.loadAdditional(compound, provider);
+        camouflage = getCamoStateFromNBT(compound, provider);
         extendedMimic = compound.getBoolean(NBT_MIMIC);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        super.saveAdditional(compound, provider);
         compound.putBoolean(NBT_MIMIC, extendedMimic);
         if (camouflage != null) {
             compound.put(NBT_CAMO_NAME, NbtUtils.writeBlockState(camouflage));
@@ -79,9 +80,9 @@ public class TemplateFrameBlockEntity extends BlockEntity implements ICamouflage
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider provider) {
         if (pkt.getTag() != null) {
-            camouflage = getCamoStateFromNBT(pkt.getTag());
+            camouflage = getCamoStateFromNBT(pkt.getTag(), provider);
             extendedMimic = pkt.getTag().getBoolean("Mimic");
             if (camouflage != null && extendedMimic && camouflage.getLightEmission(getLevel(), getBlockPos()) > 0) {
                 Objects.requireNonNull(getLevel()).getChunkSource().getLightEngine().checkBlock(worldPosition);
@@ -90,10 +91,10 @@ public class TemplateFrameBlockEntity extends BlockEntity implements ICamouflage
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        super.handleUpdateTag(tag, provider);
 
-        camouflage = getCamoStateFromNBT(tag);
+        camouflage = getCamoStateFromNBT(tag, provider);
         extendedMimic = tag.getBoolean("Mimic");
         if (camouflage != null && extendedMimic && camouflage.getLightEmission(getLevel(), getBlockPos()) > 0) {
             // this needs to be deferred a tick because the chunk isn't fully loaded,
@@ -109,7 +110,7 @@ public class TemplateFrameBlockEntity extends BlockEntity implements ICamouflage
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag compound = new CompoundTag();
         compound.putInt("x", worldPosition.getX());
         compound.putInt("y", worldPosition.getY());
@@ -119,9 +120,10 @@ public class TemplateFrameBlockEntity extends BlockEntity implements ICamouflage
         return getNBTFromCamoState(compound, camouflage);
     }
 
-    private BlockState getCamoStateFromNBT(CompoundTag tag) {
+    private BlockState getCamoStateFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
         // level isn't necessarily available here
-        var lookup = level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK);
+//        var lookup = level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK);
+        var lookup = provider.lookup(Registries.BLOCK).orElse(BuiltInRegistries.BLOCK.asLookup());
         if (tag.contains(NBT_CAMO_NAME)) {
             return NbtUtils.readBlockState(lookup, tag.getCompound(NBT_CAMO_NAME));
         }

@@ -19,11 +19,11 @@ record GhostTarget<I>(AbstractContainerScreen<?> gui, Slot slot) implements IGho
     @Override
     public void accept(I ingredient) {
         if (ingredient instanceof ItemStack stack) {
-            PacketDistributor.SERVER.noArg().send(new ModuleFilterMessage(slot.index, stack));
+            PacketDistributor.sendToServer(new ModuleFilterMessage(slot.index, stack));
         } else if (ingredient instanceof FluidStack fluidStack) {
             ItemStack bucket = FluidUtil.getFilledBucket(fluidStack);
             if (!bucket.isEmpty()) {
-                PacketDistributor.SERVER.noArg().send(new ModuleFilterMessage(slot.index, bucket));
+                PacketDistributor.sendToServer(new ModuleFilterMessage(slot.index, bucket));
             }
         }
     }

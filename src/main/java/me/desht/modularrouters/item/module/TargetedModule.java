@@ -5,27 +5,25 @@ import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.config.ConfigHolder;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModSounds;
 import me.desht.modularrouters.logic.ModuleTarget;
+import me.desht.modularrouters.logic.ModuleTargetList;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
 import me.desht.modularrouters.util.BlockUtil;
 import me.desht.modularrouters.util.InventoryUtils;
 import me.desht.modularrouters.util.MiscUtil;
-import me.desht.modularrouters.util.ModuleHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -43,14 +41,11 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 import static me.desht.modularrouters.util.MiscUtil.asMutableComponent;
 
 /**
- * Represents a module with a specific target block or blocks (blockpos stored in itemstack NBT).
+ * Represents a module with a specific target block or blocks (stored in "modularrouters:module_target_list" component).
  */
 public abstract class TargetedModule extends ModuleItem {
-    private static final String NBT_TARGET = "Target";
-    private static final String NBT_MULTI_TARGET = "MultiTarget";
-
-    TargetedModule(Item.Properties props, BiFunction<ModularRouterBlockEntity,ItemStack,? extends CompiledModule> compiler) {
-        super(props, compiler);
+    protected TargetedModule(Item.Properties props, BiFunction<ModularRouterBlockEntity,ItemStack,? extends CompiledModule> compiler) {
+        super(props.component(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY), compiler);
     }
 
     @Override
@@ -114,7 +109,7 @@ public abstract class TargetedModule extends ModuleItem {
 
             world.playSound(null, pos, ModSounds.SUCCESS.get(), SoundSource.BLOCKS,
                     ConfigHolder.client.sound.bleepVolume.get().floatValue(), removing ? 1.1f : 1.3f);
-            setTargets(stack, targets);
+            setTargetList(stack, targets);
         }
     }
 
@@ -126,15 +121,15 @@ public abstract class TargetedModule extends ModuleItem {
     }
 
     @Override
-    protected void addSettingsInformation(ItemStack itemstack, List<Component> list) {
-        super.addSettingsInformation(itemstack, list);
+    protected void addSettingsInformation(ItemStack stack, List<Component> list) {
+        super.addSettingsInformation(stack, list);
 
         Set<ModuleTarget> targets;
 
         if (getMaxTargets() > 1) {
-            targets = getTargets(itemstack, false);
+            targets = getTargets(stack, false);
         } else {
-            targets = Sets.newHashSet(getTarget(itemstack));
+            targets = Sets.newHashSet(getTarget(stack));
         }
 
         for (ModuleTarget target : targets) {
@@ -143,7 +138,7 @@ public abstract class TargetedModule extends ModuleItem {
                 list.add(msg);
                 ClientUtil.getOpenItemRouter().ifPresent(router -> {
                     ModuleTarget moduleTarget = new ModuleTarget(router.getGlobalPos());
-                    TargetValidation val = validateTarget(itemstack, moduleTarget, target, false);
+                    TargetValidation val = validateTarget(stack, moduleTarget, target, false);
                     if (val != TargetValidation.OK) {
                         list.add(xlate(val.translationKey()).withStyle(val.getColor()));
                     }
@@ -176,12 +171,12 @@ public abstract class TargetedModule extends ModuleItem {
             ModularRouters.LOGGER.warn("TargetModule.setTarget() should not be called client-side!");
             return;
         }
-        CompoundTag compound = ModuleHelper.validateNBTForWriting(stack);
+
         if (pos == null) {
-            compound.remove(NBT_TARGET);
+            stack.set(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY);
         } else {
             ModuleTarget mt = new ModuleTarget(MiscUtil.makeGlobalPos(world, pos), face, BlockUtil.getBlockName(world, pos));
-            compound.put(NBT_TARGET, mt.toNBT());
+            stack.set(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.singleTarget(mt));
         }
     }
 
@@ -204,15 +199,12 @@ public abstract class TargetedModule extends ModuleItem {
      * @return targeting data
      */
     public static ModuleTarget getTarget(ItemStack stack, boolean checkBlockName) {
-        CompoundTag compound = stack.getTagElement(ModularRouters.MODID);
-        if (compound != null && compound.getTagType(NBT_TARGET) == Tag.TAG_COMPOUND) {
-            ModuleTarget target = ModuleTarget.fromNBT(compound.getCompound(NBT_TARGET));
-            if (checkBlockName) {
-                ModuleTarget newTarget = updateTargetBlockName(stack, target);
-                if (newTarget != null) return newTarget;
-            }
-            return target;
+        ModuleTargetList targetList = stack.getOrDefault(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY);
+
+        if (!targetList.isEmpty()) {
+            return checkBlockName ? updateTargetBlockName(stack, targetList.getSingle()) : targetList.getSingle();
         }
+
         return null;
     }
 
@@ -226,35 +218,32 @@ public abstract class TargetedModule extends ModuleItem {
     public static Set<ModuleTarget> getTargets(ItemStack stack, boolean checkBlockName) {
         Set<ModuleTarget> result = Sets.newHashSet();
 
-        CompoundTag compound = stack.getTagElement(ModularRouters.MODID);
-        if (compound != null && compound.getTagType(NBT_MULTI_TARGET) == Tag.TAG_LIST) {
-            ListTag list = compound.getList(NBT_MULTI_TARGET, Tag.TAG_COMPOUND);
-            for (int i = 0; i < list.size(); i++) {
-                ModuleTarget target = ModuleTarget.fromNBT(list.getCompound(i));
-                if (checkBlockName) {
-                    ModuleTarget newTarget = updateTargetBlockName(stack, target);
-                    result.add(newTarget != null ? newTarget : target);
-                } else {
-                    result.add(target);
-                }
+        stack.getOrDefault(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY).targets().forEach(target -> {
+            if (checkBlockName) {
+                target = updateTargetBlockName(stack, target);
             }
-        }
+            if (target != null) {
+                result.add(target);
+            }
+        });
+
         return result;
     }
 
-    private static void setTargets(ItemStack stack, Set<ModuleTarget> targets) {
-        CompoundTag compound = ModuleHelper.validateNBTForWriting(stack);
-        compound.put(NBT_MULTI_TARGET, Util.make(new ListTag(), l -> targets.forEach(t -> l.add(t.toNBT()))));
+    private static void setTargetList(ItemStack stack, Set<ModuleTarget> targets) {
+        stack.set(ModDataComponents.MODULE_TARGET_LIST, new ModuleTargetList(List.copyOf(targets)));
     }
 
     private static ModuleTarget updateTargetBlockName(ItemStack stack, ModuleTarget target) {
-        ServerLevel w = MiscUtil.getWorldForGlobalPos(target.gPos);
+        ServerLevel level = MiscUtil.getWorldForGlobalPos(target.gPos);
         BlockPos pos = target.gPos.pos();
-        if (w != null && w.getChunkSource().hasChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
-            String invName = BlockUtil.getBlockName(w, pos);
+        if (level != null && level.getChunkSource().hasChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+            String invName = BlockUtil.getBlockName(level, pos);
             if (!target.blockTranslationKey.equals(invName)) {
-                setTarget(stack, w, pos, target.face);
+                setTarget(stack, level, pos, target.face);
                 return new ModuleTarget(target.gPos, target.face, invName);
+            } else {
+                return target;
             }
         }
         return null;
@@ -333,19 +322,30 @@ public abstract class TargetedModule extends ModuleItem {
         return true;
     }
 
-    enum TargetValidation {
-        OK,
-        OUT_OF_RANGE,
-        NOT_LOADED,
-        NOT_INVENTORY,
-        BAD_DIMENSION;
+    enum TargetValidation implements StringRepresentable {
+        OK("ok"),
+        OUT_OF_RANGE("out_of_range"),
+        NOT_LOADED("not_loaded"),
+        NOT_INVENTORY("no_inventory"),
+        BAD_DIMENSION("bad_dimension");
+
+        private final String name;
+
+        TargetValidation(String name) {
+            this.name = name;
+        }
 
         ChatFormatting getColor() {
             return this == OK ? ChatFormatting.GREEN : ChatFormatting.RED;
         }
 
         String translationKey() {
-            return "modularrouters.chatText.targetValidation." + this;
+            return "modularrouters.chatText.targetValidation." + getSerializedName();
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
         }
     }
 }

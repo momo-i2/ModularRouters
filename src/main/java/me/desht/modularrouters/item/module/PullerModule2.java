@@ -8,11 +8,10 @@ import me.desht.modularrouters.logic.compiled.CompiledPullerModule2;
 import net.minecraft.world.item.ItemStack;
 
 public class PullerModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
-
     private static final TintColor TINT_COLOR = new TintColor(128, 128, 255);
 
     public PullerModule2() {
-        super(ModItems.defaultProps(), CompiledPullerModule2::new);
+        super(ModItems.moduleProps(), CompiledPullerModule2::new);
     }
 
     @Override

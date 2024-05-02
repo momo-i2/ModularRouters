@@ -3,8 +3,8 @@ package me.desht.modularrouters.recipe;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModRecipes;
 import me.desht.modularrouters.item.module.IPickaxeUser;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -15,9 +15,6 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.ToolActions;
 import org.apache.commons.lang3.Validate;
-
-import javax.annotation.Nullable;
-import java.util.stream.Stream;
 
 /**
  * For modules which need a pickaxe in their recipe to set their harvest level.
@@ -44,7 +41,7 @@ public abstract class PickaxeModuleRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer inv, HolderLookup.Provider registryAccess) {
         ItemStack pick = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
@@ -72,7 +69,7 @@ public abstract class PickaxeModuleRecipe extends ShapelessRecipe {
         private static NonNullList<Ingredient> ingredients() {
             return NonNullList.of(Ingredient.EMPTY,
                     Ingredient.of(ModItems.BLANK_MODULE.get()),
-                    new PickaxeIngredient()
+                    Ingredient.of(ItemTags.PICKAXES)
             );
         }
 
@@ -101,25 +98,40 @@ public abstract class PickaxeModuleRecipe extends ShapelessRecipe {
         }
     }
 
-    private static class PickaxeIngredient extends Ingredient {
-        PickaxeIngredient() {
-            // this is for the benefit of getMatchingStacks()
-            super(Stream.of(new TagValue(ItemTags.PICKAXES)));
-
-//                    Tags.Items.ImmutableList.of(
-//                    new ItemStack(Items.WOODEN_PICKAXE),
-//                    new ItemStack(Items.STONE_PICKAXE),
-//                    new ItemStack(Items.IRON_PICKAXE),
-//                    new ItemStack(Items.DIAMOND_PICKAXE),
-//                    new ItemStack(Items.NETHERITE_PICKAXE)
-//            ))));
-        }
-
-        @Override
-        public boolean test(@Nullable ItemStack stack) {
-            return isValidPickaxe(stack);
-        }
-    }
+//    private static class PickaxeIngredient implements ICustomIngredient {
+//        PickaxeIngredient() {
+//            // this is for the benefit of getMatchingStacks()
+//            super(Stream.of(new TagValue(ItemTags.PICKAXES)));
+//
+////                    Tags.Items.ImmutableList.of(
+////                    new ItemStack(Items.WOODEN_PICKAXE),
+////                    new ItemStack(Items.STONE_PICKAXE),
+////                    new ItemStack(Items.IRON_PICKAXE),
+////                    new ItemStack(Items.DIAMOND_PICKAXE),
+////                    new ItemStack(Items.NETHERITE_PICKAXE)
+////            ))));
+//        }
+//
+//        @Override
+//        public boolean test(@Nullable ItemStack stack) {
+//            return isValidPickaxe(stack);
+//        }
+//
+//        @Override
+//        public Stream<ItemStack> getItems() {
+//            return Stream.of(new Ingredient.TagValue(ItemTags.PICKAXES));
+//        }
+//
+//        @Override
+//        public boolean isSimple() {
+//            return false;
+//        }
+//
+//        @Override
+//        public IngredientType<?> getType() {
+//            return null;
+//        }
+//    }
 
     private static boolean isValidPickaxe(ItemStack stack) {
         return stack != null && stack.getItem().canPerformAction(stack, ToolActions.PICKAXE_DIG) && stack.getDamageValue() == 0;

@@ -1,10 +1,11 @@
 package me.desht.modularrouters.container;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
+import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.RecompileFlag;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.BulkFilterHandler;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.item.smartfilter.BulkItemFilter;
-import me.desht.modularrouters.logic.filter.Filter;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.MFLocator;
 import me.desht.modularrouters.util.SetofItemStack;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +15,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import static me.desht.modularrouters.container.Layout.SLOT_X_SPACING;
 import static me.desht.modularrouters.container.Layout.SLOT_Y_SPACING;
@@ -69,11 +69,11 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
         handler.save();
 
         if (getRouter() != null && !getRouter().getLevel().isClientSide) {
-            getRouter().recompileNeeded(ModularRouterBlockEntity.COMPILE_MODULES);
+            getRouter().recompileNeeded(RecompileFlag.MODULES);
         }
     }
 
-    public int mergeInventory(IItemHandler srcInv, Filter.Flags flags, boolean clearFirst) {
+    public int mergeInventory(IItemHandler srcInv, ModuleFlags flags, boolean clearFirst) {
         if (srcInv == null) {
             return 0;
         }
@@ -83,13 +83,13 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
         for (int i = 0; i < srcInv.getSlots() && stacks.size() < handler.getSlots(); i++) {
             ItemStack stack = srcInv.getStackInSlot(i);
             if (!stack.isEmpty()) {
-                stacks.add(ItemHandlerHelper.copyStackWithSize(stack, 1));
+                stacks.add(stack.copyWithCount(1));
             }
         }
 
         int slot = 0;
         handler.setAutoSave(false);
-        for (ItemStack stack : stacks.sortedList()) {
+        for (ItemStack stack : stacks.sorted()) {
             handler.setStackInSlot(slot++, stack);
         }
         while (slot < handler.getSlots()) {
@@ -100,7 +100,7 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
         handler.save();
 
         if (getRouter() != null && !getRouter().getLevel().isClientSide) {
-            getRouter().recompileNeeded(ModularRouterBlockEntity.COMPILE_MODULES);
+            getRouter().recompileNeeded(RecompileFlag.MODULES);
         }
 
         return stacks.size() - origSize;

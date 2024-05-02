@@ -4,9 +4,11 @@ import me.desht.modularrouters.client.render.area.IPositionProvider;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
+import me.desht.modularrouters.logic.ModuleTargetList;
 import me.desht.modularrouters.logic.compiled.CompiledFluidModule2;
 import me.desht.modularrouters.logic.filter.matchers.FluidMatcher;
 import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
@@ -20,11 +22,11 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import java.util.List;
 
 public class FluidModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
-
     private static final TintColor TINT_COLOR = new TintColor(64, 224, 255);
 
     public FluidModule2() {
-        super(ModItems.defaultProps(), CompiledFluidModule2::new);
+        super(ModItems.moduleProps()
+                .component(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY), CompiledFluidModule2::new);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class FluidModule2 extends TargetedModule implements IRangedModule, IPosi
 
     @Override
     protected Component getFilterItemDisplayName(ItemStack stack) {
-        return FluidUtil.getFluidContained(stack).map(FluidStack::getDisplayName).orElse(stack.getHoverName());
+        return FluidUtil.getFluidContained(stack).map(FluidStack::getHoverName).orElse(stack.getHoverName());
     }
 
     @Override

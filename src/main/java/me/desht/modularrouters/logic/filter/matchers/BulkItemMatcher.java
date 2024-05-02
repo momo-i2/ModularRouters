@@ -1,7 +1,7 @@
 package me.desht.modularrouters.logic.filter.matchers;
 
 import com.google.common.collect.Sets;
-import me.desht.modularrouters.logic.filter.Filter.Flags;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.MiscUtil;
 import me.desht.modularrouters.util.SetofItemStack;
 import net.minecraft.tags.TagKey;
@@ -14,10 +14,10 @@ public class BulkItemMatcher implements IItemMatcher {
     private final SetofItemStack stacks;
     private final Set<TagKey<Item>> tags;
 
-    public BulkItemMatcher(SetofItemStack stacks, Flags flags) {
+    public BulkItemMatcher(SetofItemStack stacks, ModuleFlags flags) {
         this.stacks = stacks;
         this.tags = Sets.newHashSet();
-        if (flags.matchTags()) {
+        if (flags.matchItemTags()) {
             for (ItemStack stack : stacks) {
                 tags.addAll(MiscUtil.itemTags(stack.getItem()));
             }
@@ -25,15 +25,15 @@ public class BulkItemMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, Flags flags) {
+    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
         if (stacks.contains(stack)) {
             return true;
         } else {
-            return flags.matchTags() && matchTags(stack);
+            return flags.matchItemTags() && checkForItemTagIntersection(stack);
         }
     }
 
-    private boolean matchTags(ItemStack stack) {
+    private boolean checkForItemTagIntersection(ItemStack stack) {
         return !Sets.intersection(MiscUtil.itemTags(stack.getItem()), tags).isEmpty();
     }
 

@@ -17,7 +17,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
-import java.util.Comparator;
 import java.util.Map;
 
 import static me.desht.modularrouters.container.Layout.SLOT_X_SPACING;

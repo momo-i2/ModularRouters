@@ -4,10 +4,13 @@ import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.integration.XPCollection;
+import me.desht.modularrouters.item.augment.AugmentItem;
 import me.desht.modularrouters.logic.compiled.CompiledVacuumModule;
+import me.desht.modularrouters.logic.compiled.CompiledVacuumModule.VacuumSettings;
 import me.desht.modularrouters.util.MiscUtil;
 import me.desht.modularrouters.util.ModNameCache;
 import net.minecraft.ChatFormatting;
@@ -18,11 +21,12 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class VacuumModule extends ModuleItem implements IRangedModule {
-
     private static final TintColor TINT_COLOR = new TintColor(120, 48, 191);
 
     public VacuumModule() {
-        super(ModItems.defaultProps(), CompiledVacuumModule::new);
+        super(ModItems.moduleProps()
+                        .component(ModDataComponents.VACUUM_SETTINGS.get(), VacuumSettings.DEFAULT),
+                CompiledVacuumModule::new);
     }
 
     @Override
@@ -31,18 +35,20 @@ public class VacuumModule extends ModuleItem implements IRangedModule {
     }
 
     @Override
-    public void addSettingsInformation(ItemStack itemstack, List<Component> list) {
-        super.addSettingsInformation(itemstack, list);
+    public void addSettingsInformation(ItemStack stack, List<Component> list) {
+        super.addSettingsInformation(stack, list);
 
-        CompiledVacuumModule cvm = new CompiledVacuumModule(null, itemstack);
-        if (cvm.isXpMode()) {
-            XPCollection.XPCollectionType type = cvm.getXPCollectionType();
+        boolean xpMode = new AugmentItem.AugmentCounter(stack).getAugmentCount(ModItems.XP_VACUUM_AUGMENT) > 0;
+
+        if (xpMode) {
+            VacuumSettings settings = stack.get(ModDataComponents.VACUUM_SETTINGS);
+            XPCollection.XPCollectionType type = settings.collectionType();
             Component modName = Component.literal(ModNameCache.getModName(type.getModId())).withStyle(ChatFormatting.BLUE);
             Component title = type.getDisplayName().plainCopy().withStyle(ChatFormatting.AQUA);
             list.add(ClientUtil.xlate("modularrouters.guiText.label.xpVacuum")
                     .append(": ").withStyle(ChatFormatting.YELLOW)
                     .append(title).append(" - ").append(modName));
-            if (cvm.isAutoEjecting() && !type.isSolid()) {
+            if (settings.autoEject() && !type.isSolid()) {
                 list.add(MiscUtil.settingsStr(ChatFormatting.GREEN.toString(), ClientUtil.xlate("modularrouters.guiText.tooltip.xpVacuum.ejectFluid")));
             }
         }

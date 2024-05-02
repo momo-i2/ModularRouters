@@ -1,24 +1,22 @@
 package me.desht.modularrouters.item.module;
 
-import me.desht.modularrouters.util.ModuleHelper;
-import net.minecraft.nbt.CompoundTag;
+import me.desht.modularrouters.core.ModDataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemContainerContents;
+
+import java.util.List;
 
 public interface IPickaxeUser {
-    String NBT_PICKAXE = "Pickaxe";
+    ItemContainerContents DEFAULT_PICK = ItemContainerContents.fromItems(List.of(new ItemStack(Items.STONE_PICKAXE)));
 
     default ItemStack getPickaxe(ItemStack moduleStack) {
-        CompoundTag tag = ModuleHelper.validateNBT(moduleStack);
-        if (tag.contains(NBT_PICKAXE)) {
-            return ItemStack.of(tag.getCompound(NBT_PICKAXE));
-        } else {
-            return new ItemStack(Items.IRON_PICKAXE);
-        }
+        return moduleStack.getOrDefault(ModDataComponents.PICKAXE, DEFAULT_PICK)
+                .copyOne();
     }
 
     default ItemStack setPickaxe(ItemStack moduleStack, ItemStack pickaxeStack) {
-        ModuleHelper.validateNBTForWriting(moduleStack).put(NBT_PICKAXE, pickaxeStack.save(new CompoundTag()));
+        moduleStack.set(ModDataComponents.PICKAXE, ItemContainerContents.fromItems(List.of(pickaxeStack)));
         return moduleStack;
     }
 }

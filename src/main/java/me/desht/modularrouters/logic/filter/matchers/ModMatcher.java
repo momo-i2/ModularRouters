@@ -1,7 +1,7 @@
 package me.desht.modularrouters.logic.filter.matchers;
 
 import com.google.common.collect.Sets;
-import me.desht.modularrouters.logic.filter.Filter;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +16,7 @@ public class ModMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, Filter.Flags flags) {
+    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
         return !stack.isEmpty() && modSet.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace());
     }
 }

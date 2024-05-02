@@ -10,6 +10,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:energy_distributor_module"
+    "count": 1,
+    "id": "modularrouters:energy_distributor_module"
   }
 }

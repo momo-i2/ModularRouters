@@ -6,6 +6,7 @@ import me.desht.modularrouters.container.AbstractSmartFilterMenu;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.network.messages.OpenGuiMessage;
 import me.desht.modularrouters.util.MFLocator;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -31,13 +32,13 @@ public abstract class AbstractFilterContainerScreen extends AbstractContainerScr
         // need to re-open module GUI for module in router slot <moduleSlotIndex>
         MFLocator locator = menu.getLocator();
         if (locator.routerPos() != null) {
-            PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openModuleInRouter(locator));
+            PacketDistributor.sendToServer(OpenGuiMessage.openModuleInRouter(locator));
             return true;
         } else if (hand != null) {
             ItemStack stack = getMinecraft().player.getItemInHand(hand);
             if (stack.getItem() instanceof ModuleItem) {
                 // need to re-open module GUI for module in player's hand
-                PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openModuleInHand(locator));
+                PacketDistributor.sendToServer(OpenGuiMessage.openModuleInHand(locator));
                 return true;
             }
         }
@@ -51,6 +52,13 @@ public abstract class AbstractFilterContainerScreen extends AbstractContainerScr
             if (closeGUI()) return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
+        renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
     @Override

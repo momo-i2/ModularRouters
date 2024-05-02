@@ -4,12 +4,12 @@ import me.desht.modularrouters.client.gui.widgets.button.ItemStackButton;
 import me.desht.modularrouters.client.gui.widgets.textfield.IntegerTextField;
 import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.logic.compiled.CompiledDetectorModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.Range;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class DetectorModuleScreen extends AbstractModuleScreen {
+public class DetectorModuleScreen extends ModuleScreen {
     private static final ItemStack redstoneStack = new ItemStack(Items.REDSTONE);
 
     private boolean isStrong;
@@ -63,11 +63,13 @@ public class DetectorModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), compound -> {
-            compound.putByte(CompiledDetectorModule.NBT_SIGNAL_LEVEL, (byte) intField.getIntValue());
-            compound.putBoolean(CompiledDetectorModule.NBT_STRONG_SIGNAL, isStrong);
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+            stack.set(ModDataComponents.DETECTOR_SETTINGS, new CompiledDetectorModule.DetectorSettings(
+                    intField.getIntValue(),
+                    isStrong
+            ))
+        );
     }
 
     private static class TooltipButton extends ItemStackButton {

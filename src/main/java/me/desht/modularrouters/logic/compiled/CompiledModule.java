@@ -7,40 +7,40 @@ import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.augment.AugmentItem.AugmentCounter;
 import me.desht.modularrouters.item.module.IRangedModule;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.item.module.ModuleItem.RelativeDirection;
 import me.desht.modularrouters.logic.ModuleTarget;
-import me.desht.modularrouters.logic.RouterRedstoneBehaviour;
 import me.desht.modularrouters.logic.filter.Filter;
+import me.desht.modularrouters.logic.settings.ModuleSettings;
+import me.desht.modularrouters.logic.settings.ModuleTermination;
+import me.desht.modularrouters.logic.settings.RedstoneBehaviour;
+import me.desht.modularrouters.logic.settings.RelativeDirection;
 import me.desht.modularrouters.util.BlockUtil;
 import me.desht.modularrouters.util.CountedItemStacks;
 import me.desht.modularrouters.util.MiscUtil;
-import me.desht.modularrouters.util.ModuleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public abstract class CompiledModule {
-    private final Filter filter;
     private final ModuleItem module;
-    private final RelativeDirection direction;
+    protected final ModuleSettings commonSettings;
+    private final Filter filter;
+    @Nullable
+    private final Direction absoluteFacing;
     private final List<ModuleTarget> targets;
-    private final RouterRedstoneBehaviour behaviour;
-    private final ModuleItem.Termination termination;
-    private final Direction facing;
+    @Nullable
     private final Direction routerFacing;
-    private final int regulationAmount;
     private final AugmentCounter augmentCounter;
     private final int range, rangeSquared;
     @Nullable
@@ -62,18 +62,14 @@ public abstract class CompiledModule {
 
         module = (ModuleItem) stack.getItem();
         augmentCounter = new AugmentCounter(stack);
-        direction = ModuleHelper.getRelativeDirection(stack);
-        range = module instanceof IRangedModule ?
-                ((IRangedModule) module).getCurrentRange(getRangeModifier()) : 0;
+        commonSettings = ModuleItem.getCommonSettings(stack);
+        range = module instanceof IRangedModule r ? r.getCurrentRange(getRangeModifier()) : 0;
         rangeSquared = range * range;
         targets = setupTargets(router, stack);
         filter = new Filter(stack, shouldStoreRawFilterItems(), augmentCounter.getAugmentCount(ModItems.FILTER_ROUND_ROBIN_AUGMENT.get()) > 0);
-        termination = ModuleHelper.getTermination(stack);
-        behaviour = ModuleHelper.getRedstoneBehaviour(stack);
-        regulationAmount = ModuleHelper.getRegulatorAmount(stack);
-        facing = router == null ? null : router.getAbsoluteFacing(direction);
+        absoluteFacing = router == null ? null : router.getAbsoluteFacing(commonSettings.facing());
         routerFacing = router == null ? null : router.getAbsoluteFacing(RelativeDirection.FRONT);
-        this.event = router == null ? null : new ExecuteModuleEvent(router, this);
+        event = router == null ? null : new ExecuteModuleEvent(router, this);
     }
 
     /**
@@ -91,7 +87,7 @@ public abstract class CompiledModule {
     }
 
     public final RelativeDirection getDirection() {
-        return direction;
+        return commonSettings.facing();
     }
 
     protected boolean shouldStoreRawFilterItems() {
@@ -106,7 +102,7 @@ public abstract class CompiledModule {
      * @return the first target as set up by {@link #setupTargets(ModularRouterBlockEntity, ItemStack)}
      */
     public ModuleTarget getTarget() {
-        return targets == null || targets.isEmpty() ? null : targets.get(0);
+        return targets == null || targets.isEmpty() ? null : targets.getFirst();
     }
 
     /**
@@ -121,16 +117,20 @@ public abstract class CompiledModule {
 
     public boolean hasTarget() { return targets != null && !targets.isEmpty(); }
 
-    public ModuleItem.Termination termination() {
-        return termination;
+    public ModuleTermination termination() {
+        return commonSettings.termination();
     }
 
-    public final RouterRedstoneBehaviour getRedstoneBehaviour() {
-        return behaviour;
+    public final RedstoneBehaviour getRedstoneBehaviour() {
+        return commonSettings.redstoneBehaviour();
     }
 
     public int getRegulationAmount() {
-        return augmentCounter.getAugmentCount(ModItems.REGULATOR_AUGMENT.get()) > 0 ? regulationAmount : 0;
+        return augmentCounter.getAugmentCount(ModItems.REGULATOR_AUGMENT.get()) > 0 ? commonSettings.regulatorAmount() : 0;
+    }
+
+    public int getAugmentCount(Supplier<Item> augmentType) {
+        return augmentCounter.getAugmentCount(augmentType);
     }
 
     public int getAugmentCount(Item augmentType) {
@@ -144,17 +144,32 @@ public abstract class CompiledModule {
      *
      * @return absolute direction of the module
      */
-    public final Direction getFacing() {
-        return facing;
+    @Nullable
+    public final Direction getAbsoluteFacing() {
+        return absoluteFacing;
     }
 
+    /**
+     * Called immediately after the router compiles or recompiles the module, which happens if a change to any
+     * installed module item occurs (not necessarily this one). Can be overridden in subclasses to carry out any
+     * initialisation work needed, but be sure to call this super implementation!
+     *
+     * @param router the router this module is installed in
+     */
     @ApiStatus.OverrideOnly
-    public void onCompiled(ModularRouterBlockEntity router) {
-        if (behaviour == RouterRedstoneBehaviour.PULSE) {
+    public void onCompiled(@NotNull ModularRouterBlockEntity router) {
+        if (getRedstoneBehaviour() == RedstoneBehaviour.PULSE) {
             router.setHasPulsedModules(true);
         }
     }
 
+    /**
+     * Called immediately before the router compiles or recompiles the module, which happens if a change to any
+     * installed module item occurs (not necessarily this one). Can be overridden in subclasses to carry out any
+     * cleanup work needed, but be sure to call this super implementation!
+     *
+     * @param router the router this module is installed in
+     */
     @ApiStatus.OverrideOnly
     public void cleanup(ModularRouterBlockEntity router) {
         // does nothing by default
@@ -195,14 +210,14 @@ public abstract class CompiledModule {
      * @return a list of router target objects (for most modules this is a singleton list)
      */
     List<ModuleTarget> setupTargets(ModularRouterBlockEntity router, ItemStack stack) {
-        if (router == null || (module.isDirectional() && direction == RelativeDirection.NONE)) {
+        if (router == null || (module.isDirectional() && getDirection() == RelativeDirection.NONE)) {
             return null;
         }
-        Direction facing = router.getAbsoluteFacing(direction);
+        Direction facing = router.getAbsoluteFacing(getDirection());
         BlockPos pos = router.getBlockPos().relative(facing);
         String blockName = BlockUtil.getBlockName(router.getLevel(), pos);
         GlobalPos gPos = MiscUtil.makeGlobalPos(router.nonNullLevel(), pos);
-        return Collections.singletonList(new ModuleTarget(gPos, facing.getOpposite(), blockName));
+        return List.of(new ModuleTarget(gPos, facing.getOpposite(), blockName));
     }
 
     public int getItemsPerTick(ModularRouterBlockEntity router) {
@@ -237,7 +252,7 @@ public abstract class CompiledModule {
                 setLastMatchPos(key, (slot + 1) % handler.getSlots());
                 return transferred;
             }
-            if (ItemHandlerHelper.canItemStacksStack(wanted, toPull)) {
+            if (ItemStack.isSameItemSameComponents(wanted, toPull)) {
                 // this item is suitable for pulling
                 ItemStack notInserted = router.insertBuffer(toPull);
                 int inserted = toPull.getCount() - notInserted.getCount();
@@ -258,7 +273,7 @@ public abstract class CompiledModule {
         ItemStack stackInRouter = router.peekBuffer(1);
         if (!stackInRouter.isEmpty() && getFilter().test(stackInRouter) && (count == null || count.getInt(stackInRouter) - nToTake >= getRegulationAmount())) {
             // something in the router - try to pull more of that
-            return ItemHandlerHelper.copyStackWithSize(stackInRouter, nToTake);
+            return stackInRouter.copyWithCount(nToTake);
         } else if (stackInRouter.isEmpty()) {
             // router empty - just pull the next item that passes the filter
             for (int i = 0; i < handler.getSlots(); i++) {
@@ -266,7 +281,7 @@ public abstract class CompiledModule {
                 ItemStack stack = handler.getStackInSlot(pos);
                 if (getFilter().test(stack) && (count == null || count.getInt(stack) - nToTake >= getRegulationAmount())) {
                     setLastMatchPos(key, pos);
-                    return ItemHandlerHelper.copyStackWithSize(stack, nToTake);
+                    return stack.copyWithCount(nToTake);
                 }
             }
         }
@@ -290,9 +305,9 @@ public abstract class CompiledModule {
     }
 
     public boolean isRegulationOK(ModularRouterBlockEntity router, boolean inbound) {
-        if (regulationAmount == 0) return true; // no regulation
+        if (commonSettings.regulatorAmount() == 0) return true; // no regulation
         int items = router.getBufferItemStack().getCount();
-        return inbound && regulationAmount > items || !inbound && regulationAmount < items;
+        return inbound && commonSettings.regulatorAmount() > items || !inbound && commonSettings.regulatorAmount() < items;
     }
 
     public int getRange() {
@@ -304,7 +319,7 @@ public abstract class CompiledModule {
     }
 
     private int getRangeModifier() {
-        return getAugmentCount(ModItems.RANGE_UP_AUGMENT.get()) - getAugmentCount(ModItems.RANGE_DOWN_AUGMENT.get());
+        return getAugmentCount(ModItems.RANGE_UP_AUGMENT) - getAugmentCount(ModItems.RANGE_DOWN_AUGMENT);
     }
 
     protected Direction getRouterFacing() {

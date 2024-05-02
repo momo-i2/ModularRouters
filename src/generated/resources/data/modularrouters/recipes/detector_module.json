@@ -10,6 +10,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:detector_module"
+    "count": 1,
+    "id": "modularrouters:detector_module"
   }
 }

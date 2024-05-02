@@ -1,9 +1,9 @@
 package me.desht.modularrouters.item.augment;
 
+import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.module.DetectorModule;
 import me.desht.modularrouters.item.module.ExtruderModule2;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.util.ModuleHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,8 +17,11 @@ public class RegulatorAugment extends AugmentItem {
 
     @Override
     public Component getExtraInfo(int c, ItemStack moduleStack) {
-        int amount = ModuleHelper.getRegulatorAmount(moduleStack);
-        String key = ((ModuleItem) moduleStack.getItem()).getRegulatorTranslationKey(moduleStack);
-        return Component.literal(" - ").append(xlate(key, amount));
+        if (moduleStack.getItem() instanceof ModuleItem moduleItem) {
+            int amount = ModuleItem.getCommonSettings(moduleStack).regulatorAmount();
+            return Component.literal(" - ").append(xlate(moduleItem.getRegulatorTranslationKey(moduleStack), amount));
+        } else {
+            return Component.empty();
+        }
     }
 }

@@ -4,10 +4,12 @@ import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.item.IPlayerOwned;
 import me.desht.modularrouters.logic.compiled.CompiledPlayerModule;
+import me.desht.modularrouters.logic.compiled.CompiledPlayerModule.PlayerSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -15,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.context.UseOnContext;
 
 import java.util.List;
@@ -23,28 +26,31 @@ import static me.desht.modularrouters.client.util.ClientUtil.colorText;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class PlayerModule extends ModuleItem implements IPlayerOwned {
-
     private static final TintColor TINT_COLOR = new TintColor(255, 208, 144);
 
     public PlayerModule() {
-        super(ModItems.defaultProps(), CompiledPlayerModule::new);
+        super(ModItems.moduleProps()
+                        .component(ModDataComponents.PLAYER_SETTINGS, PlayerSettings.DEFAULT),
+                CompiledPlayerModule::new);
     }
 
     @Override
-    public void addSettingsInformation(ItemStack itemstack, List<Component> list) {
-        super.addSettingsInformation(itemstack, list);
+    public void addSettingsInformation(ItemStack stack, List<Component> list) {
+        super.addSettingsInformation(stack, list);
 
-        CompiledPlayerModule cpm = new CompiledPlayerModule(null, itemstack);
-        String owner = cpm.getPlayerName() == null ? "-" : cpm.getPlayerName();
+        PlayerSettings settings = stack.getOrDefault(ModDataComponents.PLAYER_SETTINGS, PlayerSettings.DEFAULT);
+        ResolvableProfile profile = stack.get(ModDataComponents.OWNER);
+
+        String owner = profile == null ? "-" : profile.gameProfile().getName();
         list.add(xlate("modularrouters.itemText.security.owner", colorText(owner, ChatFormatting.AQUA)).withStyle(ChatFormatting.YELLOW));
 
         Component c = xlate("modularrouters.itemText.misc.operation").withStyle(ChatFormatting.YELLOW)
                 .append(": ")
                 .append(xlate("block.modularrouters.modular_router")
                         .append(" ")
-                        .append(cpm.getOperation().getSymbol())
+                        .append(settings.direction().getSymbol())
                         .append(" ")
-                        .append(xlate(cpm.getSection().getTranslationKey()))
+                        .append(xlate(settings.section().getTranslationKey()))
                         .withStyle(ChatFormatting.AQUA)
                 );
         list.add(c);

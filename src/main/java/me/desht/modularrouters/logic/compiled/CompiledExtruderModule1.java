@@ -1,5 +1,6 @@
 package me.desht.modularrouters.logic.compiled;
 
+import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.core.ModItems;
@@ -12,7 +13,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -35,14 +35,10 @@ public class CompiledExtruderModule1 extends CompiledModule {
 
     public CompiledExtruderModule1(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
-        distance = router == null ? 0 : router.getExtensionData().getInt(NBT_EXTRUDER_DIST + getFacing());
-        pushingAugments = getAugmentCount(ModItems.PUSHING_AUGMENT.get());
-        pickaxe = stack.getItem() instanceof IPickaxeUser ? ((IPickaxeUser) stack.getItem()).getPickaxe(stack) : ItemStack.EMPTY;
 
-        // backwards compat
-        if (!EnchantmentHelper.getEnchantments(stack).isEmpty() && EnchantmentHelper.getEnchantments(pickaxe).isEmpty()) {
-            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(stack), pickaxe);
-        }
+        distance = router == null ? 0 : router.getExtensionData().getInt(NBT_EXTRUDER_DIST + getAbsoluteFacing());
+        pushingAugments = getAugmentCount(ModItems.PUSHING_AUGMENT);
+        pickaxe = stack.getItem() instanceof IPickaxeUser p ? p.getPickaxe(stack) : ItemStack.EMPTY;
     }
 
     @Override
@@ -52,33 +48,33 @@ public class CompiledExtruderModule1 extends CompiledModule {
 
         if (extend && !router.isBufferEmpty() && distance < getRange() && isRegulationOK(router, false)) {
             // try to extend
-            BlockPos placePos = router.getBlockPos().relative(getFacing(), distance + 1);
+            BlockPos placePos = router.getBlockPos().relative(getAbsoluteFacing(), distance + 1);
             ItemStack toPlace = router.peekBuffer(1);
-            BlockState state = BlockUtil.tryPlaceAsBlock(router, toPlace, world, placePos, getFacing());
+            BlockState state = BlockUtil.tryPlaceAsBlock(router, toPlace, world, placePos, getAbsoluteFacing());
             if (state != null) {
                 router.extractBuffer(1);
-                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getFacing(), ++distance);
+                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getAbsoluteFacing(), ++distance);
                 if (ConfigHolder.common.module.extruderSound.get()) {
                     router.playSound(null, placePos,
                             state.getBlock().getSoundType(state, world, placePos, null).getPlaceSound(),
                             SoundSource.BLOCKS, 1.0f, 0.5f + distance * 0.1f);
                 }
-                tryPushEntities(router.getLevel(), placePos, getFacing());
+                tryPushEntities(router.getLevel(), placePos, getAbsoluteFacing());
                 return true;
             }
         } else if (!extend && distance > 0 && isRegulationOK(router, true)) {
             // try to retract
-            BlockPos breakPos = router.getBlockPos().relative(getFacing(), distance);
+            BlockPos breakPos = router.getBlockPos().relative(getAbsoluteFacing(), distance);
             BlockState oldState = world.getBlockState(breakPos);
             Block oldBlock = oldState.getBlock();
             if (world.isEmptyBlock(breakPos) || oldBlock instanceof LiquidBlock) {
                 // nothing there? continue to retract anyway...
-                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getFacing(), --distance);
+                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getAbsoluteFacing(), --distance);
                 return false;
             }
             BlockUtil.BreakResult dropResult = BlockUtil.tryBreakBlock(router, world, breakPos, getFilter(), pickaxe, false);
             if (dropResult.isBlockBroken()) {
-                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getFacing(), --distance);
+                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getAbsoluteFacing(), --distance);
                 dropResult.processDrops(world, breakPos, router.getBuffer());
                 if (ConfigHolder.common.module.extruderSound.get()) {
                     router.playSound(null, breakPos,
@@ -103,7 +99,7 @@ public class CompiledExtruderModule1 extends CompiledModule {
                 entity.horizontalCollision = false;
                 entity.verticalCollision = false;
                 if (entity instanceof LivingEntity) ((LivingEntity) entity).setJumping(true);
-                PacketDistributor.TRACKING_ENTITY.with(entity).send(new PushEntityMessage(entity, v));
+                PacketDistributor.sendToPlayersTrackingEntity(entity, PushEntityMessage.forEntity(entity, v));
             }
         }
     }

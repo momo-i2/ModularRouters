@@ -10,11 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public class SenderModule3 extends TargetedModule implements IPositionProvider {
-
     private static final TintColor TINT_COLOR = new TintColor(25, 255, 11);
 
     public SenderModule3() {
-        super(ModItems.defaultProps(), CompiledSenderModule3::new);
+        super(ModItems.moduleProps(), CompiledSenderModule3::new);
     }
 
     @Override

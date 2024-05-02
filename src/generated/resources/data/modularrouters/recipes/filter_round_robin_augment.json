@@ -10,6 +10,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:filter_round_robin_augment"
+    "count": 1,
+    "id": "modularrouters:filter_round_robin_augment"
   }
 }

@@ -2,7 +2,7 @@ package me.desht.modularrouters.logic.filter.matchers;
 
 import com.google.common.collect.Lists;
 import me.desht.modularrouters.ModularRouters;
-import me.desht.modularrouters.logic.filter.Filter;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +28,7 @@ public class RegexMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, Filter.Flags flags) {
+    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
         if (stack.isEmpty()) return false;
         String name = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
         return patterns.stream().anyMatch(pat -> pat.matcher(name).find());

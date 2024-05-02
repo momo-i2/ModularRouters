@@ -5,17 +5,20 @@ import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.MRBaseItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public abstract class UpgradeItem extends MRBaseItem implements ModItems.ITintable {
-
     public UpgradeItem() {
         super(ModItems.defaultProps());
+    }
+
+    protected UpgradeItem(Item.Properties properties) {
+        super(properties);
     }
 
     public TintColor getItemTint() {

@@ -6,22 +6,23 @@ import me.desht.modularrouters.client.gui.widgets.button.TexturedToggleButton;
 import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModBlocks;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledDistributorModule;
 import me.desht.modularrouters.logic.compiled.CompiledDistributorModule.DistributionStrategy;
+import me.desht.modularrouters.logic.settings.TransferDirection;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class DistributorModuleScreen extends AbstractModuleScreen {
+public class DistributorModuleScreen extends ModuleScreen {
     private static final ItemStack ROUTER_STACK = new ItemStack(ModBlocks.MODULAR_ROUTER.get());
 
     private StrategyButton sb;
@@ -48,11 +49,13 @@ public class DistributorModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), tag -> {
-            tag.putInt(CompiledDistributorModule.NBT_STRATEGY, sb.getState().ordinal());
-            tag.putBoolean(CompiledDistributorModule.NBT_PULLING, db.isToggled());
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+                stack.set(ModDataComponents.DISTRIBUTOR_SETTINGS, new CompiledDistributorModule.DistributorSettings(
+                        sb.getState(),
+                        db.isToggled() ? TransferDirection.TO_ROUTER : TransferDirection.FROM_ROUTER
+                ))
+        );
     }
 
     @Override
@@ -80,7 +83,7 @@ public class DistributorModuleScreen extends AbstractModuleScreen {
         public DirectionButton(int x, int y, boolean initialVal) {
             super(x, y, 16, 16, initialVal, DistributorModuleScreen.this);
 
-            setTooltips(xlate("modularrouters.itemText.fluid.direction.OUT"),xlate("modularrouters.itemText.fluid.direction.IN"));
+            setTooltips(xlate("modularrouters.itemText.transfer_direction.from_router"),xlate("modularrouters.itemText.transfer_direction.to_router"));
         }
 
         @Override

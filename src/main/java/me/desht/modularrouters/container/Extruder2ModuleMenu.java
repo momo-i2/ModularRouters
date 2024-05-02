@@ -1,7 +1,9 @@
 package me.desht.modularrouters.container;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.container.handler.BaseModuleHandler;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.util.MFLocator;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,6 +18,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 
 import javax.annotation.Nonnull;
+
+import java.util.List;
 
 import static me.desht.modularrouters.container.Layout.SLOT_X_SPACING;
 
@@ -83,15 +87,28 @@ public class Extruder2ModuleMenu extends ModuleMenu {
     }
 
     public static class TemplateHandler extends BaseModuleHandler {
-        private static final String NBT_TEMPLATE = "Template";
-
         public TemplateHandler(ItemStack holderStack, ModularRouterBlockEntity router) {
-            super(holderStack, router, TEMPLATE_SLOTS, NBT_TEMPLATE);
+            super(holderStack, router, TEMPLATE_SLOTS, ModDataComponents.EXTRUDER2_TEMPLATE.get());
         }
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return isItemOKForTemplate(stack);
+        }
+
+        public List<ItemStack> toTemplate(int rangeLimit) {
+            ImmutableList.Builder<ItemStack> b = new ImmutableList.Builder<>();
+            for (int i = 0; i < getSlots() && stacks.size() < rangeLimit; i++) {
+                ItemStack stack1 = getStackInSlot(i);
+                if (stack1.isEmpty()) {
+                    break;
+                } else {
+                    for (int j = 0; j < stack1.getCount() && stacks.size() < rangeLimit; j++) {
+                        b.add(stack1.copyWithCount(1));
+                    }
+                }
+            }
+            return b.build();
         }
     }
 }

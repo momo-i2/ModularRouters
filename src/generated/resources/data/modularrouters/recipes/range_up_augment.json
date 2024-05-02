@@ -6,10 +6,10 @@
       "item": "modularrouters:augment_core"
     },
     "Q": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "S": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "modularrouters:range_up_augment"
+    "id": "modularrouters:range_up_augment"
   }
 }

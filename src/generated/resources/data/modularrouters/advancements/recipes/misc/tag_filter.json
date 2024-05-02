@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "modularrouters:bulk_item_filter"
-            ]
+            "items": "modularrouters:bulk_item_filter"
           }
         ]
       },

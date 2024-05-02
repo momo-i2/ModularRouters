@@ -15,7 +15,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 import static me.desht.modularrouters.container.Layout.SLOT_X_SPACING;
@@ -39,11 +38,11 @@ public class ModuleMenu extends AbstractMRContainerMenu {
     private final MFLocator locator;
 
     public ModuleMenu(int windowId, Inventory inv, FriendlyByteBuf extra) {
-        this(ModMenuTypes.BASE_MODULE_MENU.get(), windowId, inv, MFLocator.fromBuffer(extra));
+        this(ModMenuTypes.BASE_MODULE_MENU.get(), windowId, inv, MFLocator.STREAM_CODEC.decode(extra));
     }
 
     public ModuleMenu(MenuType type, int windowId, Inventory inv, FriendlyByteBuf extra) {
-        this(type, windowId, inv, MFLocator.fromBuffer(extra));
+        this(type, windowId, inv, MFLocator.STREAM_CODEC.decode(extra));
     }
 
     public ModuleMenu(MenuType type, int windowId, Inventory inv, MFLocator locator) {
@@ -179,7 +178,7 @@ public class ModuleMenu extends AbstractMRContainerMenu {
                     Slot s = slots.get(slot);
                     ItemStack stackOnCursor = getCarried();
                     if (stackOnCursor.isEmpty() || isItemOKForFilter(stackOnCursor, slot)) {
-                        s.set(stackOnCursor.isEmpty() ? ItemStack.EMPTY : ItemHandlerHelper.copyStackWithSize(stackOnCursor, 1));
+                        s.set(stackOnCursor.isEmpty() ? ItemStack.EMPTY : stackOnCursor.copyWithCount(1));
                     }
                     return;
                 } else if (slot >= AUGMENT_START && slot < AUGMENT_START + AugmentItem.SLOTS && augmentHandler.getHolderStack().getCount() == 1) {

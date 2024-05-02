@@ -10,16 +10,15 @@ import me.desht.modularrouters.client.model.ModelBakeEventHandler;
 import me.desht.modularrouters.client.render.area.ModuleTargetRenderer;
 import me.desht.modularrouters.client.render.blockentity.ModularRouterBER;
 import me.desht.modularrouters.core.ModBlockEntities;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
-import me.desht.modularrouters.logic.compiled.CompiledDistributorModule;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.nbt.CompoundTag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -30,7 +29,7 @@ import org.lwjgl.glfw.GLFW;
 
 import static me.desht.modularrouters.util.MiscUtil.RL;
 
-@Mod.EventBusSubscriber(modid = ModularRouters.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ModularRouters.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
     public static KeyMapping keybindConfigure;
     public static KeyMapping keybindModuleInfo;
@@ -72,7 +71,7 @@ public class ClientSetup {
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.ROUTER_MENU.get(), ModularRouterScreen::new);
 
-        event.register(ModMenuTypes.BASE_MODULE_MENU.get(), AbstractModuleScreen::new);
+        event.register(ModMenuTypes.BASE_MODULE_MENU.get(), ModuleScreen::new);
         event.register(ModMenuTypes.ACTIVATOR_MENU.get(), ActivatorModuleScreen::new);
         event.register(ModMenuTypes.BREAKER_MENU.get(), BreakerModuleScreen::new);
         event.register(ModMenuTypes.DETECTOR_MENU.get(), DetectorModuleScreen::new);
@@ -91,10 +90,7 @@ public class ClientSetup {
     private static void registerItemModelOverrides() {
         ItemProperties.register(ModItems.DISTRIBUTOR_MODULE.get(), RL("mode"), (stack, world, entity, n) -> {
             if (entity != null) {
-                CompoundTag compound = stack.getTagElement(ModularRouters.MODID);
-                if (compound != null) {
-                    return compound.getBoolean(CompiledDistributorModule.NBT_PULLING) ? 1f : 0f;
-                }
+                return stack.get(ModDataComponents.DISTRIBUTOR_SETTINGS).isPulling() ? 1f : 0f;
             }
             return 0f;
         });

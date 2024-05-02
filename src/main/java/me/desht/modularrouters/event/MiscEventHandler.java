@@ -8,11 +8,11 @@ import me.desht.modularrouters.item.IPlayerOwned;
 import me.desht.modularrouters.item.module.ModuleItem;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
-@Mod.EventBusSubscriber(modid = ModularRouters.MODID)
+@EventBusSubscriber(modid = ModularRouters.MODID)
 public class MiscEventHandler {
     @SubscribeEvent
     public static void onDigSpeedCheck(PlayerEvent.BreakSpeed event) {

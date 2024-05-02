@@ -1,19 +1,25 @@
 package me.desht.modularrouters.logic.compiled;
 
 import com.google.common.collect.Lists;
-import me.desht.modularrouters.ModularRouters;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.config.ConfigHolder;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.module.TargetedModule;
 import me.desht.modularrouters.logic.ModuleTarget;
+import me.desht.modularrouters.logic.settings.TransferDirection;
 import me.desht.modularrouters.util.BeamData;
 import me.desht.modularrouters.util.TranslatableEnum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -21,43 +27,19 @@ import java.util.List;
 import java.util.Set;
 
 public class CompiledDistributorModule extends CompiledSenderModule2 {
-    public static final String NBT_STRATEGY = "DistStrategy";
-    public static final String NBT_PULLING = "Pulling";
-
-    public enum DistributionStrategy implements TranslatableEnum {
-        ROUND_ROBIN,
-        RANDOM,
-        NEAREST_FIRST,
-        FURTHEST_FIRST;
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.itemText.distributor.strategy." + this;
-        }
-    }
-
-    private final DistributionStrategy distributionStrategy;
-    private int nextTarget = 0;
-    private boolean pulling = false;
+    private final DistributorSettings settings;
+    private int nextTarget;
 
     public CompiledDistributorModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        CompoundTag compound = stack.getTagElement(ModularRouters.MODID);
-        if (compound != null) {
-            distributionStrategy = DistributionStrategy.values()[compound.getInt(NBT_STRATEGY)];
-            if (distributionStrategy == DistributionStrategy.FURTHEST_FIRST) {
-                nextTarget = getTargets().size() - 1;
-            }
-            pulling = compound.getBoolean(NBT_PULLING);
-        } else {
-            distributionStrategy = DistributionStrategy.ROUND_ROBIN;
-        }
+        settings = stack.getOrDefault(ModDataComponents.DISTRIBUTOR_SETTINGS, DistributorSettings.DEFAULT);
+        nextTarget = settings.strategy == DistributionStrategy.FURTHEST_FIRST ? getTargets().size() - 1 : 0;
     }
 
     @Override
     public boolean execute(@Nonnull ModularRouterBlockEntity router) {
-        return pulling ? executePull(router) : super.execute(router);
+        return isPulling() ? executePull(router) : super.execute(router);
     }
 
     private boolean executePull(ModularRouterBlockEntity router) {
@@ -78,18 +60,21 @@ public class CompiledDistributorModule extends CompiledSenderModule2 {
     }
 
     public boolean isPulling() {
-        return pulling;
+        return settings.direction == TransferDirection.TO_ROUTER;
     }
 
     public DistributionStrategy getDistributionStrategy() {
-        return distributionStrategy;
+        return settings.strategy;
     }
 
     @Override
     void playParticles(ModularRouterBlockEntity router, BlockPos targetPos, ItemStack stack) {
         if (router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) < 2) {
-            BeamData data = new BeamData(router.getTickRate(), targetPos, stack, getBeamColor());
-            router.addItemBeam(isPulling() ? data.reverseItems() : data);
+            BeamData d = new BeamData.Builder(router, targetPos, getBeamColor())
+                    .reversed(isPulling())
+                    .withItemStack(stack)
+                    .build();
+            router.addItemBeam(d);
         }
     }
 
@@ -119,11 +104,11 @@ public class CompiledDistributorModule extends CompiledSenderModule2 {
     public ModuleTarget getEffectiveTarget(ModularRouterBlockEntity router) {
         if (getTargets() == null || getTargets().isEmpty()) return null;
         int nTargets = getTargets().size();
-        if (nTargets == 1) return getTargets().get(0); // degenerate case
+        if (nTargets == 1) return getTargets().getFirst(); // degenerate case
 
         ModuleTarget res = null;
         ItemStack stack = router.peekBuffer(getItemsPerTick(router));
-        switch (distributionStrategy) {
+        switch (getDistributionStrategy()) {
             case ROUND_ROBIN:
                 for (int i = 1; i <= nTargets; i++) {
                     nextTarget++;
@@ -162,5 +147,50 @@ public class CompiledDistributorModule extends CompiledSenderModule2 {
 
     private boolean okToInsert(ModuleTarget target, ItemStack stack) {
         return target.getItemHandler().map(h -> ItemHandlerHelper.insertItem(h, stack, true).isEmpty()).orElse(false);
+    }
+
+
+    public enum DistributionStrategy implements TranslatableEnum, StringRepresentable {
+        ROUND_ROBIN("round_robin"),
+        RANDOM("random"),
+        NEAREST_FIRST("nearest_first"),
+        FURTHEST_FIRST("furthest_first");
+
+        private final String name;
+
+        DistributionStrategy(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "modularrouters.itemText.distributor.strategy." + name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
+    public record DistributorSettings(DistributionStrategy strategy, TransferDirection direction) {
+        public static final DistributorSettings DEFAULT = new DistributorSettings(DistributionStrategy.ROUND_ROBIN, TransferDirection.FROM_ROUTER);
+
+        public static final Codec<DistributorSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                StringRepresentable.fromEnum(DistributionStrategy::values).optionalFieldOf("strategy", DistributionStrategy.ROUND_ROBIN)
+                        .forGetter(DistributorSettings::strategy),
+                StringRepresentable.fromEnum(TransferDirection::values).optionalFieldOf("pulling", TransferDirection.TO_ROUTER)
+                        .forGetter(DistributorSettings::direction)
+        ).apply(builder, DistributorSettings::new));
+
+        public static final StreamCodec<FriendlyByteBuf,DistributorSettings> STREAM_CODEC = StreamCodec.composite(
+                NeoForgeStreamCodecs.enumCodec(DistributionStrategy.class), DistributorSettings::strategy,
+                NeoForgeStreamCodecs.enumCodec(TransferDirection.class), DistributorSettings::direction,
+                DistributorSettings::new
+        );
+
+        public boolean isPulling() {
+            return direction == TransferDirection.TO_ROUTER;
+        }
     }
 }

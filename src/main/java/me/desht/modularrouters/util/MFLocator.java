@@ -1,16 +1,21 @@
 package me.desht.modularrouters.util;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
+import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.RecompileFlag;
 import me.desht.modularrouters.container.handler.BaseModuleHandler;
+import me.desht.modularrouters.container.handler.BaseModuleHandler.ModuleFilterHandler;
 import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.fml.common.Mod;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -20,12 +25,51 @@ import java.util.Optional;
  * Unified object to locate a module or filter.
  */
 public record MFLocator(InteractionHand hand, BlockPos routerPos, int routerSlot, int filterSlot, ItemType itemType) {
-    public enum ItemType { MODULE, FILTER }
+    public enum ItemType { MODULE, FILTER;}
+
+    public static final StreamCodec<FriendlyByteBuf,MFLocator> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public MFLocator decode(FriendlyByteBuf buf) {
+            ItemType type = buf.readEnum(ItemType.class);
+            InteractionHand hand = null;
+            BlockPos routerPos = null;
+            int routerSlot  = -1;
+            if (buf.readBoolean()) {
+                routerPos = buf.readBlockPos();
+                routerSlot = buf.readByte();
+            } else {
+                hand = buf.readEnum(InteractionHand.class);
+            }
+            int filterSlot = buf.readByte();
+            return create(type, hand, routerPos, routerSlot, filterSlot);
+        }
+
+        @Override
+        public void encode(FriendlyByteBuf buf, MFLocator locator) {
+            buf.writeEnum(locator.itemType);
+            buf.writeBoolean(locator.routerPos != null);
+            if (locator.routerPos != null) {
+                buf.writeBlockPos(locator.routerPos);
+                buf.writeByte(locator.routerSlot);
+            } else {
+                buf.writeEnum(locator.hand);
+            }
+            buf.writeByte(locator.filterSlot);
+        }
+    };
+
+    public static MFLocator fromBuffer(FriendlyByteBuf buf) {
+        return STREAM_CODEC.decode(buf);
+    }
 
     private static MFLocator create(ItemType itemType, InteractionHand hand, BlockPos routerPos, int routerSlot, int filterSlot) {
         Validate.isTrue(hand != null || routerPos != null && routerSlot >= 0);
 
         return new MFLocator(hand, routerPos, routerSlot, filterSlot, itemType);
+    }
+
+    public void writeBuf(RegistryFriendlyByteBuf buf) {
+        STREAM_CODEC.encode(buf, this);
     }
 
     public static MFLocator heldModule(InteractionHand hand) {
@@ -46,33 +90,6 @@ public record MFLocator(InteractionHand hand, BlockPos routerPos, int routerSlot
 
     public static MFLocator filterInInstalledModule(BlockPos routerPos, int routerSlot, int filterSlot) {
         return create(ItemType.FILTER, null, routerPos, routerSlot, filterSlot);
-    }
-
-    public static MFLocator fromBuffer(FriendlyByteBuf buf) {
-        ItemType type = buf.readEnum(ItemType.class);
-        InteractionHand hand = null;
-        BlockPos routerPos = null;
-        int routerSlot  = -1;
-        if (buf.readBoolean()) {
-            routerPos = buf.readBlockPos();
-            routerSlot = buf.readByte();
-        } else {
-            hand = buf.readEnum(InteractionHand.class);
-        }
-        int filterSlot = buf.readByte();
-        return create(type, hand, routerPos, routerSlot, filterSlot);
-    }
-
-    public void writeBuf(FriendlyByteBuf buf) {
-        buf.writeEnum(itemType);
-        buf.writeBoolean(routerPos != null);
-        if (routerPos != null) {
-            buf.writeBlockPos(routerPos);
-            buf.writeByte(routerSlot);
-        } else {
-            buf.writeEnum(hand);
-        }
-        buf.writeByte(filterSlot);
     }
 
     @Nonnull
@@ -104,13 +121,53 @@ public record MFLocator(InteractionHand hand, BlockPos routerPos, int routerSlot
         }
     }
 
-    public Optional<ModularRouterBlockEntity> getRouter(Level world) {
-        return routerPos == null ? Optional.empty() : world.getBlockEntity(routerPos, ModBlockEntities.MODULAR_ROUTER.get());
+    public void setModuleStack(Player player, ItemStack newStack) {
+        if (newStack.getItem() instanceof ModuleItem) {
+            if (hand != null) {
+                player.setItemInHand(hand, newStack);
+            } else if (routerPos != null) {
+                setInstalledModule(player.level(), newStack);
+            }
+        }
+    }
+
+    public Optional<ModularRouterBlockEntity> getRouter(Level level) {
+        return routerPos == null ? Optional.empty() : level.getBlockEntity(routerPos, ModBlockEntities.MODULAR_ROUTER.get());
+    }
+
+    public void setFilterStack(Player player, ItemStack newFilterStack) {
+        if (newFilterStack.getItem() instanceof SmartFilterItem) {
+            if (routerPos == null) {
+                ItemStack heldStack = player.getItemInHand(hand);
+                if (heldStack.getItem() instanceof SmartFilterItem) {
+                    // just replace filter in player's hand
+                    player.setItemInHand(hand, newFilterStack);
+                } else if (heldStack.getItem() instanceof ModuleItem && filterSlot >= 0) {
+                    // update filter in module in player's hand
+                    setFilterInModule(heldStack, newFilterStack);
+                }
+            } else {
+                getRouter(player.level()).ifPresent(router -> {
+                    // update filter in module installed in router
+                    ItemStack moduleStack = router.getModules().getStackInSlot(routerSlot);
+                    setFilterInModule(moduleStack, newFilterStack);
+                    router.setChanged();
+                });
+            }
+        }
     }
 
     @Nonnull
-    private ItemStack getInstalledModule(Level world) {
-        return getRouter(world).map(router -> router.getModules().getStackInSlot(routerSlot)).orElse(ItemStack.EMPTY);
+    private ItemStack getInstalledModule(Level level) {
+        return getRouter(level).map(router -> router.getModules().getStackInSlot(routerSlot)).orElse(ItemStack.EMPTY);
+    }
+
+    private void setInstalledModule(Level level, ItemStack newStack) {
+        getRouter(level).ifPresent(router -> {
+            router.getModules().setStackInSlot(routerSlot, newStack);
+            router.recompileNeeded(RecompileFlag.MODULES);
+            router.setChanged();
+        });
     }
 
     @Nonnull
@@ -118,9 +175,15 @@ public record MFLocator(InteractionHand hand, BlockPos routerPos, int routerSlot
         if (stack.getItem() instanceof SmartFilterItem) {
             return stack;
         } else if (stack.getItem() instanceof ModuleItem && filterSlot >= 0) {
-            return new BaseModuleHandler.ModuleFilterHandler(stack, null).getStackInSlot(filterSlot);
+            return new ModuleFilterHandler(stack, null).getStackInSlot(filterSlot);
         } else {
             return ItemStack.EMPTY;
         }
+    }
+
+    private void setFilterInModule(ItemStack moduleStack, ItemStack filterStack) {
+        ModuleFilterHandler handler = new ModuleFilterHandler(moduleStack, null);
+        handler.setStackInSlot(filterSlot, filterStack);
+        handler.save();
     }
 }

@@ -31,7 +31,7 @@ public class CompiledPullerModule2 extends CompiledPullerModule1 {
     @Override
     protected void playParticles(ModularRouterBlockEntity router, BlockPos targetPos, ItemStack stack) {
         if (router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) < 2) {
-            router.addItemBeam(new BeamData(router.getTickRate(), targetPos, stack, 0x6080FF).reverseItems());
+            router.addItemBeam(new BeamData.Builder(router, targetPos, 0x6080FF).reversed(true).withItemStack(stack).build());
         }
     }
 }

@@ -1,13 +1,19 @@
 package me.desht.modularrouters.logic;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.BlockCapability;
@@ -16,16 +22,16 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import org.checkerframework.checker.units.qual.C;
 
 import javax.annotation.Nullable;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 /**
- * Represents the target for a given module, including the dimension, blockpos
- * and face of the block where insertion/extraction will occur.
+ * Represents a target for a given targeted module, including the dimension, blockpos
+ *  and face of the block where insertion/extraction will occur.
+ * Targeted modules store one or more of these objects; see also {@link ModuleTargetList}
  */
 public class ModuleTarget {
     public final GlobalPos gPos;
@@ -36,6 +42,19 @@ public class ModuleTarget {
     private BlockCapabilityCache<IFluidHandler,Direction> fluidCapCache;
     private BlockCapabilityCache<IEnergyStorage,Direction> energyCapCache;
     private final Map<BlockCapability<?, ?>, BlockCapabilityCache<?, ?>> capabilityCache = new IdentityHashMap<>();
+
+    public static final Codec<ModuleTarget> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            GlobalPos.CODEC.fieldOf("pos").forGetter(t -> t.gPos),
+            Direction.CODEC.fieldOf("face").forGetter(t -> t.face),
+            Codec.STRING.optionalFieldOf("key", "").forGetter(t -> t.blockTranslationKey)
+    ).apply(builder, ModuleTarget::new));
+
+    public static final StreamCodec<FriendlyByteBuf,ModuleTarget> STREAM_CODEC = StreamCodec.composite(
+            GlobalPos.STREAM_CODEC, t -> t.gPos,
+            Direction.STREAM_CODEC, t -> t.face,
+            ByteBufCodecs.STRING_UTF8, t -> t.blockTranslationKey,
+            ModuleTarget::new
+    );
 
     public ModuleTarget(GlobalPos gPos, Direction face, String blockTranslationKey) {
         this.gPos = gPos;
@@ -49,20 +68,6 @@ public class ModuleTarget {
 
     public ModuleTarget(GlobalPos gPos) {
         this(gPos, null);
-    }
-
-    public CompoundTag toNBT() {
-        return Util.make(new CompoundTag(), ext -> {
-            ext.put("Pos", MiscUtil.serializeGlobalPos(gPos));
-            ext.putByte("Face", (byte) face.get3DDataValue());
-            ext.putString("InvName", blockTranslationKey);
-        });
-    }
-
-    public static ModuleTarget fromNBT(CompoundTag nbt) {
-        GlobalPos gPos = MiscUtil.deserializeGlobalPos(nbt.getCompound("Pos"));
-        Direction face = Direction.from3DDataValue(nbt.getByte("Face"));
-        return new ModuleTarget(gPos, face, nbt.getString("InvName"));
     }
 
     public boolean isSameWorld(@Nullable Level world) {

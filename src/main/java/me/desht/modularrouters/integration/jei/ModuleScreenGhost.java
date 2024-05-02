@@ -1,6 +1,6 @@
 package me.desht.modularrouters.integration.jei;
 
-import me.desht.modularrouters.client.gui.module.AbstractModuleScreen;
+import me.desht.modularrouters.client.gui.module.ModuleScreen;
 import me.desht.modularrouters.container.FilterSlot;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -9,9 +9,9 @@ import net.minecraft.world.inventory.Slot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModuleScreenGhost implements IGhostIngredientHandler<AbstractModuleScreen> {
+public class ModuleScreenGhost implements IGhostIngredientHandler<ModuleScreen> {
     @Override
-    public <I> List<Target<I>> getTargetsTyped(AbstractModuleScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargetsTyped(ModuleScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
         List<Target<I>> res = new ArrayList<>();
         for (int i = 0; i < gui.getMenu().slots.size(); i++) {
             Slot s = gui.getMenu().getSlot(i);

@@ -6,19 +6,19 @@
       "item": "modularrouters:blank_upgrade"
     },
     "G": {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     "I": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "N": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "R": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     "Z": {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/blaze"
     }
   },
   "pattern": [
@@ -28,6 +28,6 @@
   ],
   "result": {
     "count": 3,
-    "item": "modularrouters:speed_upgrade"
+    "id": "modularrouters:speed_upgrade"
   }
 }

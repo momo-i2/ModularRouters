@@ -1,13 +1,19 @@
 package me.desht.modularrouters.logic.compiled;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
-import me.desht.modularrouters.item.module.PlayerModule;
+import me.desht.modularrouters.core.ModDataComponents;
+import me.desht.modularrouters.item.IPlayerOwned;
+import me.desht.modularrouters.logic.settings.TransferDirection;
 import me.desht.modularrouters.util.InventoryUtils;
 import me.desht.modularrouters.util.TranslatableEnum;
 import me.desht.modularrouters.util.WildcardedRLMatcher;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +23,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.*;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
@@ -24,52 +31,22 @@ import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 public class CompiledPlayerModule extends CompiledModule {
-    public static final String NBT_OPERATION = "Operation";
-    public static final String NBT_SECTION = "Section";
-
-    public enum Operation implements TranslatableEnum {
-        EXTRACT, INSERT;
-
-        public String getSymbol() { return this == INSERT ? "⟹" : "⟸"; }
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.guiText.label.playerOp." + this;
-        }
-    }
-
-    public enum Section implements TranslatableEnum {
-        MAIN, MAIN_NO_HOTBAR, ARMOR, OFFHAND, ENDER;
-
-        @Override
-        public String getTranslationKey() {
-            return "modularrouters.guiText.label.playerSect." + this;
-        }
-    }
-
-    private final Operation operation;
-    private final Section section;
+    private final PlayerSettings settings;
     private final GameProfile playerProfile;
+
     private WeakReference<Player> playerRef;
 
     public CompiledPlayerModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        CompoundTag compound = stack.getTagElement(ModularRouters.MODID);
-        if (compound != null) {
-            playerProfile = ((PlayerModule) stack.getItem()).getOwnerProfile(stack).orElse(null);
-            operation = Operation.values()[compound.getInt(NBT_OPERATION)];
-            section = Section.values()[compound.getInt(NBT_SECTION)];
-            if (router != null && !router.nonNullLevel().isClientSide) {
-                Player player = playerProfile == null ? null : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerProfile.getId());
-                playerRef = new WeakReference<>(player);
-            } else {
-                playerRef = new WeakReference<>(null);
-            }
+        settings = stack.getOrDefault(ModDataComponents.PLAYER_SETTINGS, PlayerSettings.DEFAULT);
+        playerProfile = ((IPlayerOwned) stack.getItem()).getOwnerProfile(stack).orElse(null);
+
+        if (router != null && !router.nonNullLevel().isClientSide) {
+            Player player = playerProfile == null ? null : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerProfile.getId());
+            playerRef = new WeakReference<>(player);
         } else {
-            operation = Operation.EXTRACT;
-            section = Section.MAIN;
-            playerProfile = null;
+            playerRef = new WeakReference<>(null);
         }
     }
 
@@ -87,26 +64,23 @@ public class CompiledPlayerModule extends CompiledModule {
         }
 
         IItemHandler itemHandler = getHandler(player);
-        if (itemHandler == null) {
-            return false;
-        }
 
         ItemStack bufferStack = router.getBufferItemStack();
-        switch (operation) {
-            case EXTRACT -> {
+        switch (getTransferDirection()) {
+            case TO_ROUTER -> {
                 if (bufferStack.getCount() < bufferStack.getMaxStackSize()) {
                     ItemStack taken = transferToRouter(itemHandler, null, router);
                     return !taken.isEmpty();
                 }
             }
-            case INSERT -> {
+            case FROM_ROUTER -> {
                 if (getFilter().test(bufferStack)) {
                     if (getSection() == Section.ARMOR) {
                         return insertArmor(router, itemHandler, bufferStack);
                     } else {
                         int nToSend = getItemsPerTick(router);
                         if (getRegulationAmount() > 0) {
-                            int existing = InventoryUtils.countItems(bufferStack, itemHandler, getRegulationAmount(), !getFilter().getFlags().isIgnoreDamage());
+                            int existing = InventoryUtils.countItems(bufferStack, itemHandler, getRegulationAmount(), !getFilter().getFlags().matchDamage());
                             nToSend = Math.min(nToSend, getRegulationAmount() - existing);
                             if (nToSend <= 0) {
                                 return false;
@@ -171,12 +145,12 @@ public class CompiledPlayerModule extends CompiledModule {
         return playerProfile == null ? null : playerProfile.getName();
     }
 
-    public Operation getOperation() {
-        return operation;
+    public TransferDirection getTransferDirection() {
+        return settings.direction;
     }
 
     public Section getSection() {
-        return section;
+        return settings.section;
     }
 
     private boolean insertArmor(ModularRouterBlockEntity router, IItemHandler itemHandler, ItemStack armorStack) {
@@ -204,7 +178,7 @@ public class CompiledPlayerModule extends CompiledModule {
     }
 
     private IItemHandler getHandler(Player player) {
-        return switch (section) {
+        return switch (getSection()) {
             case MAIN -> new PlayerMainInvWrapper(player.getInventory());
             case MAIN_NO_HOTBAR -> new PlayerMainInvNoHotbarWrapper(player.getInventory());
             case ARMOR -> new PlayerArmorInvWrapper(player.getInventory());
@@ -217,5 +191,48 @@ public class CompiledPlayerModule extends CompiledModule {
         PlayerMainInvNoHotbarWrapper(Inventory inv) {
             super(new InvWrapper(inv), Inventory.getSelectionSize(), inv.items.size());
         }
+    }
+
+    public enum Section implements TranslatableEnum, StringRepresentable {
+        MAIN("main"),
+        MAIN_NO_HOTBAR("main_no_hotbar"),
+        ARMOR("armor"),
+        OFFHAND("offhand"),
+        ENDER("ender");
+
+        private final String name;
+
+        Section(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "modularrouters.guiText.label.playerSect." + name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
+    public record PlayerSettings(TransferDirection direction, Section section) {
+        public static final PlayerSettings DEFAULT = new PlayerSettings(TransferDirection.TO_ROUTER, Section.MAIN);
+
+        public static final Codec<PlayerSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                StringRepresentable.fromEnum(TransferDirection::values)
+                        .optionalFieldOf("direction", TransferDirection.TO_ROUTER)
+                        .forGetter(PlayerSettings::direction),
+                StringRepresentable.fromEnum(Section::values)
+                        .optionalFieldOf("section", Section.MAIN)
+                        .forGetter(PlayerSettings::section)
+        ).apply(builder, PlayerSettings::new));
+
+        public static StreamCodec<FriendlyByteBuf, PlayerSettings> STREAM_CODEC = StreamCodec.composite(
+                NeoForgeStreamCodecs.enumCodec(TransferDirection.class), PlayerSettings::direction,
+                NeoForgeStreamCodecs.enumCodec(Section.class), PlayerSettings::section,
+                PlayerSettings::new
+        );
     }
 }

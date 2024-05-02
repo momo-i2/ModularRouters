@@ -16,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
@@ -34,7 +33,7 @@ public class CompiledSenderModule1 extends CompiledModule {
             if (positionedItemHandler.isValid()) {
                 int nToSend = getItemsPerTick(router);
                 if (getRegulationAmount() > 0) {
-                    int existing = InventoryUtils.countItems(bufferStack, positionedItemHandler.handler, getRegulationAmount(), !getFilter().getFlags().isIgnoreDamage());
+                    int existing = InventoryUtils.countItems(bufferStack, positionedItemHandler.handler, getRegulationAmount(), !getFilter().getFlags().matchDamage());
                     nToSend = Math.min(nToSend, getRegulationAmount() - existing);
                     if (nToSend <= 0) {
                         return false;
@@ -43,7 +42,7 @@ public class CompiledSenderModule1 extends CompiledModule {
                 int sent = InventoryUtils.transferItems(buffer, positionedItemHandler.handler, 0, nToSend);
                 if (sent > 0) {
                     if (ConfigHolder.common.module.senderParticles.get()) {
-                        playParticles(router, positionedItemHandler.pos, ItemHandlerHelper.copyStackWithSize(bufferStack, sent));
+                        playParticles(router, positionedItemHandler.pos, bufferStack.copyWithCount(sent));
                     }
                     return true;
                 } else {
@@ -56,7 +55,7 @@ public class CompiledSenderModule1 extends CompiledModule {
 
     void playParticles(ModularRouterBlockEntity router, BlockPos targetPos, ItemStack stack) {
         if (router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) < 2) {
-            router.addItemBeam(new BeamData(router.getTickRate(), targetPos, stack, getBeamColor()));
+            router.addItemBeam(new BeamData.Builder(router, targetPos, getBeamColor()).withItemStack(stack).build());
         }
     }
 
@@ -85,7 +84,7 @@ public class CompiledSenderModule1 extends CompiledModule {
             } else if (!isPassable(level, pos, face)) {
                 return null;
             }
-            pos.move(getFacing());
+            pos.move(getAbsoluteFacing());
         }
         return null;
     }

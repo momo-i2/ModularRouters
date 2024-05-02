@@ -5,19 +5,20 @@ import me.desht.modularrouters.client.gui.widgets.textfield.FloatTextField;
 import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.FlingerModule;
 import me.desht.modularrouters.logic.compiled.CompiledFlingerModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class FlingerModuleScreen extends AbstractModuleScreen {
+public class FlingerModuleScreen extends ModuleScreen {
     private FloatTextField speedField;
     private FloatTextField pitchField;
     private FloatTextField yawField;
@@ -33,8 +34,6 @@ public class FlingerModuleScreen extends AbstractModuleScreen {
         addRenderableWidget(new TooltipButton(0, leftPos + 130, topPos + 15, "speed", FlingerModule.MIN_SPEED, FlingerModule.MAX_SPEED));
         addRenderableWidget(new TooltipButton(1, leftPos + 130, topPos + 33, "pitch", FlingerModule.MIN_PITCH, FlingerModule.MAX_PITCH));
         addRenderableWidget(new TooltipButton(2, leftPos + 130, topPos + 51, "yaw", FlingerModule.MIN_YAW, FlingerModule.MAX_YAW));
-
-//        TextFieldManager manager = getOrCreateTextFieldManager();
 
         CompiledFlingerModule cfm = new CompiledFlingerModule(null, moduleItemStack);
 
@@ -62,8 +61,6 @@ public class FlingerModuleScreen extends AbstractModuleScreen {
         addRenderableWidget(pitchField);
         addRenderableWidget(yawField);
 
-//        manager.focus(1);  // field 0 is the regulator amount textfield
-
         getMouseOverHelp().addHelpRegion(leftPos + 128, topPos + 13, leftPos + 186, topPos + 32, "modularrouters.guiText.popup.flinger.speed");
         getMouseOverHelp().addHelpRegion(leftPos + 128, topPos + 31, leftPos + 186, topPos + 50, "modularrouters.guiText.popup.flinger.pitch");
         getMouseOverHelp().addHelpRegion(leftPos + 128, topPos + 49, leftPos + 186, topPos + 68, "modularrouters.guiText.popup.flinger.yaw");
@@ -79,12 +76,14 @@ public class FlingerModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), tag -> {
-            tag.putFloat(CompiledFlingerModule.NBT_SPEED, speedField.getFloatValue());
-            tag.putFloat(CompiledFlingerModule.NBT_PITCH, pitchField.getFloatValue());
-            tag.putFloat(CompiledFlingerModule.NBT_YAW, yawField.getFloatValue());
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+            stack.set(ModDataComponents.FLINGER_SETTINGS, new CompiledFlingerModule.FlingerSettings(
+                speedField.getFloatValue(),
+                pitchField.getFloatValue(),
+                yawField.getFloatValue()
+            ))
+        );
     }
 
     private static class TooltipButton extends TexturedButton {

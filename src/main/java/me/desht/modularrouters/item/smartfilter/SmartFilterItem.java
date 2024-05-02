@@ -6,8 +6,6 @@ import me.desht.modularrouters.container.AbstractSmartFilterMenu;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.MRBaseItem;
 import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
-import me.desht.modularrouters.network.messages.FilterSettingsMessage;
-import me.desht.modularrouters.network.messages.GuiSyncMessage;
 import me.desht.modularrouters.util.MFLocator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -19,6 +17,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -31,20 +30,24 @@ public abstract class SmartFilterItem extends MRBaseItem {
         super(ModItems.defaultProps());
     }
 
+    public SmartFilterItem(Item.Properties properties) {
+        super(properties);
+    }
+
     @Nonnull
     public abstract IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack);
 
-    /**
-     * Handle a filter settings message received from a client-side GUI by updating the filter itemstack appropriately.
-     *
-     * @param player player sending/receiving the message
-     * @param message received message
-     * @param filterStack item stack of the filter that needs to be updated
-     * @param moduleStack item stack of the module the filter is installed in, if any
-     * @return true a GuiSyncMessage if a response should be sent, null otherwise
-     */
-    @Nullable
-    public abstract GuiSyncMessage onReceiveSettingsMessage(Player player, FilterSettingsMessage message, ItemStack filterStack, ItemStack moduleStack);
+//    /**
+//     * Handle a filter settings message received from a client-side GUI by updating the filter itemstack appropriately.
+//     *
+//     * @param player player sending/receiving the message
+//     * @param message received message
+//     * @param filterStack item stack of the filter that needs to be updated
+//     * @param moduleStack item stack of the module the filter is installed in, if any
+//     * @return true a GuiSyncMessage if a response should be sent, null otherwise
+//     */
+//    @Nullable
+//    public abstract GuiSyncMessage onReceiveSettingsMessage(Player player, FilterSettingsMessage message, ItemStack filterStack, ItemStack moduleStack);
 
     /**
      * Get the number of items in this filter, mainly for client display purposes.

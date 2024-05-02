@@ -5,6 +5,7 @@ import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -37,8 +38,20 @@ public class RouterFakePlayer extends FakePlayer {
     public void tick() {
         attackStrengthTicker++;
         if (router.caresAboutItemAttributes() && !ItemStack.matches(prevHeldStack, getMainHandItem())) {
-            getAttributes().removeAttributeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
-            getAttributes().addTransientAttributeModifiers(getMainHandItem().getAttributeModifiers(EquipmentSlot.MAINHAND));
+            prevHeldStack.forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
+                AttributeInstance instance = getAttributes().getInstance(holder);
+                if (instance != null) {
+                    instance.removeModifier(modifier);
+                }
+            });
+            getMainHandItem().forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
+                AttributeInstance instance = getAttributes().getInstance(holder);
+                if (instance != null) {
+                    instance.removeModifier(modifier.id());
+                    instance.addTransientModifier(modifier);
+                }
+            });
+
             prevHeldStack = getMainHandItem().copy();
         }
     }

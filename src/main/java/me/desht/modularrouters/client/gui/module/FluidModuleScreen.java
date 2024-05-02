@@ -9,13 +9,13 @@ import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModBlocks;
-import me.desht.modularrouters.item.module.FluidModule1.FluidDirection;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.logic.compiled.CompiledFluidModule1;
+import me.desht.modularrouters.logic.settings.TransferDirection;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,7 +29,7 @@ import java.util.List;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class FluidModuleScreen extends AbstractModuleScreen {
+public class FluidModuleScreen extends ModuleScreen {
     private static final ItemStack bucketStack = new ItemStack(Items.BUCKET);
     private static final ItemStack routerStack = new ItemStack(ModBlocks.MODULAR_ROUTER.get());
     private static final ItemStack waterStack = new ItemStack(Items.WATER_BUCKET);
@@ -106,17 +106,19 @@ public class FluidModuleScreen extends AbstractModuleScreen {
         regulationTypeButton.visible = regulatorTextField.visible;
         regulationTypeButton.setText();
         regulatorTextField.setRange(Range.of(0, regulationTypeButton.regulateAbsolute ? Integer.MAX_VALUE : 100));
-        forceEmptyButton.visible = fluidDirButton.getState() == FluidDirection.OUT;
+        forceEmptyButton.visible = fluidDirButton.getState() == TransferDirection.FROM_ROUTER;
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), compound -> {
-            compound.putInt(CompiledFluidModule1.NBT_MAX_TRANSFER, maxTransferField.getIntValue());
-            compound.putByte(CompiledFluidModule1.NBT_FLUID_DIRECTION, (byte) fluidDirButton.getState().ordinal());
-            compound.putBoolean(CompiledFluidModule1.NBT_FORCE_EMPTY, forceEmptyButton.isToggled());
-            compound.putBoolean(CompiledFluidModule1.NBT_REGULATE_ABSOLUTE, regulationTypeButton.regulateAbsolute);
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+                stack.set(ModDataComponents.FLUID_SETTINGS, new CompiledFluidModule1.FluidModuleSettings(
+                        maxTransferField.getIntValue(),
+                        fluidDirButton.getState(),
+                        forceEmptyButton.isToggled(),
+                        regulationTypeButton.regulateAbsolute
+                ))
+        );
     }
 
     private class TooltipButton extends ItemStackButton {
@@ -147,8 +149,8 @@ public class FluidModuleScreen extends AbstractModuleScreen {
         sendToServer();
     }
 
-    private class FluidDirectionButton extends TexturedCyclerButton<FluidDirection> {
-        FluidDirectionButton(int x, int y, FluidDirection initialVal) {
+    private class FluidDirectionButton extends TexturedCyclerButton<TransferDirection> {
+        FluidDirectionButton(int x, int y, TransferDirection initialVal) {
             super(x, y, 16, 16, initialVal, FluidModuleScreen.this);
         }
 

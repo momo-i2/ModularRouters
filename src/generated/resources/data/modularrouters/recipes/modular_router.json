@@ -6,7 +6,7 @@
       "item": "minecraft:iron_bars"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "M": {
       "item": "modularrouters:blank_module"
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "modularrouters:modular_router"
+    "id": "modularrouters:modular_router"
   }
 }

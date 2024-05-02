@@ -6,13 +6,13 @@
       "item": "modularrouters:blank_upgrade"
     },
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "Q": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "R": {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:storage_blocks/redstone"
     }
   },
   "pattern": [
@@ -21,6 +21,7 @@
     "QGQ"
   ],
   "result": {
-    "item": "modularrouters:energy_upgrade"
+    "count": 1,
+    "id": "modularrouters:energy_upgrade"
   }
 }

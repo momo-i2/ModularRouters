@@ -12,7 +12,7 @@ public class CreativeModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(187, 38, 185);
 
     public CreativeModule() {
-        super(ModItems.defaultProps(), CompiledCreativeModule::new);
+        super(ModItems.moduleProps(), CompiledCreativeModule::new);
     }
 
     @Override

@@ -9,10 +9,11 @@
       "item": "minecraft:paper"
     },
     {
-      "tag": "forge:dyes/black"
+      "tag": "c:dyes/black"
     }
   ],
   "result": {
-    "item": "modularrouters:tag_filter"
+    "count": 1,
+    "id": "modularrouters:tag_filter"
   }
 }

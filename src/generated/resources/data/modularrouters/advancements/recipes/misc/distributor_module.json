@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "modularrouters:blank_module"
-            ]
+            "items": "modularrouters:blank_module"
           }
         ]
       },

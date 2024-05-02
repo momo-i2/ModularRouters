@@ -7,11 +7,10 @@ import me.desht.modularrouters.logic.compiled.CompiledPullerModule1;
 import net.minecraft.world.item.ItemStack;
 
 public class PullerModule1 extends ModuleItem {
-
     private static final TintColor TINT_COLOR = new TintColor(192, 192, 255);
 
     public PullerModule1() {
-        super(ModItems.defaultProps(), CompiledPullerModule1::new);
+        super(ModItems.moduleProps(), CompiledPullerModule1::new);
     }
 
     @Override

@@ -3,13 +3,13 @@
   "category": "misc",
   "key": {
     "D": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "G": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "M": {
       "item": "modularrouters:blank_module"
@@ -21,6 +21,7 @@
     "IGI"
   ],
   "result": {
-    "item": "modularrouters:bulk_item_filter"
+    "count": 1,
+    "id": "modularrouters:bulk_item_filter"
   }
 }

@@ -1,7 +1,7 @@
 package me.desht.modularrouters.integration.waila;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
-import me.desht.modularrouters.logic.RouterRedstoneBehaviour;
+import me.desht.modularrouters.logic.settings.RedstoneBehaviour;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ public class RouterComponentProvider implements IBlockComponentProvider {
                         iTooltip.add(xlate("modularrouters.itemText.misc.upgradeCount", upgrades.getInt(k), xlate(k)));
                     }
                 }
-                RouterRedstoneBehaviour rrb = RouterRedstoneBehaviour.values()[data.getInt("RedstoneMode")];
+                RedstoneBehaviour rrb = RedstoneBehaviour.values()[data.getInt("RedstoneMode")];
                 iTooltip.add(xlate("modularrouters.guiText.tooltip.redstone.label")
                         .append(": " + ChatFormatting.AQUA)
                         .append(xlate("modularrouters.guiText.tooltip.redstone." + rrb))

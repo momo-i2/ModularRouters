@@ -5,7 +5,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.80'
+    id 'net.neoforged.gradle.userdev' version '7.0.118'
     id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
@@ -50,7 +50,7 @@ base {
     archivesName = "${archive_base_name}-${mod_version}+mc${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 runs {
     // applies to all the run configs below
@@ -66,6 +66,8 @@ runs {
         // You can set various levels here.
         // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
         systemProperty 'forge.logging.console.level', 'debug'
+
+        jvmArguments.addAll '-Xmx4G'
 
         modSource project.sourceSets.main
     }
@@ -99,21 +101,22 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 
-    //implementation fg.deobf("mcjty.theoneprobe:theoneprobe:${top_version}") {
-    //    exclude group: "net.minecraftforge", module: "forge"
-    //}
+    implementation("mcjty.theoneprobe:theoneprobe:${top_version}") {
+        transitive = false
+    }
 
-    compileOnly "mcjty.theoneprobe:theoneprobe:${top_version}"
-
-    implementation "curse.maven:jade-324717:${jade_curse_id}"
+    compileOnly "curse.maven:jade-324717:${jade_curse_id}"
 
     compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}:api"
-    runtimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
+    //runtimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
 
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    runtimeOnly "mezz.jei:jei-${minecraft_version}-common:${jei_version}"
-    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
+    compileOnly "mezz.jei:jei-1.20.4-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.20.4-neoforge-api:${jei_version}"
+//    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+//    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    //runtimeOnly "mezz.jei:jei-${minecraft_version}-common:${jei_version}"
+    //runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
     for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
@@ -136,7 +139,7 @@ tasks.withType(ProcessResources).configureEach {
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml']) {
+    filesMatching(['META-INF/neoforge.mods.toml']) {
         expand replaceProperties + [project: project]
     }
 }

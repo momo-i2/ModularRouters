@@ -20,7 +20,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -161,14 +160,14 @@ public class BlockUtil {
         FakePlayer fakePlayer = router.getFakePlayer();
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
         Tier tier = pickaxe.getItem() instanceof TieredItem t ? t.getTier() : Tiers.STONE;
-        if (ConfigHolder.common.module.breakerHarvestLevelLimit.get() && !TierSortingRegistry.isCorrectTierForDrops(tier, state)) {
+        if (ConfigHolder.common.module.breakerHarvestLevelLimit.get() && state.is(tier.getIncorrectBlocksForDrops())) {
             return BreakResult.NOT_BROKEN;
         }
 
         List<ItemStack> allDrops = Block.getDrops(world.getBlockState(pos), serverWorld, pos, world.getBlockEntity(pos), fakePlayer, pickaxe);
         Map<Boolean, List<ItemStack>> groups = allDrops.stream().collect(Collectors.partitioningBy(matchByBlock ? s -> true : filter));
 
-        if (!matchByBlock && allDrops.isEmpty() && !filter.isEmpty() && !filter.isBlacklist()) {
+        if (!matchByBlock && allDrops.isEmpty() && !filter.isEmpty() && filter.isWhiteList()) {
             return BreakResult.NOT_BROKEN;
         }
 

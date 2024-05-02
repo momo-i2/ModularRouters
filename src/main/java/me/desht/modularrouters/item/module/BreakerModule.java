@@ -4,13 +4,17 @@ import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.logic.compiled.CompiledBreakerModule;
+import me.desht.modularrouters.logic.compiled.CompiledBreakerModule.BreakerSettings;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.List;
 
@@ -18,7 +22,10 @@ public class BreakerModule extends ModuleItem implements IPickaxeUser {
     private static final TintColor TINT_COLOR = new TintColor(240, 208, 208);
 
     public BreakerModule() {
-        super(ModItems.defaultProps(), CompiledBreakerModule::new);
+        super(ModItems.moduleProps()
+                        .component(DataComponents.CONTAINER, ItemContainerContents.EMPTY)
+                        .component(ModDataComponents.BREAKER_SETTINGS, BreakerSettings.DEFAULT),
+                CompiledBreakerModule::new);
     }
 
     @Override
@@ -32,12 +39,11 @@ public class BreakerModule extends ModuleItem implements IPickaxeUser {
     }
 
     @Override
-    protected void addSettingsInformation(ItemStack itemstack, List<Component> list) {
-        super.addSettingsInformation(itemstack, list);
+    protected void addSettingsInformation(ItemStack stack, List<Component> list) {
+        super.addSettingsInformation(stack, list);
 
-        CompiledBreakerModule cbm = new CompiledBreakerModule(null, itemstack);
-        CompiledBreakerModule.MatchType type = cbm.getMatchType();
-        list.add(ClientUtil.xlate(type.getTranslationKey()).withStyle(ChatFormatting.YELLOW));
+        BreakerSettings settings = stack.get(ModDataComponents.BREAKER_SETTINGS);
+        list.add(ClientUtil.xlate(settings.matchType().getTranslationKey()).withStyle(ChatFormatting.YELLOW));
     }
 
     @Override

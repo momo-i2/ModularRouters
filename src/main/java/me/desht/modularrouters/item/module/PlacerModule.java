@@ -7,11 +7,10 @@ import me.desht.modularrouters.logic.compiled.CompiledPlacerModule;
 import net.minecraft.world.item.ItemStack;
 
 public class PlacerModule extends ModuleItem {
-
     private static final TintColor TINT_COLOR = new TintColor(240, 208, 208);
 
     public PlacerModule() {
-        super(ModItems.defaultProps(), CompiledPlacerModule::new);
+        super(ModItems.moduleProps(), CompiledPlacerModule::new);
     }
 
     @Override

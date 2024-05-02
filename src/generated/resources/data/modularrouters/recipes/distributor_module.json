@@ -14,6 +14,7 @@
     "SMS"
   ],
   "result": {
-    "item": "modularrouters:distributor_module"
+    "count": 1,
+    "id": "modularrouters:distributor_module"
   }
 }

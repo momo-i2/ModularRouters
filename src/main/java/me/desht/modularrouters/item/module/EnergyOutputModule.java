@@ -7,15 +7,15 @@ import me.desht.modularrouters.logic.compiled.CompiledEnergyOutputModule;
 import net.minecraft.world.item.ItemStack;
 
 public class EnergyOutputModule extends ModuleItem {
-    private static final TintColor TINT_COLOR = new TintColor(65, 4, 75);
+    private static final TintColor TINT_COLOR = new TintColor(106, 12, 120);
 
     public EnergyOutputModule() {
-        super(ModItems.defaultProps(), CompiledEnergyOutputModule::new);
+        super(ModItems.moduleProps(), CompiledEnergyOutputModule::new);
     }
 
     @Override
     public TintColor getItemTint() {
-        return new TintColor(106, 12, 120);
+        return TINT_COLOR;
     }
 
     @Override

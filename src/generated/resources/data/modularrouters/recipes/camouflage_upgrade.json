@@ -6,16 +6,17 @@
       "item": "modularrouters:blank_upgrade"
     },
     {
-      "tag": "forge:dyes/red"
+      "tag": "c:dyes/red"
     },
     {
-      "tag": "forge:dyes/green"
+      "tag": "c:dyes/green"
     },
     {
-      "tag": "forge:dyes/blue"
+      "tag": "c:dyes/blue"
     }
   ],
   "result": {
-    "item": "modularrouters:camouflage_upgrade"
+    "count": 1,
+    "id": "modularrouters:camouflage_upgrade"
   }
 }

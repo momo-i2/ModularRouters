@@ -89,7 +89,7 @@ public class SyncUpgradeScreen extends Screen {
     public void onClose() {
         int newVal = intField.getIntValue();
         if (currentVal != newVal) {
-            PacketDistributor.SERVER.noArg().send(new SyncUpgradeSettingsMessage(newVal, hand));
+            PacketDistributor.sendToServer(new SyncUpgradeSettingsMessage(newVal, hand));
         }
 
         super.onClose();

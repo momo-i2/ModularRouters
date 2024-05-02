@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public abstract class AugmentItem extends MRBaseItem {
     public static final int SLOTS = 4;
@@ -39,7 +40,7 @@ public abstract class AugmentItem extends MRBaseItem {
         }
 
         public void refresh(ItemStack moduleStack) {
-            Validate.isTrue(moduleStack.getItem() instanceof ModuleItem, "item is not a ItemModule: " + moduleStack);
+            Validate.isTrue(moduleStack.getItem() instanceof ModuleItem, "item is not a ModuleItem: " + moduleStack);
 
             AugmentHandler h = new AugmentHandler(moduleStack, null);
             counts.clear();
@@ -55,9 +56,12 @@ public abstract class AugmentItem extends MRBaseItem {
             return counts.keySet().stream().toList();
         }
 
+        public int getAugmentCount(Supplier<Item> type) {
+            return getAugmentCount(type.get());
+        }
+
         public int getAugmentCount(Item type) {
-            if (!(type instanceof AugmentItem)) return 0;
-            return counts.getOrDefault(type, 0);
+            return type instanceof AugmentItem ? counts.getOrDefault(type, 0) : 0;
         }
     }
 }

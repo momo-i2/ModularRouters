@@ -7,20 +7,20 @@ import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
 import me.desht.modularrouters.logic.compiled.CompiledSenderModule2;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.BiFunction;
 
 public class SenderModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
-
     private static final TintColor TINT_COLOR = new TintColor(149, 255, 93);
 
     public SenderModule2() {
-        super(ModItems.defaultProps(), CompiledSenderModule2::new);
+        super(ModItems.moduleProps(), CompiledSenderModule2::new);
     }
 
-    public SenderModule2(BiFunction<ModularRouterBlockEntity,ItemStack,? extends CompiledModule> compiler) {
-        super(ModItems.defaultProps(), compiler);
+    protected SenderModule2(Item.Properties properties, BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler) {
+        super(properties, compiler);
     }
 
     @Override

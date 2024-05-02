@@ -1,37 +1,35 @@
 package me.desht.modularrouters.logic.compiled;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.config.ConfigHolder;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModSounds;
-import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.logic.ModuleTarget;
-import me.desht.modularrouters.util.ModuleHelper;
+import me.desht.modularrouters.logic.settings.RelativeDirection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 
 public class CompiledFlingerModule extends CompiledDropperModule {
-    public static final String NBT_SPEED = "Speed";
-    public static final String NBT_PITCH = "Pitch";
-    public static final String NBT_YAW = "Yaw";
-
-    private final float speed, pitch, yaw;
+    private final FlingerSettings settings;
 
     public CompiledFlingerModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        CompoundTag compound = ModuleHelper.validateNBT(stack);
-        speed = compound.getFloat(NBT_SPEED);
-        pitch = compound.getFloat(NBT_PITCH);
-        yaw = compound.getFloat(NBT_YAW);
+        settings = stack.getOrDefault(ModDataComponents.FLINGER_SETTINGS, FlingerSettings.DEFAULT);
     }
 
     @Override
@@ -40,34 +38,34 @@ public class CompiledFlingerModule extends CompiledDropperModule {
 
         if (fired && ConfigHolder.common.module.flingerEffects.get()) {
             ModuleTarget target = getTarget();
-            int n = Math.round(speed * 5);
+            int n = Math.round(getSpeed() * 5);
             BlockPos pos = target.gPos.pos();
             if (router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) < 2 && router.getLevel() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE,
                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, n,
                         0.0, 0.0, 0.0, 0.0);
             }
-            router.playSound(null, pos, ModSounds.THUD.get(), SoundSource.BLOCKS, 0.5f + speed, 1.0f);
+            router.playSound(null, pos, ModSounds.THUD.get(), SoundSource.BLOCKS, 0.5f + getSpeed(), 1.0f);
         }
 
         return fired;
     }
 
     public float getYaw() {
-        return yaw;
+        return settings.yaw;
     }
 
     public float getPitch() {
-        return pitch;
+        return settings.pitch;
     }
 
     public float getSpeed() {
-        return speed;
+        return settings.speed;
     }
 
     @Override
     protected void setupItemVelocity(ModularRouterBlockEntity router, ItemEntity item) {
-        Direction routerFacing = router.getAbsoluteFacing(ModuleItem.RelativeDirection.FRONT);
+        Direction routerFacing = router.getAbsoluteFacing(RelativeDirection.FRONT);
         float basePitch = 0.0f;
         float baseYaw;
         switch (getDirection()) {
@@ -79,16 +77,16 @@ public class CompiledFlingerModule extends CompiledDropperModule {
                 basePitch = -90.0f;
                 baseYaw = yawFromFacing(routerFacing);
             }
-            default -> baseYaw = yawFromFacing(getFacing());
+            default -> baseYaw = yawFromFacing(getAbsoluteFacing());
         }
 
-        double yawRad = Math.toRadians(baseYaw + yaw), pitchRad = Math.toRadians(basePitch + pitch);
+        double yawRad = Math.toRadians(baseYaw + getYaw()), pitchRad = Math.toRadians(basePitch + getPitch());
 
         double x = (Math.cos(yawRad) * Math.cos(pitchRad));   // east is positive X
         double y = Math.sin(pitchRad);
         double z = -(Math.sin(yawRad) * Math.cos(pitchRad));  // north is negative Z
 
-        item.setDeltaMovement(x * speed, y * speed, z * speed);
+        item.setDeltaMovement(new Vec3(x, y, z).scale(getSpeed()));
     }
 
     private float yawFromFacing(Direction absoluteFacing) {
@@ -99,5 +97,22 @@ public class CompiledFlingerModule extends CompiledDropperModule {
             case SOUTH -> 270.0f;
             default -> 0;
         };
+    }
+
+    public record FlingerSettings(float speed, float pitch, float yaw) {
+        public static final FlingerSettings DEFAULT = new FlingerSettings(0f, 0f, 0f);
+
+        public static final Codec<FlingerSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            Codec.FLOAT.fieldOf("speed").forGetter(FlingerSettings::speed),
+            Codec.FLOAT.fieldOf("pitch").forGetter(FlingerSettings::pitch),
+            Codec.FLOAT.optionalFieldOf("yaw", 0f).forGetter(FlingerSettings::yaw)
+        ).apply(builder, FlingerSettings::new));
+
+        public static StreamCodec<FriendlyByteBuf,FlingerSettings> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.FLOAT, FlingerSettings::speed,
+                ByteBufCodecs.FLOAT, FlingerSettings::pitch,
+                ByteBufCodecs.FLOAT, FlingerSettings::yaw,
+                FlingerSettings::new
+        );
     }
 }

@@ -24,6 +24,7 @@
     " C "
   ],
   "result": {
-    "item": "modularrouters:player_module"
+    "count": 1,
+    "id": "modularrouters:player_module"
   }
 }

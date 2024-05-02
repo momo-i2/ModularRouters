@@ -1,15 +1,21 @@
 package me.desht.modularrouters.logic.compiled;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
-import me.desht.modularrouters.item.module.FluidModule1.FluidDirection;
-import me.desht.modularrouters.util.ModuleHelper;
+import me.desht.modularrouters.logic.settings.TransferDirection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -22,36 +28,24 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.Optional;
 
 public class CompiledFluidModule1 extends CompiledModule {
-    public static final String NBT_FORCE_EMPTY = "ForceEmpty";
-    public static final String NBT_MAX_TRANSFER = "MaxTransfer";
-    public static final String NBT_FLUID_DIRECTION = "FluidDir";
-    public static final String NBT_REGULATE_ABSOLUTE = "RegulateAbsolute";
-
-    public static final int BUCKET_VOLUME = 1000;
-
-    private final int maxTransfer;
-    private final FluidDirection fluidDirection;
-    private final boolean forceEmpty;  // force emptying even if there's a fluid block in the way
-    private final boolean regulateAbsolute;  // true = regulate by mB; false = regulate by % of tank's capacity
+    private final FluidModuleSettings settings;
 
     public CompiledFluidModule1(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        CompoundTag compound = ModuleHelper.validateNBT(stack);
-        maxTransfer = compound.getInt(NBT_MAX_TRANSFER);
-        fluidDirection = FluidDirection.values()[compound.getByte(NBT_FLUID_DIRECTION)];
-        forceEmpty = compound.getBoolean(NBT_FORCE_EMPTY);
-        regulateAbsolute = compound.getBoolean(NBT_REGULATE_ABSOLUTE);
+        settings = stack.getOrDefault(ModDataComponents.FLUID_SETTINGS.get(), FluidModuleSettings.DEFAULT);
     }
 
     @Override
@@ -67,19 +61,19 @@ public class CompiledFluidModule1 extends CompiledModule {
         boolean didWork;
         if (targetFluidHandler.isPresent()) {
             // there's a block entity with a fluid capability; try to interact with that
-            didWork = switch (fluidDirection) {
-                case IN -> targetFluidHandler.map(worldHandler -> doTransfer(router, worldHandler, routerHandler, FluidDirection.IN))
+            didWork = switch (getFluidDirection()) {
+                case TO_ROUTER -> targetFluidHandler.map(worldHandler -> doTransfer(router, worldHandler, routerHandler, TransferDirection.TO_ROUTER))
                         .orElse(false);
-                case OUT -> targetFluidHandler.map(worldHandler -> doTransfer(router, routerHandler, worldHandler, FluidDirection.OUT))
+                case FROM_ROUTER -> targetFluidHandler.map(worldHandler -> doTransfer(router, routerHandler, worldHandler, TransferDirection.FROM_ROUTER))
                         .orElse(false);
             };
         } else {
             // no block entity at the target position; try to interact with a fluid block in the world
             boolean playSound = router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) == 0;
             BlockPos pos = getTarget().gPos.pos();
-            didWork = switch (fluidDirection) {
-                case IN -> tryPickupFluid(router, routerHandler, world, pos, playSound);
-                case OUT -> tryPourOutFluid(router, routerHandler, world, pos, playSound);
+            didWork = switch (getFluidDirection()) {
+                case TO_ROUTER -> tryPickupFluid(router, routerHandler, world, pos, playSound);
+                case FROM_ROUTER -> tryPourOutFluid(router, routerHandler, world, pos, playSound);
             };
         }
 
@@ -101,15 +95,15 @@ public class CompiledFluidModule1 extends CompiledModule {
         if (fluid == Fluids.EMPTY || !fluid.isSource(fluidState) || !getFilter().testFluid(fluid)) {
             return false;
         }
-        FluidTank tank = new FluidTank(BUCKET_VOLUME);
-        tank.setFluid(new FluidStack(fluid, BUCKET_VOLUME));
-        FluidStack maybeSent = FluidUtil.tryFluidTransfer(routerHandler, tank, BUCKET_VOLUME, false);
-        if (maybeSent.getAmount() != BUCKET_VOLUME) {
+        FluidTank tank = new FluidTank(FluidType.BUCKET_VOLUME);
+        tank.setFluid(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
+        FluidStack maybeSent = FluidUtil.tryFluidTransfer(routerHandler, tank, FluidType.BUCKET_VOLUME, false);
+        if (maybeSent.getAmount() != FluidType.BUCKET_VOLUME) {
             return false;
         }
         // actually do the pickup & transfer now
         bucketPickup.pickupBlock(router.getFakePlayer(), world, pos, state);
-        FluidStack transferred = FluidUtil.tryFluidTransfer(routerHandler, tank, BUCKET_VOLUME, true);
+        FluidStack transferred = FluidUtil.tryFluidTransfer(routerHandler, tank, FluidType.BUCKET_VOLUME, true);
         if (!transferred.isEmpty() && playSound) {
             playFillSound(world, pos, fluid);
         }
@@ -117,14 +111,14 @@ public class CompiledFluidModule1 extends CompiledModule {
     }
 
     private boolean tryPourOutFluid(ModularRouterBlockEntity router, IFluidHandler routerHandler, Level world, BlockPos pos, boolean playSound) {
-        if (!forceEmpty && !(world.isEmptyBlock(pos) || world.getBlockState(pos).getBlock() instanceof LiquidBlockContainer)) {
+        if (!isForceEmpty() && !(world.isEmptyBlock(pos) || world.getBlockState(pos).getBlock() instanceof LiquidBlockContainer)) {
             return false;
         }
 
         // code partially lifted from BucketItem
 
-        FluidStack toPlace = routerHandler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
-        if (toPlace.getAmount() < BUCKET_VOLUME) {
+        FluidStack toPlace = routerHandler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
+        if (toPlace.getAmount() < FluidType.BUCKET_VOLUME) {
             return false;  // must be a full bucket's worth to place in the world
         }
         Fluid fluid = toPlace.getFluid();
@@ -157,7 +151,7 @@ public class CompiledFluidModule1 extends CompiledModule {
             }
         }
 
-        routerHandler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
+        routerHandler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
 
         return true;
     }
@@ -189,11 +183,11 @@ public class CompiledFluidModule1 extends CompiledModule {
         }
     }
 
-    private boolean doTransfer(ModularRouterBlockEntity router, IFluidHandler src, IFluidHandler dest, FluidDirection direction) {
+    private boolean doTransfer(ModularRouterBlockEntity router, IFluidHandler src, IFluidHandler dest, TransferDirection direction) {
         if (getRegulationAmount() > 0) {
-            if (direction == FluidDirection.IN && checkFluidInTank(src) <= getRegulationAmount()) {
+            if (direction == TransferDirection.TO_ROUTER && checkFluidInTank(src) <= getRegulationAmount()) {
                 return false;
-            } else if (direction == FluidDirection.OUT && checkFluidInTank(dest) >= getRegulationAmount()) {
+            } else if (direction == TransferDirection.FROM_ROUTER && checkFluidInTank(dest) >= getRegulationAmount()) {
                 return false;
             }
         }
@@ -226,19 +220,47 @@ public class CompiledFluidModule1 extends CompiledModule {
         }
     }
 
-    public FluidDirection getFluidDirection() {
-        return fluidDirection;
+    public TransferDirection getFluidDirection() {
+        return settings.direction;
     }
 
     public int getMaxTransfer() {
-        return maxTransfer == 0 ? BUCKET_VOLUME : maxTransfer;
+        return settings.maxTransfer == 0 ? FluidType.BUCKET_VOLUME : settings.maxTransfer;
     }
 
     public boolean isForceEmpty() {
-        return forceEmpty;
+        return settings.forceEmpty;
     }
 
     public boolean isRegulateAbsolute() {
-        return regulateAbsolute;
+        return settings.regulateAbsolute;
     }
+
+    public record FluidModuleSettings(int maxTransfer, TransferDirection direction, boolean forceEmpty, boolean regulateAbsolute) {
+        public static final FluidModuleSettings DEFAULT = new FluidModuleSettings(0, TransferDirection.TO_ROUTER, false, false);
+
+        public static final Codec<FluidModuleSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                ExtraCodecs.NON_NEGATIVE_INT
+                        .optionalFieldOf("max_transfer", 0)
+                        .forGetter(FluidModuleSettings::maxTransfer),
+                StringRepresentable.fromEnum(TransferDirection::values)
+                        .optionalFieldOf("direction", TransferDirection.TO_ROUTER)
+                        .forGetter(FluidModuleSettings::direction),
+                Codec.BOOL
+                        .optionalFieldOf("force_empty", false)
+                        .forGetter(FluidModuleSettings::forceEmpty),
+                Codec.BOOL
+                        .optionalFieldOf("regulate_absolute", false)
+                        .forGetter(FluidModuleSettings::regulateAbsolute)
+        ).apply(builder, FluidModuleSettings::new));
+
+        public static StreamCodec<FriendlyByteBuf, CompiledFluidModule1.FluidModuleSettings> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.INT, FluidModuleSettings::maxTransfer,
+                NeoForgeStreamCodecs.enumCodec(TransferDirection.class), FluidModuleSettings::direction,
+                ByteBufCodecs.BOOL, FluidModuleSettings::forceEmpty,
+                ByteBufCodecs.BOOL, FluidModuleSettings::regulateAbsolute,
+                CompiledFluidModule1.FluidModuleSettings::new
+        );
+    }
+
 }

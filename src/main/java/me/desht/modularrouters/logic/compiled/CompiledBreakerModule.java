@@ -1,42 +1,37 @@
 package me.desht.modularrouters.logic.compiled;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.config.ConfigHolder;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.module.IPickaxeUser;
 import me.desht.modularrouters.util.BlockUtil;
-import me.desht.modularrouters.util.ModuleHelper;
 import me.desht.modularrouters.util.TranslatableEnum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 
 public class CompiledBreakerModule extends CompiledModule {
-    public static final String NBT_MATCH_TYPE = "MatchType";
-
     private final ItemStack pickaxe;
-    private final MatchType matchType;
+    private final BreakerSettings settings;
 
     public CompiledBreakerModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        pickaxe = ((IPickaxeUser) stack.getItem()).getPickaxe(stack);
-
-        CompoundTag compound = ModuleHelper.validateNBT(stack);
-        matchType = MatchType.values()[compound.getInt(NBT_MATCH_TYPE)];
-
-        // backwards compat
-        if (!EnchantmentHelper.getEnchantments(stack).isEmpty() && EnchantmentHelper.getEnchantments(pickaxe).isEmpty()) {
-            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(stack), pickaxe);
-        }
+        pickaxe = stack.getItem() instanceof IPickaxeUser p ? p.getPickaxe(stack) : ItemStack.EMPTY;
+        settings = stack.getOrDefault(ModDataComponents.BREAKER_SETTINGS, BreakerSettings.DEFAULT);
     }
 
     @Override
@@ -48,7 +43,7 @@ public class CompiledBreakerModule extends CompiledModule {
             }
             BlockPos pos = getTarget().gPos.pos();
             BlockState oldState = world.getBlockState(pos);
-            BlockUtil.BreakResult breakResult = BlockUtil.tryBreakBlock(router, world, pos, getFilter(), pickaxe, matchType == MatchType.BLOCK);
+            BlockUtil.BreakResult breakResult = BlockUtil.tryBreakBlock(router, world, pos, getFilter(), pickaxe, getMatchType() == MatchType.BLOCK);
             if (breakResult.isBlockBroken()) {
                 breakResult.processDrops(world, pos, router.getBuffer());
                 if (ConfigHolder.common.module.breakerParticles.get() && router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) == 0) {
@@ -61,16 +56,43 @@ public class CompiledBreakerModule extends CompiledModule {
     }
 
     public MatchType getMatchType() {
-        return matchType;
+        return settings.matchType;
     }
 
-    public enum MatchType implements TranslatableEnum {
-        ITEM,
-        BLOCK;
+    public enum MatchType implements TranslatableEnum, StringRepresentable {
+        ITEM("item"),
+        BLOCK("block");
+
+        private final String name;
+
+        MatchType(String name) {
+            this.name = name;
+        }
 
         @Override
         public String getTranslationKey() {
-            return "modularrouters.guiText.label.breakMatchType." + this;
+            return "modularrouters.guiText.label.breakMatchType." + name;
         }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
+    public record BreakerSettings(MatchType matchType) {
+        public static final BreakerSettings DEFAULT = new BreakerSettings(MatchType.ITEM);
+
+        public static final Codec<BreakerSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                StringRepresentable.fromEnum(MatchType::values)
+                        .optionalFieldOf("action", MatchType.ITEM)
+                        .forGetter(BreakerSettings::matchType)
+
+        ).apply(builder, BreakerSettings::new));
+
+        public static final StreamCodec<FriendlyByteBuf, BreakerSettings> STREAM_CODEC = StreamCodec.composite(
+                NeoForgeStreamCodecs.enumCodec(MatchType.class), BreakerSettings::matchType,
+                BreakerSettings::new
+        );
     }
 }

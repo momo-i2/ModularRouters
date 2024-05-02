@@ -2,28 +2,30 @@ package me.desht.modularrouters.integration.top;
 
 import mcjty.theoneprobe.api.IElement;
 import mcjty.theoneprobe.api.IElementFactory;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.util.ModuleHelper;
+import me.desht.modularrouters.logic.settings.ModuleSettings;
+import me.desht.modularrouters.logic.settings.RelativeDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.Validate;
 
 public class ElementModule implements IElement {
     private final ItemStack stack;
-    private final ModuleItem.RelativeDirection dir;
+    private final RelativeDirection dir;
 
     public ElementModule(ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof ModuleItem, "provided item stack is not an ItemModule!");
         this.stack = stack;
-        this.dir = ModuleHelper.getRelativeDirection(stack);
+        this.dir = ModuleItem.getCommonSettings(stack).facing();
     }
 
-    public ElementModule(FriendlyByteBuf buf) {
-        this.stack = buf.readItem();
-        this.dir = buf.readEnum(ModuleItem.RelativeDirection.class);
+    public ElementModule(RegistryFriendlyByteBuf buf) {
+        this.stack = ItemStack.STREAM_CODEC.decode(buf);
+        this.dir = buf.readEnum(RelativeDirection.class);
     }
 
     @Override
@@ -43,8 +45,8 @@ public class ElementModule implements IElement {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        buffer.writeItem(stack);
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
+        ItemStack.STREAM_CODEC.encode(buffer, stack);
         buffer.writeEnum(dir);
     }
 
@@ -55,7 +57,7 @@ public class ElementModule implements IElement {
 
     public static class Factory implements IElementFactory {
         @Override
-        public IElement createElement(FriendlyByteBuf buf) {
+        public IElement createElement(RegistryFriendlyByteBuf buf) {
             return new ElementModule(buf);
         }
 

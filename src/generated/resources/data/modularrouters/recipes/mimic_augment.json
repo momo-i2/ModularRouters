@@ -6,16 +6,17 @@
       "item": "modularrouters:augment_core"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     }
   ],
   "result": {
-    "item": "modularrouters:mimic_augment"
+    "count": 1,
+    "id": "modularrouters:mimic_augment"
   }
 }

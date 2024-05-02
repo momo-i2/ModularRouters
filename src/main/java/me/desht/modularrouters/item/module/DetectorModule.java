@@ -3,9 +3,11 @@ package me.desht.modularrouters.item.module;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.logic.compiled.CompiledDetectorModule;
+import me.desht.modularrouters.logic.compiled.CompiledDetectorModule.DetectorSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -20,7 +22,9 @@ public class DetectorModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(255, 255, 195);
 
     public DetectorModule() {
-        super(ModItems.defaultProps(), CompiledDetectorModule::new);
+        super(ModItems.moduleProps()
+                .component(ModDataComponents.DETECTOR_SETTINGS, DetectorSettings.DEFAULT),
+                CompiledDetectorModule::new);
     }
 
     public enum SignalType {
@@ -37,12 +41,13 @@ public class DetectorModule extends ModuleItem {
     }
 
     @Override
-    public void addSettingsInformation(ItemStack itemstack, List<Component> list) {
-        super.addSettingsInformation(itemstack, list);
-        CompiledDetectorModule ds = new CompiledDetectorModule(null, itemstack);
+    public void addSettingsInformation(ItemStack stack, List<Component> list) {
+        super.addSettingsInformation(stack, list);
+
+        DetectorSettings settings = stack.get(ModDataComponents.DETECTOR_SETTINGS);
         list.add(xlate("modularrouters.itemText.misc.redstoneLevel",
-                ds.getSignalLevel(),
-                xlate("modularrouters.itemText.misc.strongSignal." + ds.isStrongSignal()).withStyle(ChatFormatting.AQUA)
+                settings.signalLevel(),
+                xlate("modularrouters.itemText.misc.strongSignal." + settings.strongSignal()).withStyle(ChatFormatting.AQUA)
         ).withStyle(ChatFormatting.YELLOW));
     }
 

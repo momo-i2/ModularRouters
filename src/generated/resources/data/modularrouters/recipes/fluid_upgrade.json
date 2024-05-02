@@ -6,7 +6,7 @@
       "item": "modularrouters:blank_upgrade"
     },
     "G": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "U": {
       "item": "minecraft:bucket"
@@ -18,6 +18,6 @@
   ],
   "result": {
     "count": 3,
-    "item": "modularrouters:fluid_upgrade"
+    "id": "modularrouters:fluid_upgrade"
   }
 }

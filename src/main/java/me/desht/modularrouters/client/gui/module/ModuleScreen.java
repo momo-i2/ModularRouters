@@ -15,28 +15,23 @@ import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModBlockEntities;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.augment.AugmentItem;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.item.module.ModuleItem.ModuleFlags;
-import me.desht.modularrouters.item.module.ModuleItem.RelativeDirection;
-import me.desht.modularrouters.item.module.ModuleItem.Termination;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
-import me.desht.modularrouters.logic.RouterRedstoneBehaviour;
 import me.desht.modularrouters.logic.filter.Filter;
+import me.desht.modularrouters.logic.settings.*;
 import me.desht.modularrouters.network.messages.ModuleSettingsMessage;
 import me.desht.modularrouters.network.messages.OpenGuiMessage;
 import me.desht.modularrouters.util.MFLocator;
-import me.desht.modularrouters.util.ModuleHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -56,7 +51,7 @@ import java.util.Optional;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> implements ContainerListener, IMouseOverHelpProvider, ISendToServer {
+public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements ContainerListener, IMouseOverHelpProvider, ISendToServer {
     static final ResourceLocation GUI_TEXTURE = new ResourceLocation(ModularRouters.MODID, "textures/gui/module.png");
 
     // locations of extra textures on the gui module texture sheet
@@ -74,40 +69,44 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
     private final BlockPos routerPos;
     private final int moduleSlotIndex;
     private final InteractionHand hand;
-    private RelativeDirection facing;
+    private final ModuleSettings settings;
     private int sendDelay;
-    private int regulatorAmount;
     private final MouseOverHelp mouseOverHelp;
     final AugmentItem.AugmentCounter augmentCounter;
-    private final boolean matchAll;
 
+    private int regulatorAmount;
+    private RelativeDirection facing;
     private RedstoneBehaviourButton redstoneButton;
     private RegulatorTooltipButton regulatorTooltipButton;
     private final EnumMap<RelativeDirection,DirectionButton> directionButtons = new EnumMap<>(RelativeDirection.class);
-    private final EnumMap<ModuleFlags,ModuleToggleButton> toggleButtons = new EnumMap<>(ModuleFlags.class);
     private MouseOverHelp.Button mouseOverHelpButton;
     private TexturedToggleButton matchAllButton;
     IntegerTextField regulatorTextField;
     private TerminationButton terminationButton;
+    private ModuleToggleButton whiteListButton;
+    private ModuleToggleButton matchDamageButton;
+    private ModuleToggleButton matchCompButton;
+    private ModuleToggleButton matchItemTagButton;
 
-    public AbstractModuleScreen(ModuleMenu container, Inventory inventory, Component displayName) {
+    public ModuleScreen(ModuleMenu container, Inventory inventory, Component displayName) {
         super(container, inventory, displayName);
 
         MFLocator locator = container.getLocator();
-        this.moduleSlotIndex = locator.routerSlot();
-        this.hand = locator.hand();
-        this.routerPos = locator.routerPos();
-        this.moduleItemStack = locator.getModuleStack(inventory.player);
+        moduleSlotIndex = locator.routerSlot();
+        hand = locator.hand();
+        routerPos = locator.routerPos();
+        moduleItemStack = locator.getModuleStack(inventory.player);
 
-        this.module = (ModuleItem) moduleItemStack.getItem();
+        module = (ModuleItem) moduleItemStack.getItem();
 
-        this.facing = ModuleHelper.getRelativeDirection(moduleItemStack);
-        this.regulatorAmount = ModuleHelper.getRegulatorAmount(moduleItemStack);
-        this.augmentCounter = new AugmentItem.AugmentCounter(moduleItemStack);
-        this.matchAll = ModuleHelper.isMatchAll(moduleItemStack);
-        this.imageWidth = GUI_WIDTH;
-        this.imageHeight = GUI_HEIGHT;
-        this.mouseOverHelp = new MouseOverHelp(this);
+        settings = ModuleItem.getCommonSettings(moduleItemStack);
+        regulatorAmount = settings.regulatorAmount();
+        facing = settings.facing();
+
+        augmentCounter = new AugmentItem.AugmentCounter(moduleItemStack);
+        imageWidth = GUI_WIDTH;
+        imageHeight = GUI_HEIGHT;
+        mouseOverHelp = new MouseOverHelp(this);
 
         NeoForge.EVENT_BUS.addListener(this::onInitGui);
     }
@@ -116,12 +115,13 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
     public void init() {
         super.init();
 
-        addToggleButton(ModuleFlags.BLACKLIST, 7, 75);
-        addToggleButton(ModuleFlags.IGNORE_DAMAGE, 7, 93);
-        addToggleButton(ModuleFlags.IGNORE_NBT, 25, 75);
-        addToggleButton(ModuleFlags.IGNORE_TAGS, 25, 93);
-        terminationButton = addRenderableWidget(new TerminationButton(leftPos + 45, topPos + 93, ModuleHelper.getTermination(moduleItemStack)));
-        matchAllButton = addRenderableWidget(new MatchAllButton(leftPos + 45, topPos + 75, matchAll));
+        whiteListButton = addToggleButton(7, 75, settings.flags().whiteList(), "whitelist", 0, 32);
+        matchDamageButton = addToggleButton(7, 93, settings.flags().matchDamage(), "match_damage", 32, 32);
+        matchCompButton = addToggleButton(25, 75, settings.flags().matchComponents(), "match_components", 64, 32);
+        matchItemTagButton = addToggleButton(25, 93, settings.flags().matchComponents(), "match_item_tag", 96, 32);
+        matchAllButton = addToggleButton(45, 75, settings.flags().matchAllItems(), "match_all", 208, 16);
+
+        terminationButton = addRenderableWidget(new TerminationButton(leftPos + 45, topPos + 93, settings.termination()));
 
         if (module.isDirectional()) {
             addDirectionButton(RelativeDirection.NONE, 70, 18);
@@ -135,14 +135,14 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
 
         mouseOverHelpButton = addRenderableWidget(new MouseOverHelp.Button(leftPos + 175, topPos + 1));
 
-        redstoneButton = addRenderableWidget(new RedstoneBehaviourButton(this.leftPos + 170, this.topPos + 93, BUTTON_WIDTH, BUTTON_HEIGHT,
-                ModuleHelper.getRedstoneBehaviour(moduleItemStack), this));
+        redstoneButton = addRenderableWidget(new RedstoneBehaviourButton(leftPos + 170, topPos + 93, BUTTON_WIDTH, BUTTON_HEIGHT,
+                ModuleItem.getRedstoneBehaviour(moduleItemStack), this));
 
         regulatorTextField = addRenderableWidget(buildRegulationTextField());
         regulatorTooltipButton = addRenderableWidget(new RegulatorTooltipButton(regulatorTextField.getX() - 16, regulatorTextField.getY() - 2, module.isFluidModule()));
 
         if (routerPos != null) {
-            addRenderableWidget(new BackButton(leftPos + 2, topPos + 1, p -> PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openRouter(menu.getLocator()))));
+            addRenderableWidget(new BackButton(leftPos + 2, topPos + 1, p -> PacketDistributor.sendToServer(OpenGuiMessage.openRouter(menu.getLocator()))));
         }
 
         mouseOverHelp.addHelpRegion(leftPos + 7, topPos + 16, leftPos + 60, topPos + 69, "modularrouters.guiText.popup.filter");
@@ -183,15 +183,16 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
     }
 
     protected void setupButtonVisibility() {
-        redstoneButton.visible = augmentCounter.getAugmentCount(ModItems.REDSTONE_AUGMENT.get()) > 0;
+        redstoneButton.visible = augmentCounter.getAugmentCount(ModItems.REDSTONE_AUGMENT) > 0;
 
-        regulatorTooltipButton.visible = augmentCounter.getAugmentCount(ModItems.REGULATOR_AUGMENT.get()) > 0;
+        regulatorTooltipButton.visible = augmentCounter.getAugmentCount(ModItems.REGULATOR_AUGMENT) > 0;
         regulatorTextField.setVisible(regulatorTooltipButton.visible);
     }
 
-    private void addToggleButton(ModuleFlags flag, int x, int y) {
-        toggleButtons.put(flag, new ModuleToggleButton(flag, this.leftPos + x, this.topPos + y, ModuleHelper.checkFlag(moduleItemStack, flag)));
-        addRenderableWidget(toggleButtons.get(flag));
+    private ModuleToggleButton addToggleButton(int x, int y, boolean toggled, String name, int texX, int texY) {
+        var btn = new ModuleToggleButton(this.leftPos + x, this.topPos + y, toggled, name, texX, texY);
+        addRenderableWidget(btn);
+        return btn;
     }
 
     private void addDirectionButton(RelativeDirection dir, int x, int y) {
@@ -219,28 +220,33 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
 
     @Override
     public void sendToServer() {
-        PacketDistributor.SERVER.noArg().send(new ModuleSettingsMessage(menu.getLocator(), buildMessageData()));
+        PacketDistributor.sendToServer(new ModuleSettingsMessage(menu.getLocator(), buildModifiedItemStack()));
     }
 
     /**
-     * Encode the message data to be sent to the server in {@link ModuleSettingsMessage}. This NBT data will
-     * be copied directly into the module itemstack's NBT when the server receives the packet.
-     * Overriding subclasses must call the superclass method!
+     * Build the updated item stack to be sent to the server. Components in this item stack will be copied
+     * into the server-side item, after validation.
+     * <p>
+     * Important: Overriding subclasses <strong>must</strong> call this superclass method!
      *
      * @return the message data NBT
      */
-    protected CompoundTag buildMessageData() {
-        RouterRedstoneBehaviour behaviour = redstoneButton == null ? RouterRedstoneBehaviour.ALWAYS : redstoneButton.getState();
-        return Util.make(new CompoundTag(), tag -> {
-            for (ModuleFlags flag : ModuleFlags.values()) {
-                tag.putBoolean(flag.getName(), toggleButtons.get(flag).isToggled());
-            }
-            tag.putString(ModuleHelper.NBT_TERMINATION, terminationButton.getState().toString());
-            tag.putString(ModuleHelper.NBT_DIRECTION, facing.toString());
-            tag.putByte(ModuleHelper.NBT_REDSTONE_MODE, (byte) behaviour.ordinal());
-            tag.putInt(ModuleHelper.NBT_REGULATOR_AMOUNT, regulatorAmount);
-            tag.putBoolean(ModuleHelper.NBT_MATCH_ALL, matchAllButton.isToggled());
-        });
+    protected ItemStack buildModifiedItemStack() {
+        ItemStack stack = moduleItemStack.copy();
+        stack.set(ModDataComponents.COMMON_MODULE_SETTINGS, new ModuleSettings(
+                new ModuleFlags(
+                        whiteListButton.isToggled(),
+                        matchDamageButton.isToggled(),
+                        matchCompButton.isToggled(),
+                        matchItemTagButton.isToggled(),
+                        matchAllButton.isToggled()
+                ),
+                facing,
+                terminationButton.getState(),
+                redstoneButton == null ? RedstoneBehaviour.ALWAYS : redstoneButton.getState(),
+                regulatorAmount
+        ));
+        return stack;
     }
 
     @Override
@@ -278,7 +284,7 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
             // Intercept ESC/E and immediately reopen the router GUI - this avoids an
             // annoying screen flicker between closing the module GUI and reopen the router GUI.
             // Sending the reopen message will also close this gui, triggering onGuiClosed()
-            PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openRouter(menu.getLocator()));
+            PacketDistributor.sendToServer(OpenGuiMessage.openRouter(menu.getLocator()));
             return true;
         } else if (ClientSetup.keybindConfigure.getKey().getValue() == keyCode) {
             // trying to configure an installed smart filter, we're done
@@ -303,7 +309,7 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
             // module is installed in a router
             MFLocator locator = MFLocator.filterInInstalledModule(routerPos, moduleSlotIndex, filterSlotIndex);
             if (filter.hasMenu()) {
-                PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openFilterInInstalledModule(locator));
+                PacketDistributor.sendToServer(OpenGuiMessage.openFilterInInstalledModule(locator));
             } else {
                 // no container, just open the client-side GUI directly
                 FilterScreenFactory.openFilterGui(locator);
@@ -312,7 +318,7 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
             // module is in player's hand
             MFLocator locator = MFLocator.filterInHeldModule(hand, filterSlotIndex);
             if (filter.hasMenu()) {
-                PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openFilterInHeldModule(locator));
+                PacketDistributor.sendToServer(OpenGuiMessage.openFilterInHeldModule(locator));
             } else {
                 // no container, just open the client-side GUI directly
                 FilterScreenFactory.openFilterGui(locator);
@@ -350,8 +356,8 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
         // calculate a foreground color which suitably contrasts with the given background color
         int luminance = (int) Math.sqrt(
                 bg.getRed() * bg.getRed() * 0.241 +
-                bg.getGreen() * bg.getGreen() * 0.691 +
-                bg.getBlue() * bg.getBlue() * 0.068
+                        bg.getGreen() * bg.getGreen() * 0.691 +
+                        bg.getBlue() * bg.getBlue() * 0.068
         );
         return luminance > THRESHOLD ? 0x404040 : 0xffffff;
     }
@@ -388,17 +394,19 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
     }
 
     private class ModuleToggleButton extends TexturedToggleButton {
-        private final ModuleFlags flag;
+        private final int texX;
+        private final int texY;
 
-        ModuleToggleButton(ModuleFlags flag, int x, int y, boolean toggled) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, toggled, AbstractModuleScreen.this);
-            this.flag = flag;
-            setTooltips(xlate("modularrouters.guiText.tooltip." + flag + ".1"), xlate("modularrouters.guiText.tooltip." + flag + ".2"));
+        ModuleToggleButton(int x, int y, boolean toggled, String name, int texX, int texY) {
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, toggled, ModuleScreen.this);
+            this.texX = texX;
+            this.texY = texY;
+            setTooltips(xlate("modularrouters.guiText.tooltip." + name + ".false"), xlate("modularrouters.guiText.tooltip." + name + ".true"));
         }
 
         @Override
         protected XYPoint getTextureXY() {
-            return new XYPoint(flag.ordinal() * BUTTON_WIDTH * 2 + (isToggled() ? BUTTON_WIDTH : 0), flag.getTextureY());
+            return new XYPoint(isToggled() ? texX : texX + 16, texY);
         }
     }
 
@@ -407,7 +415,7 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
         private final RelativeDirection direction;
 
         DirectionButton(RelativeDirection dir, ModuleItem module, int x, int y, boolean toggled) {
-            super(DIRECTION_GROUP, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, toggled, AbstractModuleScreen.this);
+            super(DIRECTION_GROUP, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, toggled, ModuleScreen.this);
 
             this.direction = dir;
             setTooltips(module.getDirectionString(dir).withStyle(ChatFormatting.GRAY), module.getDirectionString(dir).withStyle(ChatFormatting.YELLOW));
@@ -436,28 +444,13 @@ public class AbstractModuleScreen extends AbstractContainerScreen<ModuleMenu> im
         }
     }
 
-    private class MatchAllButton extends TexturedToggleButton {
-        private static final XYPoint TEXTURE_XY = new XYPoint(208, 16);
-        private static final XYPoint TEXTURE_XY_TOGGLED = new XYPoint(224, 16);
-
-        MatchAllButton(int x, int y, boolean toggled) {
-            super(x, y, 16, 16, toggled, AbstractModuleScreen.this);
-            setTooltips(xlate("modularrouters.guiText.tooltip.matchAll.false"), xlate("modularrouters.guiText.tooltip.matchAll.true"));
+    private class TerminationButton extends TexturedCyclerButton<ModuleTermination> {
+        public TerminationButton(int x, int y, ModuleTermination initialVal) {
+            super(x, y, 16, 16, initialVal, ModuleScreen.this);
         }
 
         @Override
-        protected XYPoint getTextureXY() {
-            return isToggled() ? TEXTURE_XY_TOGGLED : TEXTURE_XY;
-        }
-    }
-
-    private class TerminationButton extends TexturedCyclerButton<Termination> {
-        public TerminationButton(int x, int y, Termination initialVal) {
-            super(x, y, 16, 16, initialVal, AbstractModuleScreen.this);
-        }
-
-        @Override
-        protected Tooltip makeTooltip(Termination termination) {
+        protected Tooltip makeTooltip(ModuleTermination termination) {
             return Tooltip.create(xlate(termination.getTranslationKey() + ".header").append("\n").append(xlate(termination.getTranslationKey())));
         }
 

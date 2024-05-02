@@ -1,10 +1,12 @@
 package me.desht.modularrouters.container.handler;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
+import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.RecompileFlag;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.augment.AugmentItem;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.util.ModuleHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -21,7 +23,15 @@ public class AugmentHandler extends ItemStackHandler {
         Validate.isTrue(holderStack.getItem() instanceof ModuleItem, "holder stack must be a module!");
 
         this.holderStack = holderStack;
-        deserializeNBT(ModuleHelper.validateNBT(holderStack).getCompound(ModuleHelper.NBT_AUGMENTS));
+
+        var augmentStacks = holderStack.getOrDefault(ModDataComponents.AUGMENTS, ItemContainerContents.EMPTY).stream()
+                .limit(AugmentItem.SLOTS)
+                .toList();
+        for (int i = 0; i < AugmentItem.SLOTS && i < augmentStacks.size(); i++) {
+            if (augmentStacks.get(i).getItem() instanceof AugmentItem) {
+                setStackInSlot(i, augmentStacks.get(i));
+            }
+        }
     }
 
     public ItemStack getHolderStack() {
@@ -44,11 +54,10 @@ public class AugmentHandler extends ItemStackHandler {
 
     @Override
     protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-        if (stack.getItem() instanceof AugmentItem augment) {
-            return augment.getMaxAugments((ModuleItem) holderStack.getItem());
-        }
-        return 0;
-}
+        return stack.getItem() instanceof AugmentItem augment ?
+                augment.getMaxAugments((ModuleItem) holderStack.getItem()) :
+                0;
+    }
 
     @Override
     protected void onContentsChanged(int slot) {
@@ -56,9 +65,10 @@ public class AugmentHandler extends ItemStackHandler {
     }
 
     private void save() {
-        ModuleHelper.validateNBTForWriting(holderStack).put(ModuleHelper.NBT_AUGMENTS, serializeNBT());
+        holderStack.set(ModDataComponents.AUGMENTS, ItemContainerContents.fromItems(stacks));
+
         if (router != null) {
-            router.recompileNeeded(ModularRouterBlockEntity.COMPILE_MODULES);
+            router.recompileNeeded(RecompileFlag.MODULES);
         }
     }
 }

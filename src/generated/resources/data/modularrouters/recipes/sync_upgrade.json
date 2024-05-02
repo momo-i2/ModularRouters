@@ -6,10 +6,10 @@
       "item": "modularrouters:blank_upgrade"
     },
     "R": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     "S": {
-      "tag": "forge:stone"
+      "tag": "c:stones"
     },
     "T": {
       "item": "minecraft:redstone_torch"
@@ -21,6 +21,6 @@
   ],
   "result": {
     "count": 16,
-    "item": "modularrouters:sync_upgrade"
+    "id": "modularrouters:sync_upgrade"
   }
 }

@@ -13,8 +13,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import org.joml.Matrix4f;
 
 import java.util.BitSet;
@@ -30,8 +30,8 @@ public class ModuleTargetRenderer {
     private static CompiledPosition compiledPos = null;
 
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && Minecraft.getInstance().player != null) {
+    public static void clientTick(ClientTickEvent.Pre event) {
+        if (Minecraft.getInstance().player != null) {
             ItemStack curItem = Minecraft.getInstance().player.getMainHandItem();
             if (!ItemStack.matches(curItem, lastStack)) {
                 lastStack = curItem.copy();

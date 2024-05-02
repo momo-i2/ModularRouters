@@ -2,18 +2,18 @@ package me.desht.modularrouters.client.gui.module;
 
 import me.desht.modularrouters.client.gui.widgets.button.ItemStackCyclerButton;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.logic.compiled.CompiledBreakerModule;
 import me.desht.modularrouters.logic.compiled.CompiledBreakerModule.MatchType;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
-public class BreakerModuleScreen extends AbstractModuleScreen {
+public class BreakerModuleScreen extends ModuleScreen {
     private static final ItemStack BLOCK_STACK = new ItemStack(Blocks.IRON_BLOCK);
     private static final ItemStack ITEM_STACK = new ItemStack(Items.IRON_INGOT);
     private static final ItemStack[] STACKS = new ItemStack[] {
@@ -38,8 +38,12 @@ public class BreakerModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), tag -> tag.putInt(CompiledBreakerModule.NBT_MATCH_TYPE, matchBlockButton.getState().ordinal()));
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), s ->
+                s.set(ModDataComponents.BREAKER_SETTINGS, new CompiledBreakerModule.BreakerSettings(
+                        matchBlockButton.getState()
+                ))
+        );
     }
 
     @Override

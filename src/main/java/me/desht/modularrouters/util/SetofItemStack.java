@@ -1,7 +1,7 @@
 package me.desht.modularrouters.util;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import me.desht.modularrouters.logic.filter.Filter.Flags;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -10,38 +10,37 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
 public class SetofItemStack extends ObjectOpenCustomHashSet<ItemStack> {
-    private record ItemStackHashingStrategy(Flags filterFlags) implements Strategy<ItemStack> {
+    private record ItemStackHashingStrategy(ModuleFlags filterFlags) implements Strategy<ItemStack> {
         @Override
         public int hashCode(ItemStack object) {
+            if (filterFlags.matchComponents()) {
+                return ItemStack.hashItemAndComponents(object);
+            }
+
             int hashCode = Item.getId(object.getItem());
-            if (!filterFlags.isIgnoreDamage()) hashCode += 37 * object.getDamageValue();
-            if (!filterFlags.isIgnoreNBT() && object.hasTag()) //noinspection ConstantConditions
-                hashCode += 37 * object.getTag().hashCode();
-            return hashCode;
+            return filterFlags.matchDamage() ? hashCode + 37 * object.getDamageValue() : hashCode;
         }
 
         @Override
         public boolean equals(ItemStack o1, ItemStack o2) {
-            //noinspection ConstantConditions
             return (o1 == o2) || !(o1 == null || o2 == null)
                     && o1.getItem() == o2.getItem()
-                    && (filterFlags.isIgnoreDamage() || o1.getDamageValue() == o2.getDamageValue())
-                    && (filterFlags.isIgnoreNBT() || !o1.hasTag() || o1.getTag().equals(o2.getTag()));
+                    && (!filterFlags.matchDamage() || o1.getDamageValue() == o2.getDamageValue())
+                    && (!filterFlags.matchComponents() || ItemStack.isSameItemSameComponents(o1, o2));
         }
     }
 
-    public SetofItemStack(Flags filterFlags) {
+    public SetofItemStack(ModuleFlags filterFlags) {
         super(new ItemStackHashingStrategy(filterFlags));
     }
 
-    public SetofItemStack(Collection<? extends ItemStack> collection, Flags filterFlags) {
+    public SetofItemStack(Collection<? extends ItemStack> collection, ModuleFlags filterFlags) {
         super(collection, new ItemStackHashingStrategy(filterFlags));
     }
 
-    public static SetofItemStack fromItemHandler(IItemHandler handler, Flags filterFlags) {
+    public static SetofItemStack fromItemHandler(IItemHandler handler, ModuleFlags filterFlags) {
         NonNullList<ItemStack> itemStacks = NonNullList.create();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
@@ -52,11 +51,11 @@ public class SetofItemStack extends ObjectOpenCustomHashSet<ItemStack> {
         return new SetofItemStack(itemStacks, filterFlags);
     }
 
-    public List<ItemStack> sortedList() {
+    public Collection<ItemStack> sorted() {
         return this.stream().sorted(COMPARE_STACKS).toList();
     }
 
-    // matches by mod, then by display name
+    // sort by mod, then by display name
     private static final Comparator<? super ItemStack> COMPARE_STACKS = Comparator
             .comparing((ItemStack stack) -> namespace(stack.getItem()))
             .thenComparing(stack -> stack.getHoverName().getString());

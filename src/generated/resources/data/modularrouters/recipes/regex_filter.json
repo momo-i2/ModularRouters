@@ -10,6 +10,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:regex_filter"
+    "count": 1,
+    "id": "modularrouters:regex_filter"
   }
 }

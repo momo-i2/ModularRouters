@@ -12,7 +12,7 @@ public class GhostItemHandler extends ItemStackHandler {
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (!simulate) {
-            setStackInSlot(slot, ItemHandlerHelper.copyStackWithSize(stack, 1));
+            setStackInSlot(slot, stack.copyWithCount(1));
         }
         return stack;
     }

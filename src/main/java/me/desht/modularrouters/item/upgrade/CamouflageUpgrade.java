@@ -1,14 +1,12 @@
 package me.desht.modularrouters.item.upgrade;
 
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.core.ModBlocks;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,12 +26,11 @@ public class CamouflageUpgrade extends UpgradeItem {
     }
 
     private static void setCamoState(ItemStack stack, BlockState camoState) {
-        stack.getOrCreateTagElement(ModularRouters.MODID).put(NBT_STATE_NAME, NbtUtils.writeBlockState(camoState));
+        stack.set(ModDataComponents.CAMOUFLAGE, camoState);
     }
 
     private static BlockState getCamoState(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(ModularRouters.MODID);
-        return tag != null ? NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound(NBT_STATE_NAME)) : null;
+        return stack.get(ModDataComponents.CAMOUFLAGE);
     }
 
     private static Component getCamoStateDisplayName(ItemStack stack) {

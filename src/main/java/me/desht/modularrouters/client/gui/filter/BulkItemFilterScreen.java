@@ -9,18 +9,21 @@ import me.desht.modularrouters.container.AbstractSmartFilterMenu;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.logic.ModuleTarget;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
-import me.desht.modularrouters.network.FilterOp;
-import me.desht.modularrouters.network.messages.FilterSettingsMessage;
+import me.desht.modularrouters.network.messages.BulkFilterUpdateMessage;
+import me.desht.modularrouters.network.messages.BulkFilterUpdateMessage.FilterOp;
 import me.desht.modularrouters.util.MFLocator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.function.Consumer;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
@@ -44,7 +47,7 @@ public class BulkItemFilterScreen extends AbstractFilterContainerScreen {
         super.init();
 
         addRenderableWidget(new ClearButton(leftPos + 8, topPos + 130,
-                p -> PacketDistributor.SERVER.noArg().send(new FilterSettingsMessage(FilterOp.CLEAR_ALL, menu.getLocator(), null))
+                p -> PacketDistributor.sendToServer(BulkFilterUpdateMessage.untargeted(FilterOp.CLEAR_ALL, menu.getLocator()))
         ));
 
         MFLocator locator = menu.getLocator();
@@ -60,18 +63,15 @@ public class BulkItemFilterScreen extends AbstractFilterContainerScreen {
             CompiledModule cm = ((ModuleItem) moduleStack.getItem()).compile(router, moduleStack);
             target = cm.getEffectiveTarget(router);
             if (target.hasItemHandlerClientSide()) {
-                addRenderableWidget(new MergeButton(leftPos + 28, topPos + 130, target.toString(),
-                        xlate(target.blockTranslationKey), p -> {
+                MutableComponent title = xlate(target.blockTranslationKey);
+                addRenderableWidget(new MergeButton(leftPos + 28, topPos + 130, target.toString(), title, p -> {
                     if (target != null) {
-                        PacketDistributor.SERVER.noArg().send(new FilterSettingsMessage(
-                                FilterOp.MERGE, menu.getLocator(), target.toNBT()));
+                        PacketDistributor.sendToServer(BulkFilterUpdateMessage.targeted(FilterOp.MERGE, menu.getLocator(), target));
                     }
                 }));
-                addRenderableWidget(new LoadButton(leftPos + 48, topPos + 130, target.toString(),
-                        xlate(target.blockTranslationKey), p -> {
+                addRenderableWidget(new LoadButton(leftPos + 48, topPos + 130, target.toString(), title, p -> {
                     if (target != null) {
-                        PacketDistributor.SERVER.noArg().send(new FilterSettingsMessage(
-                                FilterOp.LOAD, menu.getLocator(), target.toNBT()));
+                        PacketDistributor.sendToServer(BulkFilterUpdateMessage.targeted(FilterOp.LOAD, menu.getLocator(), target));
                     }
                 }));
             }
@@ -89,7 +89,7 @@ public class BulkItemFilterScreen extends AbstractFilterContainerScreen {
     }
 
     static class ClearButton extends Buttons.DeleteButton {
-        ClearButton(int x, int y, OnPress pressable) {
+        ClearButton(int x, int y, Consumer<Buttons.DeleteButton> pressable) {
             super(x, y, 0, pressable);
             setTooltip(Tooltip.create(xlate("modularrouters.guiText.tooltip.clearFilter")));
         }

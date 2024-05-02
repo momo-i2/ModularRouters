@@ -13,6 +13,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:placer_module"
+    "count": 1,
+    "id": "modularrouters:placer_module"
   }
 }

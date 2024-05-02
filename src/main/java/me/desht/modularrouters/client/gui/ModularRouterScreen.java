@@ -78,6 +78,7 @@ public class ModularRouterScreen extends AbstractContainerScreen<RouterMenu> imp
         addRenderableWidget(energyWidget = new EnergyWidget(this.leftPos - 22, this.topPos + 15, router.getEnergyStorage()));
         addRenderableWidget(energyWarning = new EnergyWarningButton(this.leftPos + 4, this.topPos + 4));
         energyWidget.visible = energyDirButton.visible = router.getEnergyCapacity() > 0;
+        energyWarning.visible = false;
     }
 
     @Override
@@ -142,7 +143,7 @@ public class ModularRouterScreen extends AbstractContainerScreen<RouterMenu> imp
             return false;
         }
         MFLocator locator = MFLocator.moduleInRouter(menu.getRouter().getBlockPos(), slot.index - MODULE_START);
-        PacketDistributor.SERVER.noArg().send(OpenGuiMessage.openModuleInRouter(locator));
+        PacketDistributor.sendToServer(OpenGuiMessage.openModuleInRouter(locator));
         return true;
     }
 
@@ -153,7 +154,7 @@ public class ModularRouterScreen extends AbstractContainerScreen<RouterMenu> imp
         router.setRedstoneBehaviour(redstoneBehaviourButton.getState());
         router.setEcoMode(ecoButton.isToggled());
         router.setEnergyDirection(energyDirButton.getState());
-        PacketDistributor.SERVER.noArg().send(new RouterSettingsMessage(router));
+        PacketDistributor.sendToServer(RouterSettingsMessage.forRouter(router));
     }
 
     public List<Rect2i> getExtraArea() {

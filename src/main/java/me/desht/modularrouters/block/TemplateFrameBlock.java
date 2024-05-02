@@ -3,6 +3,7 @@ package me.desht.modularrouters.block;
 import me.desht.modularrouters.block.tile.ICamouflageable;
 import me.desht.modularrouters.block.tile.TemplateFrameBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
@@ -27,7 +28,8 @@ public class TemplateFrameBlock extends CamouflageableBlock implements EntityBlo
             return super.getCloneItemStack(level, pos, state);
         }
         ItemStack stack = new ItemStack(camo.getCamouflage().getBlock().asItem());
-        return stack.setHoverName(stack.getHoverName().plainCopy().append("..?"));
+        stack.set(DataComponents.ITEM_NAME, stack.getHoverName().copy().append("..?"));
+        return stack;
     }
 
     @Override

@@ -17,7 +17,7 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
             return (o1 == o2) || !(o1 == null || o2 == null)
                     && o1.getItem() == o2.getItem()
                     && o1.getDamageValue() == o2.getDamageValue();
-            // ignore NBT for these purposes
+            // ignore components for these purposes
         }
     }
 

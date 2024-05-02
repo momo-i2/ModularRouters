@@ -6,7 +6,9 @@ import me.desht.modularrouters.item.augment.*;
 import me.desht.modularrouters.item.module.*;
 import me.desht.modularrouters.item.smartfilter.*;
 import me.desht.modularrouters.item.upgrade.*;
+import me.desht.modularrouters.logic.settings.ModuleSettings;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -47,15 +49,15 @@ public class ModItems {
     public static final DeferredItem<Item> VACUUM_MODULE = register("vacuum_module", VacuumModule::new);
     public static final DeferredItem<Item> VOID_MODULE = register("void_module", VoidModule::new);
 
-    public static final DeferredItem<Item> BLAST_UPGRADE = register("blast_upgrade", BlastUpgrade::new);
-    public static final DeferredItem<Item> CAMOUFLAGE_UPGRADE = register("camouflage_upgrade", CamouflageUpgrade::new);
-    public static final DeferredItem<Item> ENERGY_UPGRADE = register("energy_upgrade", EnergyUpgrade::new);
-    public static final DeferredItem<Item> FLUID_UPGRADE = register("fluid_upgrade", FluidUpgrade::new);
-    public static final DeferredItem<Item> MUFFLER_UPGRADE = register("muffler_upgrade", MufflerUpgrade::new);
-    public static final DeferredItem<Item> SECURITY_UPGRADE = register("security_upgrade", SecurityUpgrade::new);
-    public static final DeferredItem<Item> SPEED_UPGRADE = register("speed_upgrade", SpeedUpgrade::new);
-    public static final DeferredItem<Item> STACK_UPGRADE = register("stack_upgrade", StackUpgrade::new);
-    public static final DeferredItem<Item> SYNC_UPGRADE = register("sync_upgrade", SyncUpgrade::new);
+    public static final DeferredItem<UpgradeItem> BLAST_UPGRADE = register("blast_upgrade", BlastUpgrade::new);
+    public static final DeferredItem<UpgradeItem> CAMOUFLAGE_UPGRADE = register("camouflage_upgrade", CamouflageUpgrade::new);
+    public static final DeferredItem<UpgradeItem> ENERGY_UPGRADE = register("energy_upgrade", EnergyUpgrade::new);
+    public static final DeferredItem<UpgradeItem> FLUID_UPGRADE = register("fluid_upgrade", FluidUpgrade::new);
+    public static final DeferredItem<UpgradeItem> MUFFLER_UPGRADE = register("muffler_upgrade", MufflerUpgrade::new);
+    public static final DeferredItem<UpgradeItem> SECURITY_UPGRADE = register("security_upgrade", SecurityUpgrade::new);
+    public static final DeferredItem<UpgradeItem> SPEED_UPGRADE = register("speed_upgrade", SpeedUpgrade::new);
+    public static final DeferredItem<UpgradeItem> STACK_UPGRADE = register("stack_upgrade", StackUpgrade::new);
+    public static final DeferredItem<UpgradeItem> SYNC_UPGRADE = register("sync_upgrade", SyncUpgrade::new);
 
     public static final DeferredItem<Item> FAST_PICKUP_AUGMENT = register("fast_pickup_augment", FastPickupAugment::new);
     public static final DeferredItem<Item> FILTER_ROUND_ROBIN_AUGMENT = register("filter_round_robin_augment", FilterRoundRobinAugment::new);
@@ -87,6 +89,14 @@ public class ModItems {
 
     public static Item.Properties defaultProps() {
         return new Item.Properties();
+    }
+
+    public static Item.Properties moduleProps() {
+        return defaultProps()
+                .component(ModDataComponents.COMMON_MODULE_SETTINGS, ModuleSettings.DEFAULT)
+                .component(ModDataComponents.FILTER, ItemContainerContents.EMPTY)
+                .component(ModDataComponents.AUGMENTS, ItemContainerContents.EMPTY)
+                .component(ModDataComponents.RR_COUNTER, 0);
     }
 
     public interface ITintable {

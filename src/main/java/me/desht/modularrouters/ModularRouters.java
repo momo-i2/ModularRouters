@@ -13,6 +13,8 @@ import net.minecraft.data.DataGenerator;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -34,8 +36,8 @@ public class ModularRouters {
 
     private static WildcardedRLMatcher dimensionBlacklist;
 
-    public ModularRouters(IEventBus modBus) {
-        ConfigHolder.init(modBus);
+    public ModularRouters(ModContainer container, IEventBus modBus) {
+        ConfigHolder.init(container, modBus);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ClientSetup.initEarly(modBus);
@@ -44,6 +46,10 @@ public class ModularRouters {
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::registerCaps);
 
+        registerDeferred(modBus);
+    }
+
+    private static void registerDeferred(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
@@ -51,6 +57,7 @@ public class ModularRouters {
         ModSounds.SOUNDS.register(modBus);
         ModRecipes.RECIPES.register(modBus);
         ModCreativeModeTabs.TABS.register(modBus);
+        ModDataComponents.COMPONENTS.register(modBus);
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
@@ -88,7 +95,7 @@ public class ModularRouters {
         });
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     public static class DataGenerators {
         @SubscribeEvent
         public static void gatherData(GatherDataEvent event) {
@@ -96,11 +103,11 @@ public class ModularRouters {
             CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
             ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-            generator.addProvider(event.includeServer(), new ModRecipeProvider(generator));
+            generator.addProvider(event.includeServer(), new ModRecipeProvider(generator, lookupProvider));
             ModBlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(generator, lookupProvider, existingFileHelper);
             generator.addProvider(event.includeServer(), blockTagsProvider);
             generator.addProvider(event.includeServer(), new ModItemTagsProvider(generator, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
-            generator.addProvider(event.includeServer(), new ModLootTableProvider(generator));
+            generator.addProvider(event.includeServer(), new ModLootTableProvider(generator, lookupProvider));
             generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(generator, lookupProvider, existingFileHelper));
 
             generator.addProvider(event.includeClient(), new ModBlockStateProvider(generator, existingFileHelper));

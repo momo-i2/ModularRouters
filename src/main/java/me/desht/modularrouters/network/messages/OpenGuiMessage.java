@@ -1,11 +1,15 @@
 package me.desht.modularrouters.network.messages;
 
-import me.desht.modularrouters.network.OpenGuiOp;
+import me.desht.modularrouters.item.module.ModuleItem;
+import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.util.MFLocator;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Received on: SERVER
@@ -17,22 +21,13 @@ import net.minecraft.resources.ResourceLocation;
  * 4) Open installed filter GUI (only if it is container-based)
  */
 public record OpenGuiMessage(OpenGuiOp op, MFLocator locator) implements CustomPacketPayload {
-    public static final ResourceLocation ID = MiscUtil.RL("open_gui");
+    public static final Type<OpenGuiMessage> TYPE = new Type<>(MiscUtil.RL("open_gui"));
 
-    public OpenGuiMessage(FriendlyByteBuf buf) {
-        this(buf.readEnum(OpenGuiOp.class), MFLocator.fromBuffer(buf));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeEnum(op);
-        locator.writeBuf(buffer);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
+    public static final StreamCodec<FriendlyByteBuf,OpenGuiMessage> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(OpenGuiOp.class), OpenGuiMessage::op,
+            MFLocator.STREAM_CODEC, OpenGuiMessage::locator,
+            OpenGuiMessage::new
+    );
 
     public static OpenGuiMessage openRouter(MFLocator locator) {
         return new OpenGuiMessage(OpenGuiOp.ROUTER, locator);
@@ -52,5 +47,43 @@ public record OpenGuiMessage(OpenGuiOp op, MFLocator locator) implements CustomP
 
     public static OpenGuiMessage openFilterInInstalledModule(MFLocator locator) {
         return new OpenGuiMessage(OpenGuiOp.FILTER_INSTALLED, locator);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static void handleData(OpenGuiMessage message, IPayloadContext context) {
+        ServerPlayer player = (ServerPlayer) context.player();
+        MFLocator locator = message.locator();
+        switch (message.op()) {
+            case ROUTER ->
+                // item router GUI
+                    locator.getRouter(player.getCommandSenderWorld())
+                            .ifPresent(router -> player.openMenu(router, locator.routerPos()));
+            case MODULE_HELD ->
+                // module held in player's hand
+                    player.openMenu(new ModuleItem.ModuleMenuProvider(player, locator), locator::writeBuf);
+            case MODULE_INSTALLED ->
+                // module installed in a router
+                    locator.getRouter(player.getCommandSenderWorld())
+                            .ifPresent(router -> player.openMenu(new ModuleItem.ModuleMenuProvider(player, locator), locator::writeBuf));
+            case FILTER_HELD ->
+                // filter is in a module in player's hand
+                    player.openMenu(new SmartFilterItem.FilterMenuProvider(player, locator), locator::writeBuf);
+            case FILTER_INSTALLED ->
+                // filter is in a module in a router
+                    locator.getRouter(player.getCommandSenderWorld())
+                            .ifPresent(router -> player.openMenu(new SmartFilterItem.FilterMenuProvider(player, locator), locator::writeBuf));
+        }
+    }
+
+    public enum OpenGuiOp {
+        ROUTER,
+        MODULE_HELD,
+        MODULE_INSTALLED,
+        FILTER_HELD,
+        FILTER_INSTALLED
     }
 }

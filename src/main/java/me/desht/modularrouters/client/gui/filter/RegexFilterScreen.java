@@ -2,18 +2,25 @@ package me.desht.modularrouters.client.gui.filter;
 
 import com.google.common.collect.Lists;
 import me.desht.modularrouters.ModularRouters;
+import me.desht.modularrouters.client.gui.filter.Buttons.DeleteButton;
 import me.desht.modularrouters.client.gui.widgets.button.BackButton;
 import me.desht.modularrouters.client.gui.widgets.textfield.TextFieldWidgetMR;
 import me.desht.modularrouters.core.ModSounds;
+import me.desht.modularrouters.item.smartfilter.ModFilter;
 import me.desht.modularrouters.item.smartfilter.RegexFilter;
+import me.desht.modularrouters.network.messages.FilterUpdateMessage;
 import me.desht.modularrouters.util.MFLocator;
+import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -31,13 +38,13 @@ public class RegexFilterScreen extends AbstractFilterScreen {
     private Component errorMsg = Component.empty();
     private int errorTimer = 60;  // 3 seconds
 
-    private final List<String> regexList = Lists.newArrayList();
-    private final List<Buttons.DeleteButton> deleteButtons = Lists.newArrayList();
+    private final List<String> regexList;
+    private final List<DeleteButton> deleteButtons = Lists.newArrayList();
 
     public RegexFilterScreen(ItemStack filterStack, MFLocator locator) {
         super(filterStack, locator);
 
-        regexList.addAll(RegexFilter.getRegexList(filterStack));
+        regexList = RegexFilter.getRegexList(filterStack);
     }
 
     @Override
@@ -47,24 +54,29 @@ public class RegexFilterScreen extends AbstractFilterScreen {
 
         regexTextField = new RegexTextField(this, font, xPos + 10, yPos + 27, 144, 18);
         regexTextField.useGuiTextBackground();
+        addRenderableWidget(regexTextField);
 
         if (locator.filterSlot() >= 0) {
             addRenderableWidget(new BackButton(xPos - 12, yPos, p -> closeGUI()));
         }
 
-        addRenderableWidget(new Buttons.AddButton(xPos + 155, yPos + 23, button -> {
-            if (!regexTextField.getValue().isEmpty()) addRegex();
-        }));
+        addRenderableWidget(new Buttons.AddButton(xPos + 155, yPos + 23, button -> addRegex()));
 
         deleteButtons.clear();
         for (int i = 0; i < RegexFilter.MAX_SIZE; i++) {
-            Buttons.DeleteButton b = new Buttons.DeleteButton(xPos + 8, yPos + 52 + i * 19, i,
-                    button -> sendRemovePosMessage(((Buttons.DeleteButton) button).getId()));
+            DeleteButton b = new DeleteButton(xPos + 8, yPos + 52 + i * 19, i, button -> {
+                sendRegexToServer(button.removeFromList(new ArrayList<>(regexList)));
+            });
             addRenderableWidget(b);
             deleteButtons.add(b);
         }
 
         updateDeleteButtonVisibility();
+    }
+
+    private void sendRegexToServer(Collection<String> newFilters) {
+        ItemStack newStack = Util.make(filterStack.copy(), s -> ModFilter.setModList(s, List.copyOf(newFilters)));
+        PacketDistributor.sendToServer(new FilterUpdateMessage(locator, newStack));
     }
 
     @Override
@@ -99,10 +111,15 @@ public class RegexFilterScreen extends AbstractFilterScreen {
     private void addRegex() {
         try {
             String regex = regexTextField.getValue();
-            Pattern.compile(regex);
-            sendAddStringMessage("String", regex);
-            regexTextField.setValue("");
-            errorMsg = Component.empty();
+            if (!regex.isEmpty()) {
+                Pattern.compile(regex);  // just to validate syntax
+                List<String> updatedList = new ArrayList<>(regexList);
+                updatedList.add(regex);
+                ItemStack newStack = Util.make(filterStack.copy(), s -> RegexFilter.setRegexList(s, updatedList));
+                PacketDistributor.sendToServer(new FilterUpdateMessage(locator, newStack));
+                regexTextField.setValue("");
+                errorMsg = Component.empty();
+            }
         } catch (PatternSyntaxException e) {
             minecraft.player.playSound(ModSounds.ERROR.get(), 1.0f, 1.0f);
             errorMsg = xlate("modularrouters.guiText.label.regexError");

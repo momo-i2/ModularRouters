@@ -5,19 +5,19 @@ import me.desht.modularrouters.client.gui.widgets.button.TexturedCyclerButton;
 import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModBlocks;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.logic.compiled.CompiledPlayerModule;
-import me.desht.modularrouters.logic.compiled.CompiledPlayerModule.Operation;
 import me.desht.modularrouters.logic.compiled.CompiledPlayerModule.Section;
+import me.desht.modularrouters.logic.settings.TransferDirection;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
-public class PlayerModuleScreen extends AbstractModuleScreen {
+public class PlayerModuleScreen extends ModuleScreen {
     private static final ItemStack MAIN_INV_STACK = new ItemStack(Blocks.CHEST);
     private static final ItemStack MAIN_NO_HOTBAR_INV_STACK = new ItemStack(Blocks.BARREL);
     private static final ItemStack ARMOUR_STACK = new ItemStack(Items.DIAMOND_CHESTPLATE);
@@ -30,7 +30,7 @@ public class PlayerModuleScreen extends AbstractModuleScreen {
     };
 
     private ItemStackCyclerButton<Section> secButton;
-    private OperationButton opButton;
+    private TransferDirectionButton dirButton;
 
     public PlayerModuleScreen(ModuleMenu container, Inventory inv, Component displayName) {
         super(container, inv, displayName);
@@ -40,10 +40,9 @@ public class PlayerModuleScreen extends AbstractModuleScreen {
     public void init() {
         super.init();
 
-        CompiledPlayerModule cpm = new CompiledPlayerModule(null, moduleItemStack);
-
-        addRenderableWidget(secButton = new ItemStackCyclerButton<>(leftPos + 169, topPos + 32, 16, 16, true, STACKS, cpm.getSection(), this));
-        addRenderableWidget(opButton = new OperationButton(leftPos + 148, topPos + 32, cpm.getOperation()));
+        CompiledPlayerModule.PlayerSettings settings = moduleItemStack.get(ModDataComponents.PLAYER_SETTINGS);
+        addRenderableWidget(secButton = new ItemStackCyclerButton<>(leftPos + 169, topPos + 32, 16, 16, true, STACKS, settings.section(), this));
+        addRenderableWidget(dirButton = new TransferDirectionButton(leftPos + 148, topPos + 32, settings.direction()));
 
         getMouseOverHelp().addHelpRegion(leftPos + 127, topPos + 29, leftPos + 187, topPos + 50, "modularrouters.guiText.popup.player.control");
     }
@@ -58,15 +57,17 @@ public class PlayerModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), compound -> {
-            compound.putInt(CompiledPlayerModule.NBT_OPERATION, opButton.getState().ordinal());
-            compound.putInt(CompiledPlayerModule.NBT_SECTION, secButton.getState().ordinal());
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+            stack.set(ModDataComponents.PLAYER_SETTINGS, new CompiledPlayerModule.PlayerSettings(
+                    dirButton.getState(),
+                    secButton.getState()
+            ))
+        );
     }
 
-    private class OperationButton extends TexturedCyclerButton<Operation> {
-        OperationButton(int x, int y, Operation initialVal) {
+    private class TransferDirectionButton extends TexturedCyclerButton<TransferDirection> {
+        TransferDirectionButton(int x, int y, TransferDirection initialVal) {
             super(x, y, 16, 16, initialVal, PlayerModuleScreen.this);
         }
 

@@ -5,13 +5,13 @@ import me.desht.modularrouters.client.gui.widgets.button.TexturedCyclerButton;
 import me.desht.modularrouters.client.gui.widgets.button.TexturedToggleButton;
 import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.logic.compiled.CompiledActivatorModule;
 import me.desht.modularrouters.logic.compiled.CompiledActivatorModule.ActionType;
 import me.desht.modularrouters.logic.compiled.CompiledActivatorModule.EntityMode;
 import me.desht.modularrouters.logic.compiled.CompiledActivatorModule.LookDirection;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,7 @@ import net.minecraft.world.item.Items;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class ActivatorModuleScreen extends AbstractModuleScreen {
+public class ActivatorModuleScreen extends ModuleScreen {
     private static final ItemStack ITEM_STACK = new ItemStack(Items.FLINT_AND_STEEL);
     private static final ItemStack ENTITY_STACK = new ItemStack(Items.PLAYER_HEAD);
     private static final ItemStack ATTACK_STACK = new ItemStack(Items.IRON_SWORD);
@@ -75,13 +75,15 @@ public class ActivatorModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), tag -> {
-            tag.putInt(CompiledActivatorModule.NBT_ACTION_TYPE, actionTypeButton.getState().ordinal());
-            tag.putInt(CompiledActivatorModule.NBT_LOOK_DIRECTION, lookDirectionButton.getState().ordinal());
-            tag.putInt(CompiledActivatorModule.NBT_ENTITY_MODE, entityModeButton.getState().ordinal());
-            tag.putBoolean(CompiledActivatorModule.NBT_SNEAKING, sneakButton.isToggled());
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+                stack.set(ModDataComponents.ACTIVATOR_SETTINGS, new CompiledActivatorModule.ActivatorSettings(
+                        actionTypeButton.getState(),
+                        lookDirectionButton.getState(),
+                        entityModeButton.getState(),
+                        sneakButton.isToggled()
+                ))
+        );
     }
 
     private class LookDirectionButton extends TexturedCyclerButton<LookDirection> {

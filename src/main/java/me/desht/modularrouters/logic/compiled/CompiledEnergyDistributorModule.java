@@ -37,7 +37,7 @@ public class CompiledEnergyDistributorModule extends CompiledModule {
                     int sent = handler.receiveEnergy(toExtract, false);
                     storage.extractEnergy(sent, false);
                     if (sent > 0 && doBeam) {
-                        router.addItemBeam(new BeamData(router.getTickRate(), target.gPos.pos(), 0xE04040));
+                        router.addItemBeam(new BeamData.Builder(router, target.gPos.pos(), 0xE0404040).build());
                     }
                     return sent;
                 }).orElse(0);

@@ -1,30 +1,38 @@
 package me.desht.modularrouters.container.handler;
 
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.item.smartfilter.BulkItemFilter;
 import me.desht.modularrouters.logic.filter.Filter;
-import me.desht.modularrouters.util.ModuleHelper;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public abstract class BaseModuleHandler extends GhostItemHandler {
     private final ItemStack holderStack;
     protected final ModularRouterBlockEntity router;
-    private final String tagName;
+    private final DataComponentType<ItemContainerContents> componentType;
     private boolean autoSave = true;
 
-    public BaseModuleHandler(ItemStack holderStack, ModularRouterBlockEntity router, int size, String tagName) {
+    public BaseModuleHandler(ItemStack holderStack, ModularRouterBlockEntity router, int size, DataComponentType<ItemContainerContents> componentType) {
         super(size);
+
         this.holderStack = holderStack;
         this.router = router;
-        this.tagName = tagName;
+        this.componentType = componentType;
 
-        deserializeNBT(ModuleHelper.validateNBT(holderStack).getCompound(tagName));
+        List<ItemStack> stackList = holderStack.getOrDefault(componentType, ItemContainerContents.EMPTY).stream()
+                .limit(size)
+                .toList();
+        for (int i = 0; i < size && i < stackList.size(); i++) {
+            setStackInSlot(i, stackList.get(i));
+        }
     }
 
     public void setAutoSave(boolean autoSave) {
@@ -46,7 +54,7 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
             save();
 
             if (router != null) {
-                router.recompileNeeded(ModularRouterBlockEntity.COMPILE_MODULES);
+                router.recompileNeeded(ModularRouterBlockEntity.RecompileFlag.MODULES);
             }
         }
     }
@@ -55,30 +63,20 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
      * Get the number of items in the filter of the given itemstack.  Counts the items without loading the NBT for
      * every item.
      *
-     * @param tagName name of the NBT tag the data is under
      * @return number of items in the filter
      */
-    public static int getFilterSize(ItemStack holderStack, String tagName) {
-        CompoundTag tag = holderStack.getTagElement(ModularRouters.MODID);
-        if (tag != null  && tag.contains(tagName)) {
-            ModuleFilterHandler handler = new ModuleFilterHandler(holderStack, null);
-            int n = 0;
-            for (int i = 0; i < handler.getSlots(); i++) {
-                if (!handler.getStackInSlot(i).isEmpty()) {
-                    n++;
-                }
-            }
-            return n;
-        } else {
-            return 0;
-        }
+    public static int getFilterItemCount(ItemStack holderStack) {
+        ModuleFilterHandler handler = new ModuleFilterHandler(holderStack, null);
+        return (int) IntStream.range(0, handler.getSlots())
+                .filter(i -> !handler.getStackInSlot(i).isEmpty())
+                .count();
     }
 
     /**
      * Save the contents of the item handler onto the holder item stack's NBT
      */
     public void save() {
-        ModuleHelper.validateNBTForWriting(holderStack).put(tagName, serializeNBT());
+        holderStack.set(componentType, ItemContainerContents.fromItems(stacks));
     }
 
     public static class BulkFilterHandler extends BaseModuleHandler {
@@ -91,7 +89,8 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
         }
 
         public BulkFilterHandler(ItemStack holderStack, ModularRouterBlockEntity router, ItemStack moduleStack, int filterSlot, boolean shouldSave) {
-            super(holderStack, router, BulkItemFilter.FILTER_SIZE, ModuleHelper.NBT_FILTER);
+            super(holderStack, router, BulkItemFilter.FILTER_SIZE, ModDataComponents.FILTER.get());
+
             this.moduleStack = moduleStack;
             this.filterSlot = filterSlot;
             this.shouldSave = shouldSave;
@@ -113,7 +112,7 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
 
     public static class ModuleFilterHandler extends BaseModuleHandler {
         public ModuleFilterHandler(ItemStack holderStack, @Nullable ModularRouterBlockEntity router) {
-            super(holderStack, router, Filter.FILTER_SIZE, ModuleHelper.NBT_FILTER);
+            super(holderStack, router, Filter.FILTER_SIZE, ModDataComponents.FILTER.get());
         }
 
         @Override

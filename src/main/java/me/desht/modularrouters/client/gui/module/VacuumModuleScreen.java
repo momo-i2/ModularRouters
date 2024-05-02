@@ -4,15 +4,15 @@ import me.desht.modularrouters.client.gui.widgets.button.ItemStackCyclerButton;
 import me.desht.modularrouters.client.gui.widgets.button.TexturedToggleButton;
 import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.integration.XPCollection.XPCollectionType;
-import me.desht.modularrouters.logic.compiled.CompiledVacuumModule;
+import me.desht.modularrouters.logic.compiled.CompiledVacuumModule.VacuumSettings;
 import me.desht.modularrouters.util.ModNameCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
-public class VacuumModuleScreen extends AbstractModuleScreen {
+public class VacuumModuleScreen extends ModuleScreen {
     private XPTypeButton xpb;
     private EjectButton ejb;
 
@@ -33,14 +33,16 @@ public class VacuumModuleScreen extends AbstractModuleScreen {
     public void init() {
         super.init();
 
-        CompiledVacuumModule vac = new CompiledVacuumModule(null, moduleItemStack);
+        VacuumSettings settings = moduleItemStack.getOrDefault(ModDataComponents.VACUUM_SETTINGS, VacuumSettings.DEFAULT);
 
         ItemStack[] icons = Arrays.stream(XPCollectionType.values()).map(XPCollectionType::getIcon).toArray(ItemStack[]::new);
-        addRenderableWidget(xpb = new XPTypeButton(leftPos + 127, topPos + 30, 20, 20, false, icons, vac.getXPCollectionType()));
-        addRenderableWidget(ejb = new EjectButton(leftPos + 127, topPos + 64, vac.isAutoEjecting()));
+        addRenderableWidget(xpb = new XPTypeButton(leftPos + 127, topPos + 30, 20, 20, false, icons, settings.collectionType()));
+        addRenderableWidget(ejb = new EjectButton(leftPos + 127, topPos + 64, settings.autoEject()));
 
-        getMouseOverHelp().addHelpRegion(leftPos + 125, topPos + 16, leftPos + 187, topPos + 52, "modularrouters.guiText.popup.xpVacuum", guiContainer -> xpb.visible);
-        getMouseOverHelp().addHelpRegion(leftPos + 125, topPos + 52, leftPos + 187, topPos + 88, "modularrouters.guiText.popup.xpVacuum.eject", guiContainer -> xpb.visible && ejb.visible);
+        getMouseOverHelp().addHelpRegion(leftPos + 125, topPos + 16, leftPos + 187, topPos + 52,
+                "modularrouters.guiText.popup.xpVacuum", guiContainer -> xpb.visible);
+        getMouseOverHelp().addHelpRegion(leftPos + 125, topPos + 52, leftPos + 187, topPos + 88,
+                "modularrouters.guiText.popup.xpVacuum.eject", guiContainer -> xpb.visible && ejb.visible);
     }
 
     @Override
@@ -63,11 +65,13 @@ public class VacuumModuleScreen extends AbstractModuleScreen {
     }
 
     @Override
-    protected CompoundTag buildMessageData() {
-        return Util.make(super.buildMessageData(), compound -> {
-            compound.putInt(CompiledVacuumModule.NBT_XP_FLUID_TYPE, xpb.getState().ordinal());
-            compound.putBoolean(CompiledVacuumModule.NBT_AUTO_EJECT, ejb.isToggled());
-        });
+    protected ItemStack buildModifiedItemStack() {
+        return Util.make(super.buildModifiedItemStack(), stack ->
+            stack.set(ModDataComponents.VACUUM_SETTINGS, new VacuumSettings(
+                    ejb.isToggled(),
+                    xpb.getState()
+            ))
+        );
     }
 
     private class XPTypeButton extends ItemStackCyclerButton<XPCollectionType> {

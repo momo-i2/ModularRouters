@@ -1,12 +1,13 @@
 package me.desht.modularrouters.item.module;
 
-import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.logic.compiled.CompiledActivatorModule;
+import me.desht.modularrouters.logic.compiled.CompiledActivatorModule.ActivatorSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -14,42 +15,41 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
+import static me.desht.modularrouters.client.util.ClientUtil.xlate;
+
 public class ActivatorModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(255, 255, 195);
 
     public ActivatorModule() {
-        super(ModItems.defaultProps(), CompiledActivatorModule::new);
+        super(ModItems.moduleProps().component(ModDataComponents.ACTIVATOR_SETTINGS, ActivatorSettings.DEFAULT), CompiledActivatorModule::new);
     }
 
     @Override
     public void addSettingsInformation(ItemStack stack, List<Component> list) {
         super.addSettingsInformation(stack, list);
 
-        CompiledActivatorModule cam = new CompiledActivatorModule(null, stack);
-        list.add(ClientUtil.xlate("modularrouters.guiText.tooltip.activator.action").append(": ")
+        ActivatorSettings settings = stack.getOrDefault(ModDataComponents.ACTIVATOR_SETTINGS, ActivatorSettings.DEFAULT);
+        list.add(xlate("modularrouters.guiText.tooltip.activator.action").append(": ")
                 .withStyle(ChatFormatting.YELLOW)
-                .append(ClientUtil.xlate("modularrouters.itemText.activator.action." + cam.getActionType())
-                        .withStyle(ChatFormatting.AQUA)));
-        if (!cam.getActionType().isEntityTarget()) {
-            list.add(ClientUtil.xlate("modularrouters.guiText.tooltip.activator.lookDirection").append(": ")
+                .append(xlate(settings.actionType().getTranslationKey()).withStyle(ChatFormatting.AQUA)));
+        if (!settings.actionType().isEntityTarget()) {
+            list.add(xlate("modularrouters.guiText.tooltip.activator.lookDirection").append(": ")
                     .withStyle(ChatFormatting.YELLOW)
-                    .append(ClientUtil.xlate("modularrouters.itemText.activator.direction." + cam.getLookDirection())
-                            .withStyle(ChatFormatting.AQUA)));
+                    .append(xlate(settings.lookDirection().getTranslationKey()).withStyle(ChatFormatting.AQUA)));
         } else {
-            list.add(ClientUtil.xlate("modularrouters.guiText.tooltip.activator.entityMode").append(": ")
+            list.add(xlate("modularrouters.guiText.tooltip.activator.entityMode").append(": ")
                     .withStyle(ChatFormatting.YELLOW)
-                    .append(ClientUtil.xlate("modularrouters.itemText.activator.entityMode." + cam.getEntityMode())
-                            .withStyle(ChatFormatting.AQUA)));
+                    .append(xlate(settings.entityMode().getTranslationKey()).withStyle(ChatFormatting.AQUA)));
         }
-        if (cam.isSneaking()) {
-            list.add(ClientUtil.xlate("modularrouters.guiText.tooltip.activator.sneak").withStyle(ChatFormatting.YELLOW));
+        if (settings.sneaking()) {
+            list.add(xlate("modularrouters.guiText.tooltip.activator.sneak").withStyle(ChatFormatting.YELLOW));
         }
     }
 
     @Override
     public int getEnergyCost(ItemStack stack) {
-        CompiledActivatorModule cam = new CompiledActivatorModule(null, stack);
-        return cam.getActionType() == CompiledActivatorModule.ActionType.ATTACK_ENTITY ?
+        ActivatorSettings settings = stack.get(ModDataComponents.ACTIVATOR_SETTINGS);
+        return settings.actionType() == CompiledActivatorModule.ActionType.ATTACK_ENTITY ?
                 ConfigHolder.common.energyCosts.activatorModuleEnergyCostAttack.get() :
                 ConfigHolder.common.energyCosts.activatorModuleEnergyCost.get();
     }

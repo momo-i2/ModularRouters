@@ -29,7 +29,7 @@ public class CompiledPlacerModule extends CompiledModule {
         }
         Level level = router.nonNullLevel();
         BlockPos pos = getTarget().gPos.pos();
-        BlockState newState = BlockUtil.tryPlaceAsBlock(router, toPlace, level, pos, getFacing());
+        BlockState newState = BlockUtil.tryPlaceAsBlock(router, toPlace, level, pos, getAbsoluteFacing());
         if (newState != null) {
             if (ConfigHolder.common.module.placerParticles.get() && router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) == 0) {
                 level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(newState));

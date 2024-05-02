@@ -3,8 +3,11 @@ package me.desht.modularrouters.item.module;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
+import me.desht.modularrouters.core.ModDataComponents;
+import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.logic.compiled.CompiledFlingerModule;
+import me.desht.modularrouters.logic.compiled.CompiledFlingerModule.FlingerSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -25,17 +28,21 @@ public class FlingerModule extends DropperModule {
     private static final TintColor TINT_COLOR = new TintColor(230, 204, 240);
 
     public FlingerModule() {
-        super(CompiledFlingerModule::new);
+        super(ModItems.moduleProps()
+                        .component(ModDataComponents.FLINGER_SETTINGS, FlingerSettings.DEFAULT),
+                CompiledFlingerModule::new);
     }
 
     @Override
-    public void addSettingsInformation(ItemStack itemstack, List<Component> list) {
-        super.addSettingsInformation(itemstack, list);
-        CompiledFlingerModule fs = new CompiledFlingerModule(null, itemstack);
+    public void addSettingsInformation(ItemStack stack, List<Component> list) {
+        super.addSettingsInformation(stack, list);
+
+        FlingerSettings settings = stack.get(ModDataComponents.FLINGER_SETTINGS);
+
         list.add(xlate("modularrouters.itemText.misc.flingerDetails",
-                colorText(fs.getSpeed(), ChatFormatting.AQUA),
-                colorText(fs.getPitch(), ChatFormatting.AQUA),
-                colorText(fs.getYaw(), ChatFormatting.AQUA)
+                colorText(settings.speed(), ChatFormatting.AQUA),
+                colorText(settings.pitch(), ChatFormatting.AQUA),
+                colorText(settings.yaw(), ChatFormatting.AQUA)
         ).withStyle(ChatFormatting.YELLOW));
     }
 

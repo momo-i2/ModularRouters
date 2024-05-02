@@ -5,6 +5,7 @@ import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.recipe.GuideBookRecipe;
 import me.desht.modularrouters.recipe.PickaxeModuleRecipe;
 import me.desht.modularrouters.recipe.ResetModuleRecipe;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
@@ -19,12 +20,13 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 import static me.desht.modularrouters.util.MiscUtil.RL;
 
 public class ModRecipeProvider extends RecipeProvider {
-    public ModRecipeProvider(DataGenerator generator) {
-        super(generator.getPackOutput());
+    public ModRecipeProvider(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(generator.getPackOutput(), lookupProvider);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer);
 
         shapeless(ModItems.MIMIC_AUGMENT.get(), ModItems.AUGMENT_CORE.get(),
-                ModItems.AUGMENT_CORE.get(), Tags.Items.OBSIDIAN, Tags.Items.DUSTS_REDSTONE, Tags.Items.DUSTS_GLOWSTONE
+                ModItems.AUGMENT_CORE.get(), Tags.Items.OBSIDIANS, Tags.Items.DUSTS_REDSTONE, Tags.Items.DUSTS_GLOWSTONE
         ).save(consumer);
 
         shaped(ModItems.REDSTONE_AUGMENT.get(), ModItems.AUGMENT_CORE.get(),
@@ -127,7 +129,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.FLUID_MODULE.get(), ModItems.BLANK_MODULE.get(),
                 " C /GMG",
-                'G', Tags.Items.GLASS,
+                'G', Tags.Items.GLASS_BLOCKS,
                 'C', Items.CAULDRON,
                 'M', ModItems.BLANK_MODULE.get()
         ).save(consumer);
@@ -251,7 +253,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModItems.SPEED_UPGRADE.get(), 3, ModItems.BLANK_UPGRADE.get(),
                 "RIR/NBN/GZG",
                 'I', Tags.Items.INGOTS_GOLD,
-                'G', Tags.Items.GUNPOWDER,
+                'G', Tags.Items.GUNPOWDERS,
                 'R', Tags.Items.DUSTS_REDSTONE,
                 'B', ModItems.BLANK_UPGRADE.get(),
                 'N', Tags.Items.NUGGETS_GOLD,
@@ -260,7 +262,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.BLAST_UPGRADE.get(), ModItems.BLANK_UPGRADE.get(),
                 "IOI/OBO/IOI",
-                'O', Tags.Items.OBSIDIAN,
+                'O', Tags.Items.OBSIDIANS,
                 'I', Items.IRON_BARS,
                 'B', ModItems.BLANK_UPGRADE.get()
         ).save(consumer);
@@ -271,21 +273,21 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.FLUID_UPGRADE.get(), 3, ModItems.BLANK_UPGRADE.get(),
                 " U /GBG",
-                'G', Tags.Items.GLASS,
+                'G', Tags.Items.GLASS_BLOCKS,
                 'U', Items.BUCKET,
                 'B', ModItems.BLANK_UPGRADE.get()
         ).save(consumer);
 
         shaped(ModItems.SYNC_UPGRADE.get(), 16, ModItems.BLANK_UPGRADE.get(),
                 "RST/RBR",
-                'S', Tags.Items.STONE,
+                'S', Tags.Items.STONES,
                 'T', Items.REDSTONE_TORCH,
                 'B', ModItems.BLANK_UPGRADE.get(),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).save(consumer);
 
         shapeless(ModItems.STACK_UPGRADE.get(), ModItems.BLANK_UPGRADE.get(),
-                ModItems.BLANK_UPGRADE.get(), ItemTags.STONE_BRICKS, Tags.Items.INGOTS_BRICK
+                ModItems.BLANK_UPGRADE.get(), ItemTags.STONE_BRICKS, Tags.Items.BRICKS
         ).save(consumer);
 
         shaped(ModItems.ENERGY_OUTPUT_MODULE.get(), ModItems.BLANK_MODULE.get(),
@@ -311,7 +313,7 @@ public class ModRecipeProvider extends RecipeProvider {
         // filters
         shaped(ModItems.BULK_ITEM_FILTER.get(), ModItems.BLANK_MODULE.get(),
                 "IGI/MDM/IGI",
-                'G', Tags.Items.GLASS,
+                'G', Tags.Items.GLASS_BLOCKS,
                 'D', Tags.Items.GEMS_DIAMOND,
                 'I', Tags.Items.INGOTS_IRON,
                 'M', ModItems.BLANK_MODULE.get()

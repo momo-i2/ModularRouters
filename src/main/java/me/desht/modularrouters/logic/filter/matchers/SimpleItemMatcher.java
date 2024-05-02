@@ -1,6 +1,6 @@
 package me.desht.modularrouters.logic.filter.matchers;
 
-import me.desht.modularrouters.logic.filter.Filter;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.ItemTagMatcher;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.Validate;
@@ -15,11 +15,11 @@ public class SimpleItemMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, Filter.Flags flags) {
+    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
         if (filterStack.getItem() == stack.getItem()) {
-            return (flags.isIgnoreDamage() || matchDamage(stack, filterStack))
-                    && (flags.isIgnoreNBT() || ItemStack.isSameItemSameTags(stack, filterStack));
-        } else if (flags.matchTags()) {
+            return (!flags.matchDamage() || matchDamage(stack, filterStack))
+                    && (!flags.matchComponents() || ItemStack.isSameItemSameComponents(stack, filterStack));
+        } else if (flags.matchItemTags()) {
             return getTagMatcher().match(stack);
         } else {
             return false;

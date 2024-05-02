@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "G": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "L": {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "P": {
       "item": "minecraft:paper"
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "modularrouters:blank_upgrade"
+    "id": "modularrouters:blank_upgrade"
   }
 }

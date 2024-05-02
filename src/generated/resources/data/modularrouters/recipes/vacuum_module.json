@@ -13,6 +13,7 @@
     }
   ],
   "result": {
-    "item": "modularrouters:vacuum_module"
+    "count": 1,
+    "id": "modularrouters:vacuum_module"
   }
 }

@@ -6,13 +6,13 @@
       "item": "modularrouters:blank_upgrade"
     },
     "N": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "Q": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "R": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -21,6 +21,7 @@
     " R "
   ],
   "result": {
-    "item": "modularrouters:security_upgrade"
+    "count": 1,
+    "id": "modularrouters:security_upgrade"
   }
 }
