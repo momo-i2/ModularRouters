@@ -8,7 +8,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### [12.3.3]
 
-* Router fake player will now accept XP given to it, and use it to create experience orbs near the router
+* Items which directly grant experience to the player when used can now be used by Activator Modules (which use a fake player)
+  * Experience so granted is dropped as experience orbs next to the router
+* Some API improvements, thanks to @Matyrobbrt - no player-visible changes here; intended to ease creation of addon mods
 
 ### [12.3.2]
 
