@@ -173,10 +173,6 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         return Util.make(new CompoundTag(), tag -> {
-            tag.putInt("x", worldPosition.getX());
-            tag.putInt("y", worldPosition.getY());
-            tag.putInt("z", worldPosition.getZ());
-
             if (camouflage != null) {
                 tag.put(CamouflageUpgrade.NBT_STATE_NAME, NbtUtils.writeBlockState(camouflage));
             }
@@ -199,7 +195,8 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
         super.handleUpdateTag(tag, provider);
-        processClientSync(tag);
+
+        processClientSync(tag, provider);
     }
 
     @Override
@@ -209,14 +206,14 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider provider) {
-        if (pkt.getTag() != null) processClientSync(pkt.getTag());
+        super.onDataPacket(net, pkt, provider);
+
+        processClientSync(pkt.getTag(), provider);
     }
 
-    private void processClientSync(CompoundTag compound) {
+    private void processClientSync(CompoundTag compound, HolderLookup.Provider provider) {
         // called client-side on receipt of NBT
-        HolderGetter<Block> holderGetter = this.level != null ?
-                this.level.holderLookup(Registries.BLOCK) :
-                BuiltInRegistries.BLOCK.asLookup();
+        HolderGetter<Block> holderGetter = provider.lookup(Registries.BLOCK).orElse(BuiltInRegistries.BLOCK.asLookup());
         if (compound.contains(CamouflageUpgrade.NBT_STATE_NAME)) {
             setCamouflage(NbtUtils.readBlockState(holderGetter, compound.getCompound(CamouflageUpgrade.NBT_STATE_NAME)));
         } else {
@@ -295,8 +292,8 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         super.collectImplicitComponents(builder);
 
         builder.set(ModDataComponents.REDSTONE_BEHAVIOUR, redstoneBehaviour);
-        builder.set(ModDataComponents.SAVED_MODULES, modulesHandler.getContainerContents());
-        builder.set(ModDataComponents.SAVED_UPGRADES, upgradesHandler.getContainerContents());
+        builder.set(ModDataComponents.SAVED_MODULES, modulesHandler.asContainerContents());
+        builder.set(ModDataComponents.SAVED_UPGRADES, upgradesHandler.asContainerContents());
     }
 
     private boolean hasItems(IItemHandler handler) {
@@ -412,7 +409,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
             newActive = runAllModules(powered, pulsed);
 
             if (!pendingBeams.isEmpty() && level instanceof ServerLevel serverLevel) {
-                PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(getBlockPos()), ItemBeamMessage.create(this, pendingBeams));
+                PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(getBlockPos()), ItemBeamMessage.create(getBlockPos(), pendingBeams));
                 pendingBeams.clear();
             }
             if (prevCanEmit || canEmit) {
@@ -678,12 +675,12 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         switch (dir) {
             case TO_ROUTER -> {
                 if (fluidTransferRemainingIn < amount)
-                    ModularRouters.LOGGER.warn("fluid transfer: {} < {}", fluidTransferRemainingIn, amount);
+                    ModularRouters.LOGGER.warn("fluid transfer to router: {} < {}", fluidTransferRemainingIn, amount);
                 fluidTransferRemainingIn = Math.max(0, fluidTransferRemainingIn - amount);
             }
             case FROM_ROUTER -> {
                 if (fluidTransferRemainingOut < amount)
-                    ModularRouters.LOGGER.warn("fluid transfer: {} < {}", fluidTransferRemainingOut, amount);
+                    ModularRouters.LOGGER.warn("fluid transfer from router: {} < {}", fluidTransferRemainingOut, amount);
                 fluidTransferRemainingOut = Math.max(0, fluidTransferRemainingOut - amount);
             }
             default -> {
@@ -1011,7 +1008,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
             recompileNeeded(flag);
         }
 
-        public ItemContainerContents getContainerContents() {
+        public ItemContainerContents asContainerContents() {
             return ItemContainerContents.fromItems(stacks);
         }
 

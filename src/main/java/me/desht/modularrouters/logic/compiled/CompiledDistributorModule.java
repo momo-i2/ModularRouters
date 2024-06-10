@@ -149,7 +149,6 @@ public class CompiledDistributorModule extends CompiledSenderModule2 {
         return target.getItemHandler().map(h -> ItemHandlerHelper.insertItem(h, stack, true).isEmpty()).orElse(false);
     }
 
-
     public enum DistributionStrategy implements TranslatableEnum, StringRepresentable {
         ROUND_ROBIN("round_robin"),
         RANDOM("random"),
@@ -177,9 +176,11 @@ public class CompiledDistributorModule extends CompiledSenderModule2 {
         public static final DistributorSettings DEFAULT = new DistributorSettings(DistributionStrategy.ROUND_ROBIN, TransferDirection.FROM_ROUTER);
 
         public static final Codec<DistributorSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                StringRepresentable.fromEnum(DistributionStrategy::values).optionalFieldOf("strategy", DistributionStrategy.ROUND_ROBIN)
+                StringRepresentable.fromEnum(DistributionStrategy::values)
+                        .optionalFieldOf("strategy", DistributionStrategy.ROUND_ROBIN)
                         .forGetter(DistributorSettings::strategy),
-                StringRepresentable.fromEnum(TransferDirection::values).optionalFieldOf("pulling", TransferDirection.TO_ROUTER)
+                StringRepresentable.fromEnum(TransferDirection::values)
+                        .optionalFieldOf("pulling", TransferDirection.TO_ROUTER)
                         .forGetter(DistributorSettings::direction)
         ).apply(builder, DistributorSettings::new));
 

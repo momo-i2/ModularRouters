@@ -9,7 +9,6 @@ import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.logic.ModuleTarget;
-import me.desht.modularrouters.logic.ModuleTargetList;
 import me.desht.modularrouters.logic.compiled.CompiledDistributorModule;
 import me.desht.modularrouters.logic.compiled.CompiledDistributorModule.DistributorSettings;
 import net.minecraft.ChatFormatting;

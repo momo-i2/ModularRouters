@@ -94,8 +94,6 @@ public class InspectionMatcher implements IItemMatcher {
     }
 
     public record Comparison(InspectionSubject subject, InspectionOp op, int target) implements Predicate<ItemStack> {
-        static final Comparison BAD_COMPARISON = new Comparison(null, null, 0);
-
         public static final Codec<Comparison> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                 InspectionSubject.CODEC.fieldOf("subject").forGetter(Comparison::subject),
                 InspectionOp.CODEC.fieldOf("op").forGetter(Comparison::op),
@@ -117,19 +115,6 @@ public class InspectionMatcher implements IItemMatcher {
             Optional<Integer> val = subject.evaluator.apply(stack);
             return op.test(Long.valueOf(val.orElse(-1)), (long) target);
         }
-
-//        public static Comparison fromString(String s) {
-//            String[] fields = s.split(" ", 3);
-//            if (fields.length != 3) return BAD_COMPARISON;
-//            try {
-//                InspectionSubject subject = InspectionSubject.valueOf(fields[0]);
-//                InspectionOp op = InspectionOp.valueOf(fields[1]);
-//                int target = Integer.parseInt(fields[2]);
-//                return new Comparison(subject, op, target);
-//            } catch (IllegalArgumentException e) {
-//                return BAD_COMPARISON;
-//            }
-//        }
 
         @Override
         public String toString() {

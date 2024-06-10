@@ -8,6 +8,7 @@ import me.desht.modularrouters.logic.filter.matchers.InspectionMatcher.Compariso
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class InspectionFilter extends SmartFilterItem {
     }
 
     @Override
-    public IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
+    public @NotNull IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
         return new InspectionMatcher(getComparisonList(filterStack));
     }
 
@@ -51,34 +52,6 @@ public class InspectionFilter extends SmartFilterItem {
     public static void setComparisonList(ItemStack filterStack, ComparisonList comparisonList) {
         filterStack.set(ModDataComponents.COMPARISON_LIST.get(), comparisonList);
     }
-
-//    @Override
-//    public GuiSyncMessage onReceiveSettingsMessage(Player player, FilterSettingsMessage message, ItemStack filterStack, ItemStack moduleStack) {
-//        ComparisonList comparisonList = getComparisonList(filterStack);
-//
-//        switch (message.op()) {
-//            case ADD_STRING -> {
-//                if (comparisonList.items().size() < MAX_SIZE) {
-//                    Comparison.CODEC.parse(NbtOps.INSTANCE, message.payload().getCompound(NBT_COMPARISON)).result().ifPresent(c -> {
-//                        setComparisonList(filterStack, comparisonList.addComparison(c));
-//                    });
-//                    return new GuiSyncMessage(filterStack);
-//                }
-//            }
-//            case REMOVE_AT -> {
-//                int pos = message.payload().getInt("Pos");
-//                if (pos >= 0 && pos < comparisonList.items().size()) {
-//                    setComparisonList(filterStack, comparisonList.removeAt(pos));
-//                    return new GuiSyncMessage(filterStack);
-//                }
-//            }
-//            case ANY_ALL_FLAG -> {
-//                setComparisonList(filterStack, comparisonList.setMatchAll(message.payload().getBoolean(NBT_MATCH_ALL)));
-//                return new GuiSyncMessage(filterStack);
-//            }
-//        }
-//        return null;
-//    }
 
     @Override
     public int getSize(ItemStack filterStack) {

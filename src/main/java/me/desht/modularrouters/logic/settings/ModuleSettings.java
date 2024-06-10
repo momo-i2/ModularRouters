@@ -11,7 +11,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record ModuleSettings(ModuleFlags flags, RelativeDirection facing, ModuleTermination termination,
                              RedstoneBehaviour redstoneBehaviour, int regulatorAmount)
-    implements SyncableSettings<ModuleSettings>
 {
     public static final ModuleSettings DEFAULT = new ModuleSettings(
         ModuleFlags.DEFAULT,
@@ -42,10 +41,4 @@ public record ModuleSettings(ModuleFlags flags, RelativeDirection facing, Module
             ByteBufCodecs.VAR_INT, ModuleSettings::regulatorAmount,
             ModuleSettings::new
     );
-
-    @Override
-    public StreamCodec<FriendlyByteBuf, ModuleSettings> streamCodec() {
-        return STREAM_CODEC;
-    }
-
 }

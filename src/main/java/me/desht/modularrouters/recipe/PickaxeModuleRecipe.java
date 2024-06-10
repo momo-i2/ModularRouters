@@ -98,41 +98,6 @@ public abstract class PickaxeModuleRecipe extends ShapelessRecipe {
         }
     }
 
-//    private static class PickaxeIngredient implements ICustomIngredient {
-//        PickaxeIngredient() {
-//            // this is for the benefit of getMatchingStacks()
-//            super(Stream.of(new TagValue(ItemTags.PICKAXES)));
-//
-////                    Tags.Items.ImmutableList.of(
-////                    new ItemStack(Items.WOODEN_PICKAXE),
-////                    new ItemStack(Items.STONE_PICKAXE),
-////                    new ItemStack(Items.IRON_PICKAXE),
-////                    new ItemStack(Items.DIAMOND_PICKAXE),
-////                    new ItemStack(Items.NETHERITE_PICKAXE)
-////            ))));
-//        }
-//
-//        @Override
-//        public boolean test(@Nullable ItemStack stack) {
-//            return isValidPickaxe(stack);
-//        }
-//
-//        @Override
-//        public Stream<ItemStack> getItems() {
-//            return Stream.of(new Ingredient.TagValue(ItemTags.PICKAXES));
-//        }
-//
-//        @Override
-//        public boolean isSimple() {
-//            return false;
-//        }
-//
-//        @Override
-//        public IngredientType<?> getType() {
-//            return null;
-//        }
-//    }
-
     private static boolean isValidPickaxe(ItemStack stack) {
         return stack != null && stack.getItem().canPerformAction(stack, ToolActions.PICKAXE_DIG) && stack.getDamageValue() == 0;
     }

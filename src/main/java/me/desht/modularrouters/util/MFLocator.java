@@ -2,7 +2,6 @@ package me.desht.modularrouters.util;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.RecompileFlag;
-import me.desht.modularrouters.container.handler.BaseModuleHandler;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.ModuleFilterHandler;
 import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.item.module.ModuleItem;
@@ -15,7 +14,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.common.Mod;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -58,7 +56,7 @@ public record MFLocator(InteractionHand hand, BlockPos routerPos, int routerSlot
         }
     };
 
-    public static MFLocator fromBuffer(FriendlyByteBuf buf) {
+    public static MFLocator fromNetwork(FriendlyByteBuf buf) {
         return STREAM_CODEC.decode(buf);
     }
 
@@ -68,7 +66,7 @@ public record MFLocator(InteractionHand hand, BlockPos routerPos, int routerSlot
         return new MFLocator(hand, routerPos, routerSlot, filterSlot, itemType);
     }
 
-    public void writeBuf(RegistryFriendlyByteBuf buf) {
+    public void toNetwork(RegistryFriendlyByteBuf buf) {
         STREAM_CODEC.encode(buf, this);
     }
 

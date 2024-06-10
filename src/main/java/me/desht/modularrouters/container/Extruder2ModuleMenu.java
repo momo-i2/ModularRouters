@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 
 import javax.annotation.Nonnull;
-
 import java.util.List;
 
 import static me.desht.modularrouters.container.Layout.SLOT_X_SPACING;
@@ -27,7 +26,7 @@ public class Extruder2ModuleMenu extends ModuleMenu {
     private static final int TEMPLATE_SLOTS = 9;
 
     Extruder2ModuleMenu(int windowId, Inventory inv, FriendlyByteBuf extra) {
-        this(windowId, inv, MFLocator.fromBuffer(extra));
+        this(windowId, inv, MFLocator.fromNetwork(extra));
     }
 
     public Extruder2ModuleMenu(int windowId, Inventory inv, MFLocator locator) {
@@ -75,7 +74,7 @@ public class Extruder2ModuleMenu extends ModuleMenu {
 
     private static boolean isItemOKForTemplate(ItemStack stack) {
         if (stack.isEmpty()) {
-            return true;  //  null is ok, clears the slot
+            return true;  //  empty stack is ok, clears the slot
         }
         if (stack.getItem() instanceof BlockItem bi) {
             Block b = bi.getBlock();

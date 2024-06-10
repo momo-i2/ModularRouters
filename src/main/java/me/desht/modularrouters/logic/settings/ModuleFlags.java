@@ -3,7 +3,6 @@ package me.desht.modularrouters.logic.settings;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.ModuleItem;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;

@@ -322,6 +322,7 @@ public abstract class CompiledModule {
         return getAugmentCount(ModItems.RANGE_UP_AUGMENT) - getAugmentCount(ModItems.RANGE_DOWN_AUGMENT);
     }
 
+    @Nullable
     protected Direction getRouterFacing() {
         return routerFacing;
     }

@@ -2,7 +2,6 @@ package me.desht.modularrouters.api.event;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.DataSlot;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;

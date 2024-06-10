@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class TagFilterMenu extends AbstractInvSmartFilterMenu {
     public TagFilterMenu(int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
-        super(ModMenuTypes.TAG_FILTER_MENU.get(), windowId, invPlayer, MFLocator.fromBuffer(extraData));
+        super(ModMenuTypes.TAG_FILTER_MENU.get(), windowId, invPlayer, MFLocator.fromNetwork(extraData));
     }
 
     public TagFilterMenu(int windowId, Inventory invPlayer, MFLocator locator) {

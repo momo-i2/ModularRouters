@@ -2,7 +2,6 @@ package me.desht.modularrouters.client.gui.filter;
 
 import me.desht.modularrouters.client.gui.widgets.button.TexturedButton;
 import me.desht.modularrouters.client.util.XYPoint;
-import net.minecraft.client.gui.components.Button;
 
 import java.util.List;
 import java.util.function.Consumer;

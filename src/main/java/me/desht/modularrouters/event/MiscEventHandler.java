@@ -6,14 +6,39 @@ import me.desht.modularrouters.container.handler.AugmentHandler;
 import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.item.IPlayerOwned;
 import me.desht.modularrouters.item.module.ModuleItem;
+import me.desht.modularrouters.util.fake_player.RouterFakePlayer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+
+import java.util.Iterator;
 
 @EventBusSubscriber(modid = ModularRouters.MODID)
 public class MiscEventHandler {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onBlockDrops(BlockDropsEvent event) {
+        if (event.getBreaker() instanceof RouterFakePlayer fakePlayer) {
+            // try to insert as much as possible of the dropped item(s) into the router
+            Iterator<ItemEntity> iter = event.getDrops().iterator();
+            while (iter.hasNext()) {
+                ItemEntity itemEntity = iter.next();
+                ItemStack excess = fakePlayer.tryInsertIntoRouter(itemEntity.getItem());
+                if (excess.isEmpty()) {
+                    // the whole item could be inserted
+                    iter.remove();
+                } else if (excess.getCount() < itemEntity.getItem().getCount()) {
+                    // some of the item could be inserted
+                    itemEntity.setItem(excess);
+                }
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onDigSpeedCheck(PlayerEvent.BreakSpeed event) {
         if (event.getState().getBlock() instanceof TemplateFrameBlock) {

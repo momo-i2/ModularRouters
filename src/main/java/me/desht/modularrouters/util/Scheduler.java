@@ -9,7 +9,6 @@ import net.neoforged.fml.util.thread.EffectiveSide;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -244,7 +243,7 @@ public final class Scheduler extends AbstractListeningExecutorService {
     @Override
     @Deprecated
     public List<Runnable> shutdownNow() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     /**

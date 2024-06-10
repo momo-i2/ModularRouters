@@ -384,10 +384,10 @@ public class CompiledActivatorModule extends CompiledModule {
                         .optionalFieldOf("action", ActionType.USE_ITEM_ON_ENTITY)
                         .forGetter(ActivatorSettings::actionType),
                 StringRepresentable.fromEnum(LookDirection::values)
-                        .optionalFieldOf("action", LookDirection.LEVEL)
+                        .optionalFieldOf("look_direction", LookDirection.LEVEL)
                         .forGetter(ActivatorSettings::lookDirection),
                 StringRepresentable.fromEnum(EntityMode::values)
-                        .optionalFieldOf("action", EntityMode.NEAREST)
+                        .optionalFieldOf("entity_mode", EntityMode.NEAREST)
                         .forGetter(ActivatorSettings::entityMode),
                 Codec.BOOL
                         .optionalFieldOf("sneaking", false)

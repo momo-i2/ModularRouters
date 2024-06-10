@@ -7,10 +7,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -25,7 +25,6 @@ import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -171,20 +170,17 @@ public class BlockUtil {
             return BreakResult.NOT_BROKEN;
         }
 
-        if (allDrops.isEmpty() || !groups.get(true).isEmpty()) {
-            BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(world, pos, state, fakePlayer);
-            NeoForge.EVENT_BUS.post(breakEvent);
-            if (!breakEvent.isCanceled()) {
-                world.removeBlock(pos, false);
-                if (ConfigHolder.common.router.blockBreakXPDrops.get() && breakEvent.getExpToDrop() > 0) {
-                    Vec3 vec = Vec3.atCenterOf(pos);
-                    ExperienceOrb xpOrb = new ExperienceOrb(world, vec.x, vec.y, vec.z, breakEvent.getExpToDrop());
-                    world.addFreshEntity(xpOrb);
-                }
-                return new BreakResult(true, groups);
-            }
+        if ((allDrops.isEmpty() || !groups.get(true).isEmpty()) && fakePlayer.gameMode.destroyBlock(pos)) {
+            // See also MiscEventHandler#onBlockDrops
+            return new BreakResult(true, groups);
         }
         return BreakResult.NOT_BROKEN;
+    }
+
+    private static int getExpAmount(Level level, BlockPos pos, BlockState state, ItemStack pickaxe) {
+        int fortuneLevel = pickaxe.getEnchantmentLevel(Enchantments.FORTUNE);
+        int silkTouchLevel = pickaxe.getEnchantmentLevel(Enchantments.SILK_TOUCH);
+        return state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
     }
 
     public static String getBlockName(Level w, BlockPos pos) {
@@ -192,7 +188,7 @@ public class BlockUtil {
     }
 
     public static class BreakResult {
-        static final BreakResult NOT_BROKEN = new BreakResult(false, Collections.emptyMap());
+        static final BreakResult NOT_BROKEN = new BreakResult(false, Map.of());
 
         private final boolean blockBroken;
         private final Map<Boolean,List<ItemStack>> drops;
@@ -207,7 +203,7 @@ public class BlockUtil {
         }
 
         List<ItemStack> getFilteredDrops(boolean passed) {
-            return drops.getOrDefault(passed, Collections.emptyList());
+            return drops.getOrDefault(passed, List.of());
         }
 
         /**

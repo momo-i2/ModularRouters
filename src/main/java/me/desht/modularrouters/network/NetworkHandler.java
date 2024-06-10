@@ -11,7 +11,6 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public class NetworkHandler {
     private static final String NETWORK_VERSION = "1.0";
 
-    @SuppressWarnings("Convert2MethodRef")
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(ModularRouters.MODID)
@@ -35,5 +34,4 @@ public class NetworkHandler {
         // bidirectional
         registrar.playBidirectional(RouterSettingsMessage.TYPE, RouterSettingsMessage.STREAM_CODEC, RouterSettingsMessage::handleData);
     }
-
 }

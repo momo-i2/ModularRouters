@@ -1,5 +1,6 @@
 package me.desht.modularrouters.container.handler;
 
+import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.ModuleItem;
@@ -35,8 +36,16 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
         }
     }
 
-    public void setAutoSave(boolean autoSave) {
-        this.autoSave = autoSave;
+    /**
+     * Run an operation on the handler, deferring any saving till after the whole operation done.
+     *
+     * @param runnable the operation to run
+     */
+    public void runBatchOperation(Runnable runnable) {
+        autoSave = false;
+        runnable.run();
+        autoSave = true;
+        save();
     }
 
     /**
@@ -105,6 +114,7 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
                     var h = new ModuleFilterHandler(moduleStack, router);
                     h.setStackInSlot(filterSlot, getHolderStack());
                     h.save();
+                    ModularRouters.LOGGER.info("saved!");
                 }
             }
         }

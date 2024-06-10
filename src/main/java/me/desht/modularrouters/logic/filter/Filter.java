@@ -1,14 +1,11 @@
 package me.desht.modularrouters.logic.filter;
 
 import com.google.common.collect.Lists;
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.ModuleFilterHandler;
-import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
 import me.desht.modularrouters.logic.settings.ModuleFlags;
-import me.desht.modularrouters.logic.settings.ModuleSettings;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.commons.lang3.Validate;
@@ -127,41 +124,4 @@ public class Filter implements Predicate<ItemStack> {
     public ModuleFlags getFlags() {
         return flags;
     }
-
-//    public static class Flags {
-//        public static final Flags DEFAULT_FLAGS = new Flags();
-//
-//        private final boolean blacklist;
-//        private final boolean ignoreDamage;
-//        private final boolean ignoreNBT;
-//
-//        public Flags(ItemStack moduleStack) {
-//            Validate.isTrue(moduleStack.getItem() instanceof ModuleItem);
-//            blacklist = ModuleHelper.isBlacklist(moduleStack);
-//            ignoreDamage = ModuleHelper.ignoreDamage(moduleStack);
-//            ignoreNBT = ModuleHelper.ignoreNBT(moduleStack);
-//        }
-//
-//        public Flags() {
-//            blacklist = ModuleFlags.BLACKLIST.getDefaultValue();
-//            ignoreDamage = ModuleFlags.IGNORE_DAMAGE.getDefaultValue();
-//            ignoreNBT = ModuleFlags.IGNORE_NBT.getDefaultValue();
-//        }
-//
-//        public boolean isBlacklist() {
-//            return blacklist;
-//        }
-//
-//        public boolean isIgnoreDamage() {
-//            return ignoreDamage;
-//        }
-//
-//        public boolean isIgnoreNBT() {
-//            return ignoreNBT;
-//        }
-//
-//        public boolean matchTags() {
-//            return !ignoreTags;
-//        }
-//    }
 }

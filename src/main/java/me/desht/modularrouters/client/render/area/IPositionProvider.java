@@ -5,7 +5,6 @@ import me.desht.modularrouters.logic.ModuleTarget;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ public interface IPositionProvider {
      */
     default List<ModuleTarget> getStoredPositions(@Nonnull ItemStack stack) {
         ModuleTarget target = TargetedModule.getTarget(stack);
-        return target == null ? Collections.emptyList() : Collections.singletonList(target);
+        return target == null ? List.of() : List.of(target);
     }
 
     /**

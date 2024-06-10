@@ -22,7 +22,7 @@ public abstract class AbstractInvSmartFilterMenu extends AbstractSmartFilterMenu
     public final IItemHandlerModifiable handler;
 
     protected AbstractInvSmartFilterMenu(MenuType<?> menuType, int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
-        this(menuType, windowId, invPlayer, MFLocator.fromBuffer(extraData));
+        this(menuType, windowId, invPlayer, MFLocator.fromNetwork(extraData));
     }
 
     protected AbstractInvSmartFilterMenu(MenuType<?> menuType, int windowId, Inventory invPlayer, MFLocator locator) {

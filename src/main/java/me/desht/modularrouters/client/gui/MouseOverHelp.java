@@ -54,21 +54,15 @@ public class MouseOverHelp {
 
     private void onMouseOver(GuiGraphics graphics, int mouseX, int mouseY) {
         if (active) {
-            HelpRegion region = getRegionAt(mouseX, mouseY);
-            if (region != null) {
-                showPopupBox(graphics, screen, Minecraft.getInstance().font, region.extent, 0xC0000000, 0x6040FFFF, 0x0, null);
-                showPopupBox(graphics, screen, Minecraft.getInstance().font, region.extent, 0xC0000000, 0xE0202020, 0xFFE0E0E0, region.text);
-            }
+            helpRegions.stream()
+                    .filter(region -> region.extent.contains(mouseX, mouseY) && region.showPredicate.test(screen))
+                    .findFirst()
+                    .ifPresent(r -> {
+                        Font font = Minecraft.getInstance().font;
+                        showPopupBox(graphics, screen, font, r.extent, 0xC0000000, 0x6040FFFF, 0x0, null);
+                        showPopupBox(graphics, screen, font, r.extent, 0xC0000000, 0xE0202020, 0xFFE0E0E0, r.text);
+                    });
         }
-    }
-
-    private HelpRegion getRegionAt(int mouseX, int mouseY) {
-        for (HelpRegion region : helpRegions) {
-            if (region.extent.contains(mouseX, mouseY) && region.showPredicate.test(screen)) {
-                return region;
-            }
-        }
-        return null;
     }
 
     private static Rect2i calcBounds(AbstractContainerScreen<?> screen, Font fontRenderer, Rect2i rect, List<FormattedCharSequence> helpText) {

@@ -9,31 +9,28 @@ import me.desht.modularrouters.core.ModSounds;
 import me.desht.modularrouters.logic.filter.matchers.BulkItemMatcher;
 import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
 import me.desht.modularrouters.logic.settings.ModuleFlags;
-import me.desht.modularrouters.network.messages.BulkFilterUpdateMessage;
-import me.desht.modularrouters.network.messages.GuiSyncMessage;
 import me.desht.modularrouters.util.InventoryUtils;
 import me.desht.modularrouters.util.MFLocator;
 import me.desht.modularrouters.util.SetofItemStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class BulkItemFilter extends SmartFilterItem {
     public static final int FILTER_SIZE = 54;
 
     @Override
-    public IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
+    public @NotNull IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
         ModuleFlags flags = ModuleFlags.forItem(moduleStack);
 
         SetofItemStack stacks = getFilterItems(filterStack, flags);
@@ -58,42 +55,31 @@ public class BulkItemFilter extends SmartFilterItem {
 
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
-        Level world = ctx.getLevel();
-        Player player = ctx.getPlayer();
-        ItemStack stack = ctx.getItemInHand();
-        if (world.isClientSide) {
-            return InteractionResult.SUCCESS;
-        } else if (player != null && player.isShiftKeyDown()) {
-            return InventoryUtils.getInventory(world, ctx.getClickedPos(), ctx.getClickedFace()).map(handler -> {
-                int nAdded = mergeInventory(stack, handler);
-                player.displayClientMessage(Component.translatable("modularrouters.chatText.misc.inventoryMerged",
-                        nAdded, stack.getHoverName()), false);
-                world.playSound(null, ctx.getClickedPos(), ModSounds.SUCCESS.get(), SoundSource.MASTER,
-                        ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.0f);
-                return InteractionResult.SUCCESS;
-            }).orElse(super.useOn(ctx));
-        } else {
-            return InteractionResult.PASS;
-        }
-    }
-
-    public GuiSyncMessage onReceiveSettingsMessage(Player player, BulkFilterUpdateMessage message, ItemStack moduleStack) {
-        if (player.containerMenu instanceof BulkItemFilterMenu filterMenu) {
-            ModuleFlags flags = ModuleFlags.forItem(moduleStack);
-            switch (message.op()) {
-                case CLEAR_ALL -> filterMenu.clearSlots();
-                case MERGE -> message.getTargetInventory()
-                        .ifPresent(h -> filterMenu.mergeInventory(h, flags, false));
-                case LOAD -> message.getTargetInventory()
-                        .ifPresent(h -> filterMenu.mergeInventory(h, flags, true));
-            }
-        }
-        return null;
+        return ctx.getLevel().isClientSide ? InteractionResult.SUCCESS : handleUseServerSide(ctx);
     }
 
     @Override
     public int getSize(ItemStack filterStack) {
         return BaseModuleHandler.getFilterItemCount(filterStack);
+    }
+
+    private InteractionResult handleUseServerSide(UseOnContext ctx) {
+        if (ctx.getPlayer() instanceof ServerPlayer sp) {
+            Optional<IItemHandler> inventory = InventoryUtils.getInventory(ctx.getLevel(), ctx.getClickedPos(), ctx.getClickedFace());
+            if (inventory.isPresent()) {
+                int nAdded = mergeInventory(ctx.getItemInHand(), inventory.get());
+                sp.displayClientMessage(Component.translatable("modularrouters.chatText.misc.inventoryMerged",
+                        nAdded, ctx.getItemInHand().getHoverName()), false);
+                ctx.getLevel().playSound(null, ctx.getClickedPos(), ModSounds.SUCCESS.get(), SoundSource.MASTER,
+                        ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.0f);
+            } else {
+                MFLocator loc = MFLocator.heldFilter(ctx.getHand());
+                sp.openMenu(new FilterMenuProvider(sp, loc), loc::toNetwork);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        return InteractionResult.PASS;
     }
 
     private int mergeInventory(ItemStack filterStack, IItemHandler srcInventory) {

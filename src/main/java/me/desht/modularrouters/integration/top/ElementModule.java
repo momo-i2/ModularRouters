@@ -2,9 +2,7 @@ package me.desht.modularrouters.integration.top;
 
 import mcjty.theoneprobe.api.IElement;
 import mcjty.theoneprobe.api.IElementFactory;
-import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.logic.settings.ModuleSettings;
 import me.desht.modularrouters.logic.settings.RelativeDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

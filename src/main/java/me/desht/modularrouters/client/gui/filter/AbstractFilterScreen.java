@@ -3,12 +3,9 @@ package me.desht.modularrouters.client.gui.filter;
 import me.desht.modularrouters.client.gui.IResyncableGui;
 import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.item.module.ModuleItem;
-import me.desht.modularrouters.network.messages.BulkFilterUpdateMessage;
 import me.desht.modularrouters.network.messages.OpenGuiMessage;
 import me.desht.modularrouters.util.MFLocator;
-import net.minecraft.Util;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -52,14 +49,4 @@ public abstract class AbstractFilterScreen extends Screen implements IResyncable
         }
         return false;
     }
-
-//    void sendAddStringMessage(String key, String s) {
-//        CompoundTag ext = Util.make(new CompoundTag(), tag -> tag.putString(key, s));
-//        PacketDistributor.sendToServer(new BulkFilterUpdateMessage(BulkFilterUpdateMessage.FilterOp.ADD_STRING, locator, ext));
-//    }
-//
-//    void sendRemovePosMessage(int pos) {
-//        CompoundTag ext = Util.make(new CompoundTag(), tag -> tag.putInt("Pos", pos));
-//        PacketDistributor.sendToServer(new BulkFilterUpdateMessage(BulkFilterUpdateMessage.FilterOp.REMOVE_AT, locator, ext));
-//    }
 }

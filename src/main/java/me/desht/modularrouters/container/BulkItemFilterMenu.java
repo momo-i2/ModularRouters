@@ -1,6 +1,5 @@
 package me.desht.modularrouters.container;
 
-import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.RecompileFlag;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.BulkFilterHandler;
 import me.desht.modularrouters.core.ModMenuTypes;
@@ -33,7 +32,7 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
     private final BulkFilterHandler handler;
 
     public BulkItemFilterMenu(int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
-        this(windowId, invPlayer, MFLocator.fromBuffer(extraData));
+        this(windowId, invPlayer, MFLocator.fromNetwork(extraData));
     }
 
     public BulkItemFilterMenu(int windowId, Inventory invPlayer, MFLocator loc) {
@@ -61,14 +60,13 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
     }
 
     public void clearSlots() {
-        handler.setAutoSave(false);
-        for (int i = 0; i < handler.getSlots(); i++) {
-            handler.setStackInSlot(i, ItemStack.EMPTY);
-        }
-        handler.setAutoSave(true);
-        handler.save();
+        handler.runBatchOperation(() -> {
+            for (int i = 0; i < handler.getSlots(); i++) {
+                handler.setStackInSlot(i, ItemStack.EMPTY);
+            }
+        });
 
-        if (getRouter() != null && !getRouter().getLevel().isClientSide) {
+        if (getRouter() != null && !getRouter().nonNullLevel().isClientSide) {
             getRouter().recompileNeeded(RecompileFlag.MODULES);
         }
     }
@@ -87,19 +85,17 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
             }
         }
 
-        int slot = 0;
-        handler.setAutoSave(false);
-        for (ItemStack stack : stacks.sorted()) {
-            handler.setStackInSlot(slot++, stack);
-        }
-        while (slot < handler.getSlots()) {
-            handler.setStackInSlot(slot++, ItemStack.EMPTY);
-        }
+        handler.runBatchOperation(() -> {
+            int slot = 0;
+            for (ItemStack stack : stacks.sorted()) {
+                handler.setStackInSlot(slot++, stack);
+            }
+            while (slot < handler.getSlots()) {
+                handler.setStackInSlot(slot++, ItemStack.EMPTY);
+            }
+        });
 
-        handler.setAutoSave(true);
-        handler.save();
-
-        if (getRouter() != null && !getRouter().getLevel().isClientSide) {
+        if (getRouter() != null && !getRouter().nonNullLevel().isClientSide) {
             getRouter().recompileNeeded(RecompileFlag.MODULES);
         }
 

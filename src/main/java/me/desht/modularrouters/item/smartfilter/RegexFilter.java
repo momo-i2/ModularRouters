@@ -7,6 +7,7 @@ import me.desht.modularrouters.logic.filter.matchers.RegexMatcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -42,36 +43,9 @@ public class RegexFilter extends SmartFilterItem {
     }
 
     @Override
-    public IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
+    public @NotNull IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
         return new RegexMatcher(getRegexList(filterStack));
     }
-
-//    @Override
-//    public GuiSyncMessage onReceiveSettingsMessage(Player player, FilterSettingsMessage message, ItemStack filterStack, ItemStack moduleStack) {
-//        List<String> l;
-//        switch (message.op()) {
-//            case ADD_STRING -> {
-//                String regex = message.payload().getString("String");
-//                l = getRegexList(filterStack);
-//                if (l.size() < MAX_SIZE) {
-//                    l.add(regex);
-//                    setRegexList(filterStack, l);
-//                    return new GuiSyncMessage(filterStack);
-//                }
-//            }
-//            case REMOVE_AT -> {
-//                int pos = message.payload().getInt("Pos");
-//                l = getRegexList(filterStack);
-//                if (pos >= 0 && pos < l.size()) {
-//                    l.remove(pos);
-//                    setRegexList(filterStack, l);
-//                    return new GuiSyncMessage(filterStack);
-//                }
-//            }
-//            default -> ModularRouters.LOGGER.warn("received unexpected message type " + message.op() + " for " + filterStack);
-//        }
-//        return null;
-//    }
 
     @Override
     public int getSize(ItemStack filterStack) {

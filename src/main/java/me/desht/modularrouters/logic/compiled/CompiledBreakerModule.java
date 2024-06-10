@@ -10,11 +10,13 @@ import me.desht.modularrouters.item.module.IPickaxeUser;
 import me.desht.modularrouters.util.BlockUtil;
 import me.desht.modularrouters.util.TranslatableEnum;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LevelEvent;
@@ -30,8 +32,8 @@ public class CompiledBreakerModule extends CompiledModule {
     public CompiledBreakerModule(ModularRouterBlockEntity router, ItemStack stack) {
         super(router, stack);
 
-        pickaxe = stack.getItem() instanceof IPickaxeUser p ? p.getPickaxe(stack) : ItemStack.EMPTY;
         settings = stack.getOrDefault(ModDataComponents.BREAKER_SETTINGS, BreakerSettings.DEFAULT);
+        pickaxe = stack.getItem() instanceof IPickaxeUser p ? p.getPickaxe(stack) : ItemStack.EMPTY;
     }
 
     @Override

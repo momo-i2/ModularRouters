@@ -60,8 +60,6 @@ public class ModLootTableProvider extends LootTableProvider {
                                     .include(ModDataComponents.SAVED_MODULES.get())
                                     .include(ModDataComponents.SAVED_UPGRADES.get())
                             )
-//                            .apply(SetContainerContents.setContents(ContainerComponentManipulators.CONTAINER)
-//                                    .withEntry(DynamicLoot.dynamicEntry(ShulkerBoxBlock.CONTENTS)))
                     );
             add(router, LootTable.lootTable().withPool(builder));
         }

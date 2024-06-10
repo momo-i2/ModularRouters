@@ -376,15 +376,13 @@ public class ModRecipeProvider extends RecipeProvider {
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result, count);
         for (Object v : ingredients) {
-            if (v instanceof TagKey<?>) {
-                //noinspection unchecked
-                b.requires((TagKey<Item>) v);
-            } else if (v instanceof ItemLike) {
-                b.requires((ItemLike) v);
-            } else if (v instanceof Ingredient) {
-                b.requires((Ingredient) v);
-            } else {
-                throw new IllegalArgumentException("bad type for recipe ingredient " + v);
+            switch (v) {
+                case TagKey<?> tagKey ->
+                    //noinspection unchecked
+                        b.requires((TagKey<Item>) v);
+                case ItemLike itemLike -> b.requires(itemLike);
+                case Ingredient ingredient -> b.requires(ingredient);
+                case null, default -> throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
         b.unlockedBy("has_" + safeName(required), has(required));

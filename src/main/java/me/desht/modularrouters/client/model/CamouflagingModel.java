@@ -17,7 +17,6 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class CamouflagingModel implements IDynamicBakedModel {
@@ -46,7 +45,7 @@ public abstract class CamouflagingModel implements IDynamicBakedModel {
             return model.getQuads(camoState, side, rand, modelData, renderType);
         } else {
             // Not rendering in this layer
-            return Collections.emptyList();
+            return List.of();
         }
     }
 

@@ -19,6 +19,10 @@ public class RouterFakePlayer extends FakePlayer {
         this.router = router;
     }
 
+    public ItemStack tryInsertIntoRouter(ItemStack stack) {
+        return router.insertBuffer(stack);
+    }
+
     @Override
     public Vec3 position() {
         return new Vec3(getX(), getY(), getZ());

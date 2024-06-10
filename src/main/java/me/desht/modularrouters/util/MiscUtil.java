@@ -23,11 +23,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.CheckForNull;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MiscUtil {

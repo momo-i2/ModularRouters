@@ -1,7 +1,6 @@
 package me.desht.modularrouters.container.handler;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class GhostItemHandler extends ItemStackHandler {

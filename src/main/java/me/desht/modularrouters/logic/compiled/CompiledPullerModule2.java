@@ -8,7 +8,6 @@ import me.desht.modularrouters.util.BeamData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CompiledPullerModule2 extends CompiledPullerModule1 {
@@ -18,7 +17,8 @@ public class CompiledPullerModule2 extends CompiledPullerModule1 {
 
     @Override
     protected List<ModuleTarget> setupTargets(ModularRouterBlockEntity router, ItemStack stack) {
-        return Collections.singletonList(TargetedModule.getTarget(stack, !router.nonNullLevel().isClientSide));
+        ModuleTarget target = TargetedModule.getTarget(stack, !router.nonNullLevel().isClientSide);
+        return target == null ? List.of() : List.of(target);
     }
 
     @Override

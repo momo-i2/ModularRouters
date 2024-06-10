@@ -29,9 +29,9 @@ public abstract class AbstractFilterContainerScreen extends AbstractContainerScr
     }
 
     boolean closeGUI() {
-        // need to re-open module GUI for module in router slot <moduleSlotIndex>
         MFLocator locator = menu.getLocator();
         if (locator.routerPos() != null) {
+            // need to re-open module GUI for module in router slot
             PacketDistributor.sendToServer(OpenGuiMessage.openModuleInRouter(locator));
             return true;
         } else if (hand != null) {

@@ -31,7 +31,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.Collections;
 import java.util.List;
 
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
@@ -160,8 +159,8 @@ public class ModularRouterScreen extends AbstractContainerScreen<RouterMenu> imp
     public List<Rect2i> getExtraArea() {
         // for JEI's benefit
         return menu.getRouter().getEnergyCapacity() > 0 ?
-                Collections.singletonList(new Rect2i(leftPos - 27, topPos, 32, 100)) :
-                Collections.emptyList();
+                List.of(new Rect2i(leftPos - 27, topPos, 32, 100)) :
+                List.of();
     }
 
     private class EcoButton extends TexturedToggleButton {

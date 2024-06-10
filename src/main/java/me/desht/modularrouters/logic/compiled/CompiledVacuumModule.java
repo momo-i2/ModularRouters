@@ -36,7 +36,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 
 public class CompiledVacuumModule extends CompiledModule {
@@ -92,7 +91,7 @@ public class CompiledVacuumModule extends CompiledModule {
         int offset = dir == RelativeDirection.NONE ? 0 : getRange() + 1;
         Direction facing = router.getAbsoluteFacing(dir);
         GlobalPos gPos = MiscUtil.makeGlobalPos(router.nonNullLevel(), router.getBlockPos().relative(facing, offset));
-        return Collections.singletonList(new ModuleTarget(gPos, facing));
+        return List.of(new ModuleTarget(gPos, facing));
     }
 
     private boolean handleItemMode(ModularRouterBlockEntity router) {

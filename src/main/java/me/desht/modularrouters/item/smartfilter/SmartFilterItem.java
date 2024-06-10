@@ -20,8 +20,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -34,20 +34,8 @@ public abstract class SmartFilterItem extends MRBaseItem {
         super(properties);
     }
 
-    @Nonnull
+    @NotNull
     public abstract IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack);
-
-//    /**
-//     * Handle a filter settings message received from a client-side GUI by updating the filter itemstack appropriately.
-//     *
-//     * @param player player sending/receiving the message
-//     * @param message received message
-//     * @param filterStack item stack of the filter that needs to be updated
-//     * @param moduleStack item stack of the module the filter is installed in, if any
-//     * @return true a GuiSyncMessage if a response should be sent, null otherwise
-//     */
-//    @Nullable
-//    public abstract GuiSyncMessage onReceiveSettingsMessage(Player player, FilterSettingsMessage message, ItemStack filterStack, ItemStack moduleStack);
 
     /**
      * Get the number of items in this filter, mainly for client display purposes.
@@ -80,7 +68,7 @@ public abstract class SmartFilterItem extends MRBaseItem {
         SmartFilterItem filter = (SmartFilterItem) stack.getItem();
         MFLocator loc = MFLocator.heldFilter(hand);
         if (player instanceof ServerPlayer sp && filter.hasMenu()) {
-            sp.openMenu(new FilterMenuProvider(player, loc), loc::writeBuf);
+            sp.openMenu(new FilterMenuProvider(player, loc), loc::toNetwork);
         } else if (world.isClientSide && !hasMenu()) {
             FilterScreenFactory.openFilterGui(loc);
         }

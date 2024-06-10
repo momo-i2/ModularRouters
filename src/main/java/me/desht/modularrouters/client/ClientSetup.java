@@ -13,6 +13,7 @@ import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
+import me.desht.modularrouters.logic.compiled.CompiledDistributorModule.DistributorSettings;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.neoforged.api.distmarker.Dist;
@@ -90,7 +91,7 @@ public class ClientSetup {
     private static void registerItemModelOverrides() {
         ItemProperties.register(ModItems.DISTRIBUTOR_MODULE.get(), RL("mode"), (stack, world, entity, n) -> {
             if (entity != null) {
-                return stack.get(ModDataComponents.DISTRIBUTOR_SETTINGS).isPulling() ? 1f : 0f;
+                return stack.getOrDefault(ModDataComponents.DISTRIBUTOR_SETTINGS, DistributorSettings.DEFAULT).isPulling() ? 1f : 0f;
             }
             return 0f;
         });

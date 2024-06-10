@@ -1,21 +1,17 @@
 package me.desht.modularrouters.network.messages;
 
-import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
-import me.desht.modularrouters.block.tile.ModularRouterBlockEntity.RecompileFlag;
-import me.desht.modularrouters.container.handler.BaseModuleHandler;
+import me.desht.modularrouters.container.BulkItemFilterMenu;
 import me.desht.modularrouters.item.smartfilter.BulkItemFilter;
 import me.desht.modularrouters.logic.ModuleTarget;
+import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.MFLocator;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -57,24 +53,15 @@ public record BulkFilterUpdateMessage(FilterOp op, MFLocator locator, Optional<M
     public static void handleData(BulkFilterUpdateMessage message, IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
         MFLocator locator = message.locator();
-        ItemStack moduleStack = locator.getModuleStack(player);
-        ItemStack filterStack = locator.getTargetItem(player);
-        if (filterStack.getItem() instanceof BulkItemFilter bulkFilter) {
-            GuiSyncMessage response = bulkFilter.onReceiveSettingsMessage(player, message, moduleStack);
-            if (!moduleStack.isEmpty()) {
-                ModularRouterBlockEntity router = locator.getRouter(player.level()).orElse(null);
-                BaseModuleHandler.ModuleFilterHandler filterHandler = new BaseModuleHandler.ModuleFilterHandler(moduleStack, router);
-                filterHandler.setStackInSlot(locator.filterSlot(), filterStack);
-                filterHandler.save();
-                if (locator.hand() != null) {
-                    player.setItemInHand(locator.hand(), filterHandler.getHolderStack());
-                } else if (router != null) {
-                    router.recompileNeeded(RecompileFlag.MODULES);
-                }
-            }
-            if (response != null) {
-                // send to any nearby players in case they also have the GUI open
-                PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) player.level(), player.chunkPosition(), response);
+
+        if (locator.getTargetItem(player).getItem() instanceof BulkItemFilter && player.containerMenu instanceof BulkItemFilterMenu filterMenu) {
+            ModuleFlags flags = ModuleFlags.forItem(locator.getModuleStack(player));
+            switch (message.op()) {
+                case CLEAR_ALL -> filterMenu.clearSlots();
+                case MERGE -> message.getTargetInventory()
+                        .ifPresent(h -> filterMenu.mergeInventory(h, flags, false));
+                case LOAD -> message.getTargetInventory()
+                        .ifPresent(h -> filterMenu.mergeInventory(h, flags, true));
             }
         }
     }

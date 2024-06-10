@@ -12,8 +12,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.IFluidBlock;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -79,6 +79,6 @@ public class CompiledExtruderModule2 extends CompiledExtruderModule1 {
 
     private boolean okToBreak(BlockState state) {
         Block b = state.getBlock();
-        return state.isAir() || b == ModBlocks.TEMPLATE_FRAME.get() || b instanceof IFluidBlock;
+        return state.isAir() || b == ModBlocks.TEMPLATE_FRAME.get() || b instanceof LiquidBlock;
     }
 }

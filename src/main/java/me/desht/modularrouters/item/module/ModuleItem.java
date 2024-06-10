@@ -280,7 +280,7 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
         if (!player.isCrouching()) {
             if (!world.isClientSide) {
                 MFLocator locator = MFLocator.heldModule(hand);
-                player.openMenu(new ModuleMenuProvider(player, locator), locator::writeBuf);
+                player.openMenu(new ModuleMenuProvider(player, locator), locator::toNetwork);
             }
         } else {
             return onSneakRightClick(stack, world, player, hand);
