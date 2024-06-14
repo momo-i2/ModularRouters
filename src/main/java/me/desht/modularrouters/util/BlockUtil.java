@@ -10,7 +10,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -175,12 +174,6 @@ public class BlockUtil {
             return new BreakResult(true, groups);
         }
         return BreakResult.NOT_BROKEN;
-    }
-
-    private static int getExpAmount(Level level, BlockPos pos, BlockState state, ItemStack pickaxe) {
-        int fortuneLevel = pickaxe.getEnchantmentLevel(Enchantments.FORTUNE);
-        int silkTouchLevel = pickaxe.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-        return state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
     }
 
     public static String getBlockName(Level w, BlockPos pos) {

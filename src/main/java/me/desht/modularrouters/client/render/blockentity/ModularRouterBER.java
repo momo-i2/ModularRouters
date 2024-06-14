@@ -81,35 +81,35 @@ public class ModularRouterBER implements BlockEntityRenderer<ModularRouterBlockE
     }
 
     private void addVertices(VertexConsumer wr, Matrix4f posMat) {
-        wr.vertex(posMat, 0, 0, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, -1).endVertex();
-        wr.vertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, -1).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, -1).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, -1).endVertex();
+        wr.addVertex(posMat, 0, 0, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, -1);
+        wr.addVertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, -1);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, -1);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, -1);
 
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, 1).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, 1).endVertex();
-        wr.vertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, 1).endVertex();
-        wr.vertex(posMat, 0, 0, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 0, 1).endVertex();
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, 1);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, 1);
+        wr.addVertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, 1);
+        wr.addVertex(posMat, 0, 0, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 0, 1);
 
-        wr.vertex(posMat, 0, 0, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(-1, 0, 0).endVertex();
-        wr.vertex(posMat, 0, 0, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(-1, 0, 0).endVertex();
-        wr.vertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(-1, 0, 0).endVertex();
-        wr.vertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(-1, 0, 0).endVertex();
+        wr.addVertex(posMat, 0, 0, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(-1, 0, 0);
+        wr.addVertex(posMat, 0, 0, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(-1, 0, 0);
+        wr.addVertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(-1, 0, 0);
+        wr.addVertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(-1, 0, 0);
 
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(1, 0, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(1, 0, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(1, 0, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(1, 0, 0).endVertex();
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(1, 0, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(1, 0, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(1, 0, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(1, 0, 0);
 
-        wr.vertex(posMat, 0, 0, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, -1, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, -1, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, -1, 0).endVertex();
-        wr.vertex(posMat, 0, 0, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, -1, 0).endVertex();
+        wr.addVertex(posMat, 0, 0, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, -1, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, -1, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, 0, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, -1, 0);
+        wr.addVertex(posMat, 0, 0, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, -1, 0);
 
-        wr.vertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 1, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 1, 0).endVertex();
-        wr.vertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 1, 0).endVertex();
-        wr.vertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, 0).color(COLS[0], COLS[1], COLS[2], COLS[3]).normal(0, 1, 0).endVertex();
+        wr.addVertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 1, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 1, 0);
+        wr.addVertex(posMat, CAMO_HIGHLIGHT_SIZE, CAMO_HIGHLIGHT_SIZE, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 1, 0);
+        wr.addVertex(posMat, 0, CAMO_HIGHLIGHT_SIZE, 0).setColor(COLS[0], COLS[1], COLS[2], COLS[3]).setNormal(0, 1, 0);
     }
 
     private static boolean playerHoldingRouter(Player player) {
@@ -152,23 +152,19 @@ public class ModularRouterBER implements BlockEntityRenderer<ModularRouterBlockE
 
         VertexConsumer builder = buffer.getBuffer(ModRenderTypes.BEAM_LINE_THICK);
         ClientUtil.posF(builder, positionMatrix, startPos)
-                .color(colors[0], colors[1], colors[2], alpha)
-                .normal(matrixStack.last(), xn, yn, zn)
-                .endVertex();
+                .setColor(colors[0], colors[1], colors[2], alpha)
+                .setNormal(matrixStack.last(), xn, yn, zn);
         ClientUtil.posF(builder, positionMatrix, endPos)
-                .color(colors[0], colors[1], colors[2], alpha)
-                .normal(matrixStack.last(), xn, yn, zn)
-                .endVertex();
+                .setColor(colors[0], colors[1], colors[2], alpha)
+                .setNormal(matrixStack.last(), xn, yn, zn);
 
         VertexConsumer builder2 = buffer.getBuffer(ModRenderTypes.BEAM_LINE_THIN);
         ClientUtil.posF(builder2, positionMatrix, startPos)
-                .color(colors[0], colors[1], colors[2], 192)
-                .normal(matrixStack.last(), xn, yn, zn)
-                .endVertex();
+                .setColor(colors[0], colors[1], colors[2], 192)
+                .setNormal(matrixStack.last(), xn, yn, zn);
         ClientUtil.posF(builder2, positionMatrix, endPos)
-                .color(colors[0], colors[1], colors[2], 192)
-                .normal(matrixStack.last(), xn, yn, zn)
-                .endVertex();
+                .setColor(colors[0], colors[1], colors[2], 192)
+                .setNormal(matrixStack.last(), xn, yn, zn);
     }
 
 }

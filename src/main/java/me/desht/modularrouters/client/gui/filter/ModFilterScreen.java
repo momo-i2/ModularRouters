@@ -23,7 +23,7 @@ import java.util.*;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class ModFilterScreen extends AbstractFilterContainerScreen {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(ModularRouters.MODID, "textures/gui/modfilter.png");
+    private static final ResourceLocation TEXTURE_LOCATION = MiscUtil.RL("textures/gui/modfilter.png");
 
     private static final int GUI_WIDTH = 176;
     private static final int GUI_HEIGHT = 252;

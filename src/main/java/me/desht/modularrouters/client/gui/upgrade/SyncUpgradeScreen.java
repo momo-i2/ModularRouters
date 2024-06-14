@@ -7,6 +7,7 @@ import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.item.upgrade.SyncUpgrade;
 import me.desht.modularrouters.network.messages.SyncUpgradeSettingsMessage;
+import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,7 +23,7 @@ import org.apache.commons.lang3.Range;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class SyncUpgradeScreen extends Screen {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(ModularRouters.MODID, "textures/gui/sync_upgrade.png");
+    private static final ResourceLocation TEXTURE_LOCATION = MiscUtil.RL("textures/gui/sync_upgrade.png");
     private static final ItemStack clockStack = new ItemStack(Items.CLOCK);
     private static final int GUI_WIDTH = 176;
     private static final int GUI_HEIGHT = 48;

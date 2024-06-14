@@ -14,7 +14,6 @@ import me.desht.modularrouters.util.WildcardedRLMatcher;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -168,12 +167,12 @@ public class CompiledPlayerModule extends CompiledModule {
     }
 
     private int getSlotForArmorItem(ItemStack stack) {
-        return switch (Mob.getEquipmentSlotForItem(stack)) {
+        return switch (stack.getEquipmentSlot()) {
             case HEAD -> 3;
             case CHEST -> 2;
             case LEGS -> 1;
             case FEET -> 0;
-            default -> -1;
+            case null, default -> -1;
         };
     }
 

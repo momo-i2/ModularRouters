@@ -11,6 +11,7 @@ import me.desht.modularrouters.logic.filter.matchers.InspectionMatcher.Inspectio
 import me.desht.modularrouters.logic.filter.matchers.InspectionMatcher.InspectionSubject;
 import me.desht.modularrouters.network.messages.FilterUpdateMessage;
 import me.desht.modularrouters.util.MFLocator;
+import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -28,7 +29,7 @@ import java.util.List;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class InspectionFilterScreen extends AbstractFilterScreen {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(ModularRouters.MODID, "textures/gui/inspectionfilter.png");
+    private static final ResourceLocation TEXTURE_LOCATION = MiscUtil.RL("textures/gui/inspectionfilter.png");
 
     private static final int GUI_WIDTH = 176;
     private static final int GUI_HEIGHT = 191;

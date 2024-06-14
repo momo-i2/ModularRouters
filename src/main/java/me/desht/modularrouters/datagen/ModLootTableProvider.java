@@ -38,8 +38,8 @@ public class ModLootTableProvider extends LootTableProvider {
     }
 
     private static class ModularRoutersBlockLoot extends BlockLootSubProvider {
-        public ModularRoutersBlockLoot() {
-            super(Set.of(), FeatureFlags.DEFAULT_FLAGS);
+        public ModularRoutersBlockLoot(HolderLookup.Provider provider) {
+            super(Set.of(), FeatureFlags.DEFAULT_FLAGS, provider);
         }
 
         @Override

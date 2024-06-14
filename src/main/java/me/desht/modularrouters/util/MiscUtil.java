@@ -50,7 +50,7 @@ public class MiscUtil {
     }
 
     public static ResourceLocation RL(String name) {
-        return new ResourceLocation(ModularRouters.MODID, name);
+        return ResourceLocation.fromNamespaceAndPath(ModularRouters.MODID, name);
     }
 
     public static int getYawFromFacing(Direction facing) {

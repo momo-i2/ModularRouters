@@ -72,7 +72,7 @@ public class XPCollection {
         XPCollectionType(boolean solid, int xpRatio, String registryName) {
             this.solid = solid;
             this.xpRatio = xpRatio;
-            this.registryName = new ResourceLocation(registryName);
+            this.registryName = ResourceLocation.parse(registryName);
         }
 
         public int getXpRatio() {

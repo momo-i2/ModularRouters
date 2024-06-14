@@ -10,6 +10,7 @@ import me.desht.modularrouters.item.smartfilter.ModFilter;
 import me.desht.modularrouters.item.smartfilter.RegexFilter;
 import me.desht.modularrouters.network.messages.FilterUpdateMessage;
 import me.desht.modularrouters.util.MFLocator;
+import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,7 +29,7 @@ import java.util.regex.PatternSyntaxException;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class RegexFilterScreen extends AbstractFilterScreen {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(ModularRouters.MODID, "textures/gui/regexfilter.png");
+    private static final ResourceLocation TEXTURE_LOCATION = MiscUtil.RL("textures/gui/regexfilter.png");
 
     private static final int GUI_WIDTH = 176;
     private static final int GUI_HEIGHT = 186;

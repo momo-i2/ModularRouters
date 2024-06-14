@@ -194,9 +194,8 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
             list.add(xlate("modularrouters.itemText.misc.breakerPick").withStyle(ChatFormatting.YELLOW)
                     .append(pick.getHoverName().plainCopy().withStyle(ChatFormatting.AQUA)));
             pick.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).entrySet().forEach(holder -> {
-                Enchantment ench = holder.getKey().value();
                 list.add(Component.literal("▶ ")
-                        .append(ench.getFullname(holder.getIntValue()).copy().withStyle(ChatFormatting.AQUA))
+                        .append(Enchantment.getFullname(holder.getKey(), holder.getIntValue()).copy().withStyle(ChatFormatting.AQUA))
                         .withStyle(ChatFormatting.YELLOW));
             });
         }

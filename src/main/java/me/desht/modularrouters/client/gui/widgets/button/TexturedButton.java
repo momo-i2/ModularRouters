@@ -5,13 +5,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.client.util.GuiUtil;
 import me.desht.modularrouters.client.util.XYPoint;
+import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 
 public abstract class TexturedButton extends ExtendedButton /*implements ITooltipButton*/ {
-    static final ResourceLocation TEXTURE = new ResourceLocation(ModularRouters.MODID, "textures/gui/widgets.png");
+    static final ResourceLocation TEXTURE = MiscUtil.RL("textures/gui/widgets.png");
 
     public TexturedButton(int x, int y, int width, int height, OnPress pressable) {
         super(x, y, width, height, Component.empty(), pressable);

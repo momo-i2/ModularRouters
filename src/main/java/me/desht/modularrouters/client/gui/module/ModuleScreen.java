@@ -25,6 +25,7 @@ import me.desht.modularrouters.logic.settings.*;
 import me.desht.modularrouters.network.messages.ModuleSettingsMessage;
 import me.desht.modularrouters.network.messages.OpenGuiMessage;
 import me.desht.modularrouters.util.MFLocator;
+import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,7 +53,7 @@ import java.util.Optional;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements ContainerListener, IMouseOverHelpProvider, ISendToServer {
-    static final ResourceLocation GUI_TEXTURE = new ResourceLocation(ModularRouters.MODID, "textures/gui/module.png");
+    static final ResourceLocation GUI_TEXTURE = MiscUtil.RL("textures/gui/module.png");
 
     // locations of extra textures on the gui module texture sheet
     static final XYPoint SMALL_TEXTFIELD_XY = new XYPoint(0, 198);

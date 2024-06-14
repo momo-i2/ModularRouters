@@ -58,7 +58,7 @@ public class ClientUtil {
     }
 
     public static VertexConsumer posF(VertexConsumer builder, Matrix4f posMat, Vec3 vec) {
-        return builder.vertex(posMat, (float)vec.x, (float)vec.y, (float)vec.z);
+        return builder.addVertex(posMat, (float)vec.x, (float)vec.y, (float)vec.z);
     }
 
     public static Slot getHoveredSlot() {

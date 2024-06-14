@@ -12,6 +12,7 @@ import me.desht.modularrouters.logic.compiled.CompiledModule;
 import me.desht.modularrouters.network.messages.BulkFilterUpdateMessage;
 import me.desht.modularrouters.network.messages.BulkFilterUpdateMessage.FilterOp;
 import me.desht.modularrouters.util.MFLocator;
+import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,7 +29,7 @@ import java.util.function.Consumer;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class BulkItemFilterScreen extends AbstractFilterContainerScreen {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(ModularRouters.MODID, "textures/gui/bulkitemfilter.png");
+    private static final ResourceLocation TEXTURE_LOCATION = MiscUtil.RL("textures/gui/bulkitemfilter.png");
 
     private static final int GUI_WIDTH = 176;
     private static final int GUI_HEIGHT = 233;

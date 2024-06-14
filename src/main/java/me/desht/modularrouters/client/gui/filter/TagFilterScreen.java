@@ -27,7 +27,7 @@ import java.util.*;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class TagFilterScreen extends AbstractFilterContainerScreen {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(ModularRouters.MODID, "textures/gui/tagfilter.png");
+    private static final ResourceLocation TEXTURE_LOCATION = MiscUtil.RL("textures/gui/tagfilter.png");
 
     private static final int GUI_WIDTH = 256;
     private static final int GUI_HEIGHT = 252;

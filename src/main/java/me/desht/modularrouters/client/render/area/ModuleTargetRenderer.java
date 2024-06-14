@@ -70,40 +70,40 @@ public class ModuleTargetRenderer {
             VertexConsumer faceBuilder = buffer.getBuffer(ModRenderTypes.BLOCK_HILIGHT_FACE);
 
             alpha = getFaceAlpha(faceAndColour, Direction.NORTH);
-            faceBuilder.vertex(posMat,0, 0, 0).color(r, g, b, alpha).normal(0, 0, -1).endVertex();
-            faceBuilder.vertex(posMat, 0, BOX_SIZE, 0).color(r, g, b, alpha).normal(0, 0, -1).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, BOX_SIZE, 0).color(r, g, b, alpha).normal(0, 0, -1).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, 0, 0).color(r, g, b, alpha).normal(0, 0, -1).endVertex();
+            faceBuilder.addVertex(posMat,0, 0, 0).setColor(r, g, b, alpha).setNormal(0, 0, -1);
+            faceBuilder.addVertex(posMat, 0, BOX_SIZE, 0).setColor(r, g, b, alpha).setNormal(0, 0, -1);
+            faceBuilder.addVertex(posMat, BOX_SIZE, BOX_SIZE, 0).setColor(r, g, b, alpha).setNormal(0, 0, -1);
+            faceBuilder.addVertex(posMat, BOX_SIZE, 0, 0).setColor(r, g, b, alpha).setNormal(0, 0, -1);
 
             alpha = getFaceAlpha(faceAndColour, Direction.SOUTH);
-            faceBuilder.vertex(posMat, BOX_SIZE, 0, BOX_SIZE).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, BOX_SIZE, BOX_SIZE).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
-            faceBuilder.vertex(posMat, 0, BOX_SIZE, BOX_SIZE).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
-            faceBuilder.vertex(posMat, 0, 0, BOX_SIZE).color(r, g, b, alpha).normal(0, 0, 1).endVertex();
+            faceBuilder.addVertex(posMat, BOX_SIZE, 0, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, 0, 1);
+            faceBuilder.addVertex(posMat, BOX_SIZE, BOX_SIZE, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, 0, 1);
+            faceBuilder.addVertex(posMat, 0, BOX_SIZE, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, 0, 1);
+            faceBuilder.addVertex(posMat, 0, 0, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, 0, 1);
 
             alpha = getFaceAlpha(faceAndColour, Direction.WEST);
-            faceBuilder.vertex(posMat, 0, 0, 0).color(r, g, b, alpha).normal(-1, 0, 0).endVertex();
-            faceBuilder.vertex(posMat, 0, 0, BOX_SIZE).color(r, g, b, alpha).normal(-1, 0, 0).endVertex();
-            faceBuilder.vertex(posMat, 0, BOX_SIZE, BOX_SIZE).color(r, g, b, alpha).normal(-1, 0, 0).endVertex();
-            faceBuilder.vertex(posMat, 0, BOX_SIZE, 0).color(r, g, b, alpha).normal(-1, 0, 0).endVertex();
+            faceBuilder.addVertex(posMat, 0, 0, 0).setColor(r, g, b, alpha).setNormal(-1, 0, 0);
+            faceBuilder.addVertex(posMat, 0, 0, BOX_SIZE).setColor(r, g, b, alpha).setNormal(-1, 0, 0);
+            faceBuilder.addVertex(posMat, 0, BOX_SIZE, BOX_SIZE).setColor(r, g, b, alpha).setNormal(-1, 0, 0);
+            faceBuilder.addVertex(posMat, 0, BOX_SIZE, 0).setColor(r, g, b, alpha).setNormal(-1, 0, 0);
 
             alpha = getFaceAlpha(faceAndColour, Direction.EAST);
-            faceBuilder.vertex(posMat, BOX_SIZE, BOX_SIZE, 0).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, BOX_SIZE, BOX_SIZE).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, 0, BOX_SIZE).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, 0, 0).color(r, g, b, alpha).normal(1, 0, 0).endVertex();
+            faceBuilder.addVertex(posMat, BOX_SIZE, BOX_SIZE, 0).setColor(r, g, b, alpha).setNormal(1, 0, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, BOX_SIZE, BOX_SIZE).setColor(r, g, b, alpha).setNormal(1, 0, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, 0, BOX_SIZE).setColor(r, g, b, alpha).setNormal(1, 0, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, 0, 0).setColor(r, g, b, alpha).setNormal(1, 0, 0);
 
             alpha = getFaceAlpha(faceAndColour, Direction.DOWN);
-            faceBuilder.vertex(posMat, 0, 0, 0).color(r, g, b, alpha).normal(0, -1, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, 0, 0).color(r, g, b, alpha).normal(0, -1, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, 0, BOX_SIZE).color(r, g, b, alpha).normal(0, -1, 0).endVertex();
-            faceBuilder.vertex(posMat, 0, 0, BOX_SIZE).color(r, g, b, alpha).normal(0, -1, 0).endVertex();
+            faceBuilder.addVertex(posMat, 0, 0, 0).setColor(r, g, b, alpha).setNormal(0, -1, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, 0, 0).setColor(r, g, b, alpha).setNormal(0, -1, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, 0, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, -1, 0);
+            faceBuilder.addVertex(posMat, 0, 0, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, -1, 0);
 
             alpha = getFaceAlpha(faceAndColour, Direction.UP);
-            faceBuilder.vertex(posMat, 0, BOX_SIZE, BOX_SIZE).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, BOX_SIZE, BOX_SIZE).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
-            faceBuilder.vertex(posMat, BOX_SIZE, BOX_SIZE, 0).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
-            faceBuilder.vertex(posMat, 0, BOX_SIZE, 0).color(r, g, b, alpha).normal(0, 1, 0).endVertex();
+            faceBuilder.addVertex(posMat, 0, BOX_SIZE, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, 1, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, BOX_SIZE, BOX_SIZE).setColor(r, g, b, alpha).setNormal(0, 1, 0);
+            faceBuilder.addVertex(posMat, BOX_SIZE, BOX_SIZE, 0).setColor(r, g, b, alpha).setNormal(0, 1, 0);
+            faceBuilder.addVertex(posMat, 0, BOX_SIZE, 0).setColor(r, g, b, alpha).setNormal(0, 1, 0);
 
             RenderSystem.disableDepthTest();
             buffer.endBatch(ModRenderTypes.BLOCK_HILIGHT_FACE);

@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
 public class GuideBookRecipe extends ShapelessRecipe {
-    private static final ResourceLocation BOOK_ID = new ResourceLocation("patchouli:guide_book");
+    private static final ResourceLocation BOOK_ID = ResourceLocation.parse("patchouli:guide_book");
 
 //    private static final String NBT_KEY = "patchouli:book";
     private static final String NBT_VAL = "modularrouters:book";

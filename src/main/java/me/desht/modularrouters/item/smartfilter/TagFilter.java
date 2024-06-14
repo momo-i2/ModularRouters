@@ -24,8 +24,8 @@ public class TagFilter extends SmartFilterItem {
     public static List<TagKey<Item>> getTagList(ItemStack filterStack) {
         List<String> strings = filterStack.getOrDefault(ModDataComponents.FILTER_STRINGS, List.of());
         return strings.stream()
-                .filter(ResourceLocation::isValidResourceLocation)
-                .map(s -> TagKey.create(Registries.ITEM, new ResourceLocation(s)))
+                .filter(rl -> ResourceLocation.tryParse(rl) != null)
+                .map(s -> TagKey.create(Registries.ITEM, ResourceLocation.parse(s)))
                 .toList();
     }
 
