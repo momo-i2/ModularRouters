@@ -1,4 +1,4 @@
-package me.desht.modularrouters.integration.waila;
+package me.desht.modularrouters.integration.jade;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.item.upgrade.UpgradeItem;

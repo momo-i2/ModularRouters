@@ -1,4 +1,4 @@
-package me.desht.modularrouters.integration.waila;
+package me.desht.modularrouters.integration.jade;
 
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.logic.settings.RedstoneBehaviour;
@@ -26,7 +26,7 @@ public class RouterComponentProvider implements IBlockComponentProvider {
                 }
                 CompoundTag upgrades = data.getCompound("Upgrades");
                 if (!upgrades.isEmpty()) {
-                    iTooltip.add(xlate("modularrouters.itemText.misc.upgrades"));
+                    iTooltip.add(xlate("modularrouters.itemText.misc.upgrades").append(":"));
                     for (String k : upgrades.getAllKeys()) {
                         iTooltip.add(xlate("modularrouters.itemText.misc.upgradeCount", upgrades.getInt(k), xlate(k)));
                     }
@@ -34,7 +34,7 @@ public class RouterComponentProvider implements IBlockComponentProvider {
                 RedstoneBehaviour rrb = RedstoneBehaviour.values()[data.getInt("RedstoneMode")];
                 iTooltip.add(xlate("modularrouters.guiText.tooltip.redstone.label")
                         .append(": " + ChatFormatting.AQUA)
-                        .append(xlate("modularrouters.guiText.tooltip.redstone." + rrb))
+                        .append(xlate(rrb.getTranslationKey()))
                 );
                 if (data.getBoolean("EcoMode")) {
                     iTooltip.add(xlate("modularrouters.itemText.misc.ecoMode").withStyle(ChatFormatting.GREEN));

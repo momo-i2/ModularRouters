@@ -105,14 +105,14 @@ dependencies {
         transitive = false
     }
 
-    compileOnly "curse.maven:jade-324717:${jade_curse_id}"
+    implementation "curse.maven:jade-324717:${jade_curse_id}"
 
     compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}:api"
     //runtimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
 
 
-    compileOnly "mezz.jei:jei-1.20.4-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-1.20.4-neoforge-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.20.6-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.20.6-neoforge-api:${jei_version}"
 //    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
 //    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     //runtimeOnly "mezz.jei:jei-${minecraft_version}-common:${jei_version}"
