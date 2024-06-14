@@ -45,9 +45,7 @@ public class CompiledBreakerModule extends CompiledModule {
             }
             BlockPos pos = getTarget().gPos.pos();
             BlockState oldState = world.getBlockState(pos);
-            BlockUtil.BreakResult breakResult = BlockUtil.tryBreakBlock(router, world, pos, getFilter(), pickaxe, getMatchType() == MatchType.BLOCK);
-            if (breakResult.isBlockBroken()) {
-                breakResult.processDrops(world, pos, router.getBuffer());
+            if (BlockUtil.tryBreakBlock(router, world, pos, getFilter(), pickaxe, getMatchType() == MatchType.BLOCK)) {
                 if (ConfigHolder.common.module.breakerParticles.get() && router.getUpgradeCount(ModItems.MUFFLER_UPGRADE.get()) == 0) {
                     world.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(oldState));
                 }

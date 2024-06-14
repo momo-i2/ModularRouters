@@ -27,13 +27,15 @@ public class MiscEventHandler {
             Iterator<ItemEntity> iter = event.getDrops().iterator();
             while (iter.hasNext()) {
                 ItemEntity itemEntity = iter.next();
-                ItemStack excess = fakePlayer.tryInsertIntoRouter(itemEntity.getItem());
-                if (excess.isEmpty()) {
-                    // the whole item could be inserted
-                    iter.remove();
-                } else if (excess.getCount() < itemEntity.getItem().getCount()) {
-                    // some of the item could be inserted
-                    itemEntity.setItem(excess);
+                if (itemEntity.isAlive()) {
+                    ItemStack excess = fakePlayer.tryInsertIntoRouter(itemEntity.getItem());
+                    if (excess.isEmpty()) {
+                        // the whole item could be inserted
+                        iter.remove();
+                    } else if (excess.getCount() < itemEntity.getItem().getCount()) {
+                        // some of the item could be inserted
+                        itemEntity.setItem(excess);
+                    }
                 }
             }
         }

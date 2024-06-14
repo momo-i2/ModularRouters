@@ -8,12 +8,10 @@ import me.desht.modularrouters.network.messages.PushEntityMessage;
 import me.desht.modularrouters.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -24,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class CompiledExtruderModule1 extends CompiledModule {
     public static final String NBT_EXTRUDER_DIST = "ExtruderDist";
@@ -46,37 +45,36 @@ public class CompiledExtruderModule1 extends CompiledModule {
     public boolean execute(@Nonnull ModularRouterBlockEntity router) {
         boolean extend = shouldExtend(router);
         Level world = router.nonNullLevel();
+        Direction dir = Objects.requireNonNull(getAbsoluteFacing());  // should always be non-null at this point
 
         if (extend && !router.isBufferEmpty() && distance < getRange() && isRegulationOK(router, false)) {
             // try to extend
-            BlockPos placePos = router.getBlockPos().relative(getAbsoluteFacing(), distance + 1);
+            BlockPos placePos = router.getBlockPos().relative(dir, distance + 1);
             ItemStack toPlace = router.peekBuffer(1);
-            BlockState state = BlockUtil.tryPlaceAsBlock(router, toPlace, world, placePos, getAbsoluteFacing());
+            BlockState state = BlockUtil.tryPlaceAsBlock(router, toPlace, world, placePos, dir);
             if (state != null) {
                 router.extractBuffer(1);
-                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getAbsoluteFacing(), ++distance);
+                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + dir, ++distance);
                 if (ConfigHolder.common.module.extruderSound.get()) {
                     router.playSound(null, placePos,
                             state.getBlock().getSoundType(state, world, placePos, null).getPlaceSound(),
                             SoundSource.BLOCKS, 1.0f, 0.5f + distance * 0.1f);
                 }
-                tryPushEntities(router.getLevel(), placePos, getAbsoluteFacing());
+                tryPushEntities(router.getLevel(), placePos, dir);
                 return true;
             }
         } else if (!extend && distance > 0 && isRegulationOK(router, true)) {
             // try to retract
-            BlockPos breakPos = router.getBlockPos().relative(getAbsoluteFacing(), distance);
+            BlockPos breakPos = router.getBlockPos().relative(dir, distance);
             BlockState oldState = world.getBlockState(breakPos);
             Block oldBlock = oldState.getBlock();
             if (world.isEmptyBlock(breakPos) || oldBlock instanceof LiquidBlock) {
                 // nothing there? continue to retract anyway...
-                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getAbsoluteFacing(), --distance);
+                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + dir, --distance);
                 return false;
             }
-            BlockUtil.BreakResult dropResult = BlockUtil.tryBreakBlock(router, world, breakPos, getFilter(), pickaxe, false);
-            if (dropResult.isBlockBroken()) {
-                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + getAbsoluteFacing(), --distance);
-                dropResult.processDrops(world, breakPos, router.getBuffer());
+            if (BlockUtil.tryBreakBlock(router, world, breakPos, getFilter(), pickaxe, false)) {
+                router.getExtensionData().putInt(NBT_EXTRUDER_DIST + dir, --distance);
                 if (ConfigHolder.common.module.extruderSound.get()) {
                     router.playSound(null, breakPos,
                             oldBlock.getSoundType(oldState, world, breakPos, null).getBreakSound(),

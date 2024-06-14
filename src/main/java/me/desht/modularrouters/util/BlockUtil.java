@@ -22,7 +22,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -138,85 +137,43 @@ public class BlockUtil {
      * block will not be broken. Liquid, air & unbreakable blocks (bedrock etc.) will never be broken.  Drops will be
      * available via the BreakResult object, organised by whether they passed the filter.
      *
+     * @param router    the router whose fake player will be doing the block breaking
      * @param world     the world
      * @param pos       the block position
      * @param filter    filter for the block's drops
-     * @param pickaxe   the pickaxe to use to break block
-     * @return a drop result object
+     * @param pickaxe   the pickaxe being used by the fake player to break block
+     * @return true if the block was broken, false otherwise
      */
-    public static BreakResult tryBreakBlock(ModularRouterBlockEntity router, Level world, BlockPos pos, Filter filter, ItemStack pickaxe, boolean matchByBlock) {
-        if (!(world instanceof ServerLevel serverWorld)) return BreakResult.NOT_BROKEN;
+    public static boolean tryBreakBlock(ModularRouterBlockEntity router, Level world, BlockPos pos, Filter filter, ItemStack pickaxe, boolean matchByBlock) {
+        if (!(world instanceof ServerLevel serverWorld)) return false;
 
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
         if (state.isAir() || state.getDestroySpeed(world, pos) < 0 || block instanceof LiquidBlock
                 || matchByBlock && !filter.test(new ItemStack(block))) {
-            return BreakResult.NOT_BROKEN;
+            return false;
         }
 
         FakePlayer fakePlayer = router.getFakePlayer();
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
         Tier tier = pickaxe.getItem() instanceof TieredItem t ? t.getTier() : Tiers.STONE;
         if (ConfigHolder.common.module.breakerHarvestLevelLimit.get() && state.is(tier.getIncorrectBlocksForDrops())) {
-            return BreakResult.NOT_BROKEN;
+            return false;
         }
 
         List<ItemStack> allDrops = Block.getDrops(world.getBlockState(pos), serverWorld, pos, world.getBlockEntity(pos), fakePlayer, pickaxe);
         Map<Boolean, List<ItemStack>> groups = allDrops.stream().collect(Collectors.partitioningBy(matchByBlock ? s -> true : filter));
 
         if (!matchByBlock && allDrops.isEmpty() && !filter.isEmpty() && filter.isWhiteList()) {
-            return BreakResult.NOT_BROKEN;
+            return false;
         }
 
-        if ((allDrops.isEmpty() || !groups.get(true).isEmpty()) && fakePlayer.gameMode.destroyBlock(pos)) {
-            // See also MiscEventHandler#onBlockDrops
-            return new BreakResult(true, groups);
-        }
-        return BreakResult.NOT_BROKEN;
+        // See also MiscEventHandler#onBlockDrops for handling of dropped items
+        return (allDrops.isEmpty() || !groups.get(true).isEmpty()) && fakePlayer.gameMode.destroyBlock(pos);
     }
 
     public static String getBlockName(Level w, BlockPos pos) {
         return w == null ? "" : w.getBlockState(pos).getBlock().getDescriptionId();
-    }
-
-    public static class BreakResult {
-        static final BreakResult NOT_BROKEN = new BreakResult(false, Map.of());
-
-        private final boolean blockBroken;
-        private final Map<Boolean,List<ItemStack>> drops;
-
-        BreakResult(boolean blockBroken, Map<Boolean, List<ItemStack>> drops) {
-            this.blockBroken = blockBroken;
-            this.drops = drops;
-        }
-
-        public boolean isBlockBroken() {
-            return blockBroken;
-        }
-
-        List<ItemStack> getFilteredDrops(boolean passed) {
-            return drops.getOrDefault(passed, List.of());
-        }
-
-        /**
-         * Process dropped items.  Items which matched the filter are inserted into the given item handler if possible.
-         * Items which didn't match the filter, or which matched but could not be inserted, are dropped on the ground.
-         *
-         * @param world the world
-         * @param pos the position to drop any items at
-         * @param handler item handler to insert into
-         */
-        public void processDrops(Level world, BlockPos pos, IItemHandler handler) {
-            for (ItemStack drop : getFilteredDrops(true)) {
-                ItemStack excess = handler.insertItem(0, drop, false);
-                if (!excess.isEmpty()) {
-                    InventoryUtils.dropItems(world, Vec3.atCenterOf(pos), excess);
-                }
-            }
-            for (ItemStack drop : getFilteredDrops(false)) {
-                InventoryUtils.dropItems(world, Vec3.atCenterOf(pos), drop);
-            }
-        }
     }
 }
