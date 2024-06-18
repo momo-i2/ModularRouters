@@ -13,6 +13,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,6 +27,14 @@ public class ModCreativeModeTabs {
     public static final Supplier<CreativeModeTab> DEFAULT = TABS.register("default", ModCreativeModeTabs::buildDefaultTab);
 
     private static CreativeModeTab buildDefaultTab() {
+        return CreativeModeTab.builder()
+                .title(Component.literal(ModularRouters.MODNAME))
+                .icon(() -> new ItemStack(ModBlocks.MODULAR_ROUTER.get()))
+                .displayItems((params, output) -> output.acceptAll(collectItems()))
+                .build();
+    }
+
+    private static @NotNull List<ItemStack> collectItems() {
         List<ItemStack> items = ModItems.ITEMS.getEntries().stream()
                 .map(ro -> new ItemStack(ro.get()))
                 .sorted(new ItemSorter())
@@ -35,11 +44,7 @@ public class ModCreativeModeTabs {
             items.add(GuideBookRecipe.makeGuideBook());
         }
 
-        return CreativeModeTab.builder()
-                .title(Component.literal(ModularRouters.MODNAME))
-                .icon(() -> new ItemStack(ModBlocks.MODULAR_ROUTER.get()))
-                .displayItems((params, output) -> output.acceptAll(items))
-                .build();
+        return items;
     }
 
     private static class ItemSorter implements Comparator<ItemStack> {
