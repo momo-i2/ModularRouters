@@ -101,7 +101,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 
-    compileOnly("mcjty.theoneprobe:theoneprobe:${top_version}") {
+    implementation("mcjty.theoneprobe:theoneprobe:${top_version}") {
         transitive = false
     }
 
@@ -111,12 +111,12 @@ dependencies {
     //runtimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
 
 
-    compileOnly "mezz.jei:jei-1.20.6-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-1.20.6-neoforge-api:${jei_version}"
-//    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-//    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    //runtimeOnly "mezz.jei:jei-${minecraft_version}-common:${jei_version}"
-    //runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+//    compileOnly "mezz.jei:jei-1.20.6-common-api:${jei_version}"
+//    compileOnly "mezz.jei:jei-1.20.6-neoforge-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-common:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
     for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
