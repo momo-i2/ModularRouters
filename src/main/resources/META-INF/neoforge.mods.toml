@@ -10,7 +10,7 @@ license="MIT"
 modId="modularrouters" #mandatory
 version="${mod_version}" #mandatory
 displayName="Modular Routers"
-updateJSONURL="https://raw.githubusercontent.com/desht/ModularRouters/MC1.20.4-master/release_info.json" #optional
+updateJSONURL="https://raw.githubusercontent.com/desht/ModularRouters/MC1.21-master/release_info.json" #optional
 description="${mod_description}"
 
 [[dependencies.modularrouters]]
