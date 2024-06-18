@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.21
 
+### [13.0.1]
+
+* Fixed init crash while setting up creative tabs.
+
 ### [13.0.0]
 
 * Ported to Minecraft 1.21.  Equivalent in functionality to last 1.20.4 release.
