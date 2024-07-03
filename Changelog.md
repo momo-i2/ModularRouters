@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.21
 
+### [13.0.2]
+
+* Updated to work with Neoforge 21.0.40+
+* Placer Module has been reworked internally to simplify the code and act more like a player placing the block. Couple of minor player-noticeable changes:
+  * Directional blocks are now oriented along the placing axis
+  * If placing is prevented (e.g. by a protection mod such as FTB Chunks), the place sound will still play even though the block is not placed. This can be a useful indicator that the placement is being attempted and failing. (Using a Security Module in your router is the correct action here)
+
 ### [13.0.1]
 
 * Fixed init crash while setting up creative tabs.
