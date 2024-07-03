@@ -32,7 +32,7 @@ public class DistributorModule extends SenderModule2 {
     public void addSettingsInformation(ItemStack stack, List<Component> list) {
         super.addSettingsInformation(stack, list);
 
-        DistributorSettings settings = stack.get(ModDataComponents.DISTRIBUTOR_SETTINGS);
+        DistributorSettings settings = stack.getOrDefault(ModDataComponents.DISTRIBUTOR_SETTINGS, DistributorSettings.DEFAULT);
         list.add(ClientUtil.xlate("modularrouters.guiText.tooltip.distributor.strategy").withStyle(ChatFormatting.YELLOW)
                 .append(": ").withStyle(ChatFormatting.YELLOW)
                 .append(ClientUtil.xlate(settings.strategy().getTranslationKey())).withStyle(ChatFormatting.AQUA));

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class RegexFilter extends SmartFilterItem {
-    private static final String NBT_REGEX = "Regex";
     public static final int MAX_SIZE = 6;
 
     public RegexFilter() {

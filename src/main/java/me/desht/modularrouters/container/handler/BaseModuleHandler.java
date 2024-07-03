@@ -21,7 +21,7 @@ public abstract class BaseModuleHandler extends GhostItemHandler {
     private final DataComponentType<ItemContainerContents> componentType;
     private boolean autoSave = true;
 
-    public BaseModuleHandler(ItemStack holderStack, ModularRouterBlockEntity router, int size, DataComponentType<ItemContainerContents> componentType) {
+    protected BaseModuleHandler(ItemStack holderStack, ModularRouterBlockEntity router, int size, DataComponentType<ItemContainerContents> componentType) {
         super(size);
 
         this.holderStack = holderStack;

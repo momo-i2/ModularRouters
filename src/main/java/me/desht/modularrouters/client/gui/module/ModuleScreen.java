@@ -1,6 +1,5 @@
 package me.desht.modularrouters.client.gui.module;
 
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.client.ClientSetup;
 import me.desht.modularrouters.client.gui.IMouseOverHelpProvider;

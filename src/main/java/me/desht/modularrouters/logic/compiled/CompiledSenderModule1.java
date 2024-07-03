@@ -63,7 +63,7 @@ public class CompiledSenderModule1 extends CompiledModule {
         return 0xFFC000;
     }
 
-    PositionedItemHandler findTargetInventory(ModularRouterBlockEntity router) {
+    protected PositionedItemHandler findTargetInventory(ModularRouterBlockEntity router) {
         ModuleTarget target = getEffectiveTarget(router);
         if (target != null) {
             return target.getItemHandler().map(h -> new PositionedItemHandler(target.gPos.pos(), h)).orElse(PositionedItemHandler.INVALID);
@@ -73,18 +73,19 @@ public class CompiledSenderModule1 extends CompiledModule {
 
     @Override
     public ModuleTarget getEffectiveTarget(ModularRouterBlockEntity router) {
-        BlockPos p0 = getTarget().gPos.pos();
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(p0.getX(), p0.getY(), p0.getZ());
-        Direction face = getTarget().face;
-        Level level = router.nonNullLevel();
-        for (int i = 1; i <= getRange(); i++) {
-            if (level.getCapability(Capabilities.ItemHandler.BLOCK, pos, getTarget().face) != null) {
-                GlobalPos gPos = MiscUtil.makeGlobalPos(level, pos.immutable());
-                return new ModuleTarget(gPos, face, BlockUtil.getBlockName(level, pos));
-            } else if (!isPassable(level, pos, face)) {
-                return null;
+        if (getAbsoluteFacing() != null) {
+            BlockPos.MutableBlockPos pos = getTarget().gPos.pos().mutable();
+            Direction face = getTarget().face;
+            Level level = router.nonNullLevel();
+            for (int i = 1; i <= getRange(); i++) {
+                if (level.getCapability(Capabilities.ItemHandler.BLOCK, pos, getTarget().face) != null) {
+                    GlobalPos gPos = MiscUtil.makeGlobalPos(level, pos.immutable());
+                    return new ModuleTarget(gPos, face, BlockUtil.getBlockName(level, pos));
+                } else if (!isPassable(level, pos, face)) {
+                    return null;
+                }
+                pos.move(getAbsoluteFacing());
             }
-            pos.move(getAbsoluteFacing());
         }
         return null;
     }

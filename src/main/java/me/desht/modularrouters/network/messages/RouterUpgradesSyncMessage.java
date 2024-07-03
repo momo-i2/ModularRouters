@@ -45,8 +45,8 @@ public record RouterUpgradesSyncMessage(BlockPos pos, ItemStackHandler upgradesH
     }
 
     public static void handleData(RouterUpgradesSyncMessage message, IPayloadContext context) {
-        Level level = ClientUtil.theClientLevel();
-        if (level != null && level.isLoaded(message.pos())) {
+        Level level = context.player().level();
+        if (level.isLoaded(message.pos())) {
             level.getBlockEntity(message.pos(), ModBlockEntities.MODULAR_ROUTER.get())
                     .ifPresent(router -> router.setUpgradesFrom(message.upgradesHandler()));
         }

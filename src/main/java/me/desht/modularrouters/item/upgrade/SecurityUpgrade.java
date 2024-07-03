@@ -27,10 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SecurityUpgrade extends UpgradeItem implements IPlayerOwned {
@@ -122,7 +119,8 @@ public class SecurityUpgrade extends UpgradeItem implements IPlayerOwned {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.getCommandSenderWorld().isClientSide && player.isSteppingCarefully()) {
             setOwner(stack, player);
-            player.displayClientMessage(Component.translatable("modularrouters.itemText.security.owner", player.getDisplayName().getString()), false);
+            Component displayName = Objects.requireNonNullElse(player.getDisplayName(), Component.literal("?"));
+            player.displayClientMessage(Component.translatable("modularrouters.itemText.security.owner", displayName.getString()), false);
             return InteractionResultHolder.success(stack);
         }
         return InteractionResultHolder.pass(stack);

@@ -2,7 +2,6 @@ package me.desht.modularrouters.logic;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -13,7 +12,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -21,8 +19,6 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,7 +35,6 @@ public class ModuleTarget {
     private BlockCapabilityCache<IItemHandler,Direction> itemCapCache;
     private BlockCapabilityCache<IFluidHandler,Direction> fluidCapCache;
     private BlockCapabilityCache<IEnergyStorage,Direction> energyCapCache;
-    private final Map<BlockCapability<?, ?>, BlockCapabilityCache<?, ?>> capabilityCache = new IdentityHashMap<>();
 
     public static final Codec<ModuleTarget> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             GlobalPos.CODEC.fieldOf("pos").forGetter(t -> t.gPos),
@@ -77,13 +72,13 @@ public class ModuleTarget {
     }
 
     /**
-     * Check for existence of an item handler client-side.  The target dimension must be the same as the client's
-     * current dimension.
+     * Check for existence of an item handler.  The target dimension must be the same as the level's current dimension.
      *
      * @return a (lazy optional) item handler
      */
-    public boolean hasItemHandlerClientSide() {
-        return ClientUtil.theClientLevel().getCapability(Capabilities.ItemHandler.BLOCK, gPos.pos(), face) != null;
+    public boolean hasItemHandler(Level level) {
+        return level.dimension().location().equals(gPos.dimension().location())
+                && level.getCapability(Capabilities.ItemHandler.BLOCK, gPos.pos(), face) != null;
     }
 
     /**
@@ -133,28 +128,6 @@ public class ModuleTarget {
             energyCapCache = BlockCapabilityCache.create(Capabilities.EnergyStorage.BLOCK, level, gPos.pos(), face);
         }
         return Optional.ofNullable(energyCapCache.getCapability());
-    }
-
-    /**
-     * Get a cached capability of the module target.
-     *
-     * @param capability the capability
-     * @param context    the capability context
-     * @return the capability
-     */
-    @Nullable
-    public <T, C> T getCapability(BlockCapability<T, C> capability, @Nullable C context) {
-        var cached = (BlockCapabilityCache<T, C>)capabilityCache.get(capability);
-        if (cached != null && Objects.equals(cached.context(), context)) {
-            return cached.getCapability();
-        }
-        ServerLevel level = MiscUtil.getWorldForGlobalPos(gPos);
-        if (level == null) {
-            return null;
-        }
-        cached = BlockCapabilityCache.create(capability, level, gPos.pos(), context);
-        capabilityCache.put(capability, cached);
-        return cached.getCapability();
     }
 
     @Override

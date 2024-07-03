@@ -35,7 +35,7 @@ public record PushEntityMessage(int entityId, Vec3 vec) implements CustomPacketP
     }
 
     public static void handleData(PushEntityMessage message, IPayloadContext context) {
-        Entity entity = ClientUtil.theClientLevel().getEntity(message.entityId());
+        Entity entity = context.player().level().getEntity(message.entityId());
         if (entity != null) {
             Vec3 vec = message.vec();
             entity.setDeltaMovement(vec.x, vec.y, vec.z);

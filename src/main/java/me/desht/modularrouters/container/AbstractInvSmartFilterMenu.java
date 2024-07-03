@@ -2,7 +2,6 @@ package me.desht.modularrouters.container;
 
 import me.desht.modularrouters.container.handler.GhostItemHandler;
 import me.desht.modularrouters.util.MFLocator;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
@@ -20,10 +19,6 @@ public abstract class AbstractInvSmartFilterMenu extends AbstractSmartFilterMenu
     private static final int PLAYER_HOTBAR_Y = 220;
 
     public final IItemHandlerModifiable handler;
-
-    protected AbstractInvSmartFilterMenu(MenuType<?> menuType, int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
-        this(menuType, windowId, invPlayer, MFLocator.fromNetwork(extraData));
-    }
 
     protected AbstractInvSmartFilterMenu(MenuType<?> menuType, int windowId, Inventory invPlayer, MFLocator locator) {
         super(menuType, windowId, invPlayer, locator);
@@ -62,7 +57,7 @@ public abstract class AbstractInvSmartFilterMenu extends AbstractSmartFilterMenu
             } else if (index >= 1) {
                 // shift-clicking in player inventory: copy it into the ghost slot
                 // but don't remove it from playerpack inventory
-                Slot s = slots.get(0);
+                Slot s = slots.getFirst();
                 s.set(stack);
                 slot.set(stackInSlot);
             }

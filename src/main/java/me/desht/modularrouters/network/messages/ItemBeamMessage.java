@@ -32,7 +32,7 @@ public record ItemBeamMessage(BlockPos pos, List<BeamData> beams) implements Cus
     }
 
     public static void handleData(ItemBeamMessage message, IPayloadContext context) {
-        ClientUtil.theClientLevel().getBlockEntity(message.pos(), ModBlockEntities.MODULAR_ROUTER.get())
+        context.player().level().getBlockEntity(message.pos(), ModBlockEntities.MODULAR_ROUTER.get())
                 .ifPresent(te -> message.beams().forEach(te::addItemBeam));
     }
 

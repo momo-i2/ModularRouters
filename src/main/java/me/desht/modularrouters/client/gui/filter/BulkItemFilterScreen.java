@@ -1,6 +1,5 @@
 package me.desht.modularrouters.client.gui.filter;
 
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.client.gui.widgets.button.BackButton;
 import me.desht.modularrouters.client.gui.widgets.button.TexturedButton;
@@ -63,7 +62,7 @@ public class BulkItemFilterScreen extends AbstractFilterContainerScreen {
             ModularRouterBlockEntity router = menu.getRouter();
             CompiledModule cm = ((ModuleItem) moduleStack.getItem()).compile(router, moduleStack);
             target = cm.getEffectiveTarget(router);
-            if (target.hasItemHandlerClientSide()) {
+            if (target.hasItemHandler(Minecraft.getInstance().level)) {
                 MutableComponent title = xlate(target.blockTranslationKey);
                 addRenderableWidget(new MergeButton(leftPos + 28, topPos + 130, target.toString(), title, p -> {
                     if (target != null) {

@@ -42,7 +42,7 @@ public class BreakerModule extends ModuleItem implements IPickaxeUser {
     protected void addSettingsInformation(ItemStack stack, List<Component> list) {
         super.addSettingsInformation(stack, list);
 
-        BreakerSettings settings = stack.get(ModDataComponents.BREAKER_SETTINGS);
+        BreakerSettings settings = stack.getOrDefault(ModDataComponents.BREAKER_SETTINGS, BreakerSettings.DEFAULT);
         list.add(ClientUtil.xlate(settings.matchType().getTranslationKey()).withStyle(ChatFormatting.YELLOW));
     }
 

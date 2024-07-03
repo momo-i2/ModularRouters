@@ -71,9 +71,9 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
         }
     }
 
-    public int mergeInventory(IItemHandler srcInv, ModuleFlags flags, boolean clearFirst) {
+    public void mergeInventory(IItemHandler srcInv, ModuleFlags flags, boolean clearFirst) {
         if (srcInv == null) {
-            return 0;
+            return;
         }
         SetofItemStack stacks = clearFirst ? new SetofItemStack(flags) : SetofItemStack.fromItemHandler(handler, flags);
         int origSize = stacks.size();
@@ -98,8 +98,6 @@ public class BulkItemFilterMenu extends AbstractSmartFilterMenu {
         if (getRouter() != null && !getRouter().nonNullLevel().isClientSide) {
             getRouter().recompileNeeded(RecompileFlag.MODULES);
         }
-
-        return stacks.size() - origSize;
     }
 
     @Override

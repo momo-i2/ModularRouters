@@ -22,8 +22,6 @@ import static me.desht.modularrouters.client.util.ClientUtil.colorText;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class SyncUpgrade extends UpgradeItem {
-    private static final String NBT_TUNING = "Tuning";
-
     public SyncUpgrade() {
         super(ModItems.defaultProps().component(ModDataComponents.SYNC_TUNING, 1));
     }

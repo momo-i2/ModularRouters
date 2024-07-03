@@ -27,10 +27,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 public class ClientUtil {
-    public static Level theClientLevel() {
-        return Minecraft.getInstance().level;
-    }
-
     public static Optional<ModularRouterBlockEntity> getOpenItemRouter() {
         if (Minecraft.getInstance().screen instanceof ModularRouterScreen mrs) {
             return Optional.of(mrs.getMenu().getRouter());

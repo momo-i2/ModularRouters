@@ -41,7 +41,7 @@ public class VacuumModule extends ModuleItem implements IRangedModule {
         boolean xpMode = new AugmentItem.AugmentCounter(stack).getAugmentCount(ModItems.XP_VACUUM_AUGMENT) > 0;
 
         if (xpMode) {
-            VacuumSettings settings = stack.get(ModDataComponents.VACUUM_SETTINGS);
+            VacuumSettings settings = stack.getOrDefault(ModDataComponents.VACUUM_SETTINGS, VacuumSettings.DEFAULT);
             XPCollection.XPCollectionType type = settings.collectionType();
             Component modName = Component.literal(ModNameCache.getModName(type.getModId())).withStyle(ChatFormatting.BLUE);
             Component title = type.getDisplayName().plainCopy().withStyle(ChatFormatting.AQUA);

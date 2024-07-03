@@ -37,8 +37,7 @@ public class FlingerModule extends DropperModule {
     public void addSettingsInformation(ItemStack stack, List<Component> list) {
         super.addSettingsInformation(stack, list);
 
-        FlingerSettings settings = stack.get(ModDataComponents.FLINGER_SETTINGS);
-
+        FlingerSettings settings = stack.getOrDefault(ModDataComponents.FLINGER_SETTINGS, FlingerSettings.DEFAULT);
         list.add(xlate("modularrouters.itemText.misc.flingerDetails",
                 colorText(settings.speed(), ChatFormatting.AQUA),
                 colorText(settings.pitch(), ChatFormatting.AQUA),

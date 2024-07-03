@@ -9,7 +9,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -95,6 +95,6 @@ public abstract class PickaxeModuleRecipe extends ShapelessRecipe {
     }
 
     private static boolean isValidPickaxe(ItemStack stack) {
-        return stack != null && stack.getItem().canPerformAction(stack, ToolActions.PICKAXE_DIG) && stack.getDamageValue() == 0;
+        return stack != null && stack.getItem().canPerformAction(stack, ItemAbilities.PICKAXE_DIG) && stack.getDamageValue() == 0;
     }
 }

@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class TagFilter extends SmartFilterItem {
-    private static final int MAX_SIZE = 6;
-
     public static List<TagKey<Item>> getTagList(ItemStack filterStack) {
         List<String> strings = filterStack.getOrDefault(ModDataComponents.FILTER_STRINGS, List.of());
         return strings.stream()
@@ -50,37 +48,6 @@ public class TagFilter extends SmartFilterItem {
                 .map(Component::literal)
                 .toList());
     }
-
-//    @Nullable
-//    @Override
-//    public GuiSyncMessage onReceiveSettingsMessage(Player player, FilterSettingsMessage message, ItemStack filterStack, ItemStack moduleStack) {
-//        List<TagKey<Item>> tagList;
-//        switch (message.op()) {
-//            case ADD_STRING -> {
-//                tagList = new ArrayList<>(getTagList(filterStack));
-//                String t = message.payload().getString("Tag");
-//                if (tagList.size() < MAX_SIZE && ResourceLocation.isValidResourceLocation(t)) {
-//                    TagKey<Item> tag = TagKey.create(Registries.ITEM, new ResourceLocation(t));
-//                    if (!tagList.contains(tag)) {
-//                        tagList.add(tag);
-//                        setTagList(filterStack, tagList);
-//                        return new GuiSyncMessage(filterStack);
-//                    }
-//                }
-//            }
-//            case REMOVE_AT -> {
-//                int pos = message.payload().getInt("Pos");
-//                tagList = new ArrayList<>(getTagList(filterStack));
-//                if (pos >= 0 && pos < tagList.size()) {
-//                    tagList.remove(pos);
-//                    setTagList(filterStack, tagList);
-//                    return new GuiSyncMessage(filterStack);
-//                }
-//            }
-//            default -> ModularRouters.LOGGER.warn("received unexpected message type " + message.op() + " for " + filterStack);
-//        }
-//        return null;
-//    }
 
     @Override
     public int getSize(ItemStack filterStack) {

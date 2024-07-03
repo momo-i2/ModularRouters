@@ -44,7 +44,7 @@ public class DetectorModule extends ModuleItem {
     public void addSettingsInformation(ItemStack stack, List<Component> list) {
         super.addSettingsInformation(stack, list);
 
-        DetectorSettings settings = stack.get(ModDataComponents.DETECTOR_SETTINGS);
+        DetectorSettings settings = stack.getOrDefault(ModDataComponents.DETECTOR_SETTINGS, DetectorSettings.DEFAULT);
         list.add(xlate("modularrouters.itemText.misc.redstoneLevel",
                 settings.signalLevel(),
                 xlate("modularrouters.itemText.misc.strongSignal." + settings.strongSignal()).withStyle(ChatFormatting.AQUA)
