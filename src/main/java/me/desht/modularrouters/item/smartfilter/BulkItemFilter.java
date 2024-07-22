@@ -71,7 +71,7 @@ public class BulkItemFilter extends SmartFilterItem {
                 sp.displayClientMessage(Component.translatable("modularrouters.chatText.misc.inventoryMerged",
                         nAdded, ctx.getItemInHand().getHoverName()), false);
                 ctx.getLevel().playSound(null, ctx.getClickedPos(), ModSounds.SUCCESS.get(), SoundSource.MASTER,
-                        ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.0f);
+                        ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.0f);
             } else {
                 MFLocator loc = MFLocator.heldFilter(ctx.getHand());
                 sp.openMenu(new FilterMenuProvider(sp, loc), loc::toNetwork);

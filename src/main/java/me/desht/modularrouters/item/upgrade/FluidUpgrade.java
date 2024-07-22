@@ -11,7 +11,7 @@ import java.util.List;
 public class FluidUpgrade extends UpgradeItem {
     @Override
     public Object[] getExtraUsageParams() {
-        return new Object[] { ConfigHolder.common.router.mBperFluidUpgade.get() };
+        return new Object[] { ConfigHolder.common.router.mBperFluidUpgrade.get() };
     }
 
     @Override

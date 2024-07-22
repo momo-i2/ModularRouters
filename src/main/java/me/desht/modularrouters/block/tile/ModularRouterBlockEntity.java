@@ -596,7 +596,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
             tickRate = Math.max(ConfigHolder.common.router.hardMinTickRate.get(),
                     ConfigHolder.common.router.baseTickRate.get() - ConfigHolder.common.router.ticksPerUpgrade.get() * getUpgradeCount(ModItems.SPEED_UPGRADE.get()));
             fluidTransferRate = Math.min(ConfigHolder.common.router.fluidMaxTransferRate.get(),
-                    ConfigHolder.common.router.fluidBaseTransferRate.get() + getUpgradeCount(ModItems.FLUID_UPGRADE.get()) * ConfigHolder.common.router.mBperFluidUpgade.get());
+                    ConfigHolder.common.router.fluidBaseTransferRate.get() + getUpgradeCount(ModItems.FLUID_UPGRADE.get()) * ConfigHolder.common.router.mBperFluidUpgrade.get());
 
             energyStorage.updateForEnergyUpgrades(getUpgradeCount(ModItems.ENERGY_UPGRADE.get()));
             if (!level.isClientSide) {

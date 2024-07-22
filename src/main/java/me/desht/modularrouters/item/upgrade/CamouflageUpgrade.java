@@ -57,7 +57,7 @@ public class CamouflageUpgrade extends UpgradeItem {
                         .append(getCamoStateDisplayName(stack))
                         .withStyle(ChatFormatting.YELLOW), true);
             } else {
-                player.playSound(ModSounds.SUCCESS.get(), ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.5f);
+                player.playSound(ModSounds.SUCCESS.get(), ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.5f);
             }
             return InteractionResult.SUCCESS;
         } else if (ctx.getLevel().isClientSide) {

@@ -42,7 +42,7 @@ public class CommonConfig {
         public ModConfigSpec.IntValue lowPowerTickRate;
         public ModConfigSpec.IntValue fluidBaseTransferRate;
         public ModConfigSpec.IntValue fluidMaxTransferRate;
-        public ModConfigSpec.IntValue mBperFluidUpgade;
+        public ModConfigSpec.IntValue mBperFluidUpgrade;
         public ModConfigSpec.IntValue fePerEnergyUpgrade;
         public ModConfigSpec.IntValue feXferPerEnergyUpgrade;
     }
@@ -75,6 +75,7 @@ public class CommonConfig {
     public final Module module = new Module();
     public final Router router = new Router();
     public final EnergyCosts energyCosts = new EnergyCosts();
+    public final Sound sound = new Sound();
 
     CommonConfig(ModConfigSpec.Builder builder) {
         builder.push("Module");
@@ -97,10 +98,10 @@ public class CommonConfig {
                 .translation("modularrouters.gui.config.vacuumMaxRange")
                 .defineInRange("vacuumMaxRange", 12, 1, Integer.MAX_VALUE);
         module.extruder1BaseRange = builder.comment("Base range for Extruder Mk1 (no range upgrades)")
-                .translation("gui.config.extruder1BaseRange")
+                .translation("modularrouters.gui.config.extruder1BaseRange")
                 .defineInRange("extruder1BaseRange", 16, 1, Integer.MAX_VALUE);
         module.extruder1MaxRange = builder.comment("Max range for Extruder Mk1")
-                .translation("gui.config.extruder1MaxRange")
+                .translation("modularrouters.gui.config.extruder1MaxRange")
                 .defineInRange("extruder1MaxRange", 32, 1, Integer.MAX_VALUE);
         module.extruder2BaseRange = builder.comment("Base range for Extruder Mk2 (no range upgrades)")
                 .translation("modularrouters.gui.config.extruder2BaseRange")
@@ -115,10 +116,10 @@ public class CommonConfig {
                 .translation("modularrouters.gui.config.puller2MaxRange")
                 .defineInRange("puller2MaxRange", 24, 1, Integer.MAX_VALUE);
         module.fluid2BaseRange = builder.comment("Base range for Fluid Mk2 (no range upgrades)")
-                .translation("gui.config.fluid2BaseRange")
+                .translation("modularrouters.gui.config.fluid2BaseRange")
                 .defineInRange("fluid2BaseRange", 12, 1, Integer.MAX_VALUE);
         module.fluid2MaxRange = builder.comment("Max range for Fluid Mk2")
-                .translation("gui.config.fluid2MaxRange")
+                .translation("modularrouters.gui.config.fluid2MaxRange")
                 .defineInRange("fluid2MaxRange", 24, 1, Integer.MAX_VALUE);
         module.senderParticles = builder.comment("Should Sender modules show particle effects when working?")
                 .translation("modularrouters.gui.config.senderParticles")
@@ -145,7 +146,7 @@ public class CommonConfig {
                 .translation("modularrouters.gui.config.extruderPushEntities")
                 .define("extruderPushEntities", true);
         module.breakerHarvestLevelLimit = builder.comment("Should Breaker & Extruder Mk1 Modules respect the harvest level of the pickaxe used to craft them? (e.g. craft with an Iron Pickaxe => can't break Obsidian")
-                .translation("gui.config.breakerHarvestLevelLimit")
+                .translation("modularrouters.gui.config.breakerHarvestLevelLimit")
                 .define("breakerHarvestLevelLimit", true);
         module.dimensionBlacklist = builder.comment("Dimension ID's which the Sender Mk3 cannot send to or from, and the Player Module cannot operate (both router dimension and player dimension are checked). This can be wildcarded, e.g. 'somemod:*' blacklists all dimensions added by the mod 'somemod'")
                 .translation("modularrouters.gui.config.dimensionBlacklist")
@@ -160,7 +161,7 @@ public class CommonConfig {
                 .translation("modularrouters.gui.config.ticksPerUpgrade")
                 .defineInRange("ticksPerUpgrade", 2, 1, Integer.MAX_VALUE);
         router.hardMinTickRate = builder.comment("Hard minimum tick interval for a router regardless of Speed Upgrades")
-                .translation("gui.config.hardMinTickRate")
+                .translation("modularrouters.gui.config.hardMinTicks")
                 .defineInRange("hardMinTickRate", 2, 1, Integer.MAX_VALUE);
         router.ecoTimeout = builder.comment("Router with eco mode enabled will go into low-power mode if idle for this many server ticks")
                 .translation("modularrouters.gui.config.ecoTimeout")
@@ -169,22 +170,22 @@ public class CommonConfig {
                 .translation("modularrouters.gui.config.lowPowerTickRate")
                 .defineInRange("lowPowerTickRate", 100, 1, Integer.MAX_VALUE);
         router.fluidBaseTransferRate = builder.comment("Base fluid transfer rate (mB/t in each direction) for a router")
-                .translation("gui.config.fluidBaseTransferRate")
+                .translation("modularrouters.gui.config.fluidBaseTransferRate")
                 .defineInRange("fluidBaseTransferRate", 50, 1, Integer.MAX_VALUE);
         router.fluidMaxTransferRate = builder.comment("Max fluid transfer rate (mB/t in each direction) for a router")
                 .translation("modularrouters.gui.config.baseTickRate")
                 .defineInRange("fluidMaxTransferRate", 400, 1, Integer.MAX_VALUE);
-        router.mBperFluidUpgade = builder.comment("Fluid transfer rate increase per Fluid Transfer Upgrade")
-                .translation("gui.config.mBperFluidUpgade")
+        router.mBperFluidUpgrade = builder.comment("Fluid transfer rate increase per Fluid Transfer Upgrade")
+                .translation("modularrouters.gui.config.mBperFluidUpgrade")
                 .defineInRange("mBperFluidUpgade", 10, 1, Integer.MAX_VALUE);
         router.fePerEnergyUpgrade = builder.comment("FE capacity per Energy Upgrade")
-                .translation("gui.config.fePerEnergyUpgrade")
+                .translation("modularrouters.gui.config.fePerEnergyUpgrade")
                 .defineInRange("fePerEnergyUpgrade", 50_000, 1, Integer.MAX_VALUE);
         router.feXferPerEnergyUpgrade = builder.comment("FE transfer rate (FE/t) per Energy Upgrade")
-                .translation("gui.config.feXferPerEnergyUpgrade")
+                .translation("modularrouters.gui.config.feXferPerEnergyUpgrade")
                 .defineInRange("feXferPerEnergyUpgrade", 1000, 1, Integer.MAX_VALUE);
         router.blockBreakXPDrops = builder.comment("Should block-breaking modules drop XP where appropriate? (ore mining etc.)")
-                .translation("gui.config.blockBreakXPDrops")
+                .translation("modularrouters.gui.config.blockBreakXPDrops")
                 .define("blockBreakXPDrops", true);
         builder.pop();
 
@@ -256,5 +257,15 @@ public class CommonConfig {
                 .translation("modularrouters.gui.config.voidModuleEnergyCost")
                 .defineInRange("voidModuleEnergyCost", 0, 0, Integer.MAX_VALUE);
         builder.pop();
+
+        builder.push("Sound");
+        sound.bleepVolume = builder.comment("Volume of the bleep played when various operations are done with modules/upgrades/etc. such as binding to an inventory, setting camo...")
+                .translation("modularrouters.gui.config.moduleBindVolume")
+                .defineInRange("bleepVolume", 0.5, 0.0, 2.0);
+        builder.pop();
+    }
+
+    public static class Sound {
+        public ModConfigSpec.DoubleValue bleepVolume;
     }
 }

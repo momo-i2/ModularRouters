@@ -78,7 +78,7 @@ public abstract class TargetedModule extends ModuleItem {
                 MutableComponent msg = Component.translatable("modularrouters.chatText.misc.targetSet").append(tgt.getTextComponent());
                 player.displayClientMessage(msg.withStyle(ChatFormatting.YELLOW), true);
                 world.playSound(null, pos, ModSounds.SUCCESS.get(), SoundSource.BLOCKS,
-                        ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.3f);
+                        ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.3f);
             }
         }
     }
@@ -108,7 +108,7 @@ public abstract class TargetedModule extends ModuleItem {
             }
 
             world.playSound(null, pos, ModSounds.SUCCESS.get(), SoundSource.BLOCKS,
-                    ConfigHolder.client.sound.bleepVolume.get().floatValue(), removing ? 1.1f : 1.3f);
+                    ConfigHolder.common.sound.bleepVolume.get().floatValue(), removing ? 1.1f : 1.3f);
             setTargetList(stack, targets);
         }
     }
@@ -152,7 +152,7 @@ public abstract class TargetedModule extends ModuleItem {
         if (!world.isClientSide && getTarget(stack) != null && getMaxTargets() == 1) {
             setTarget(stack, world, null, null);
             world.playSound(null, player.blockPosition(), ModSounds.SUCCESS.get(), SoundSource.BLOCKS,
-                    ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.1f);
+                    ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.1f);
             player.displayClientMessage(Component.translatable("modularrouters.chatText.misc.targetCleared").withStyle(ChatFormatting.YELLOW), true);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);

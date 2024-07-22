@@ -40,7 +40,7 @@ public class ModularRouters {
         ConfigHolder.init(container, modBus);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            ClientSetup.initEarly(modBus);
+            ClientSetup.initEarly(container, modBus);
         }
 
         modBus.addListener(this::commonSetup);

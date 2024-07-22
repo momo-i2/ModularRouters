@@ -133,7 +133,7 @@ public class SecurityUpgrade extends UpgradeItem implements IPlayerOwned {
             Result res = player.isSteppingCarefully() ? removePlayer(stack, profile) : addPlayer(stack, profile);
             if (player.level().isClientSide) {
                 player.playSound(res.isError() ? ModSounds.ERROR.get() : ModSounds.SUCCESS.get(),
-                        ConfigHolder.client.sound.bleepVolume.get().floatValue(), 1.0f);
+                        ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.0f);
             } else {
                 player.displayClientMessage(Component.translatable(res.getTranslationKey(), profile.getName()), false);
             }
