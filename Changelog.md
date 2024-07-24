@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.21
 
+### [13.0.3]
+* NeoForge 21.0.110-beta or newer required
+* Added support for FTB Filter System; Smart Filters from that mod can be placed in module filter slots and function as filters
+  * Limitation: they can't be configured in-place, so keep the real Smart Filter item around in case reconfiguration is needed
+* Mod configuration GUI is now available again thanks to changes in NeoForge 21.0.110-beta
+* Fixed Distributor Modules not working on dedicated server with more recent NeoForge builds
+* Patchouli integration has been updated
+  * Note that Patchouli doesn't have an official release yet for 1.21
+
 ### [13.0.2]
 
 * Updated to work with Neoforge 21.0.40+
