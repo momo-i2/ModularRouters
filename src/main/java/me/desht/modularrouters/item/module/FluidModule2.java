@@ -11,7 +11,7 @@ import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.logic.ModuleTargetList;
 import me.desht.modularrouters.logic.compiled.CompiledFluidModule2;
 import me.desht.modularrouters.logic.filter.matchers.FluidMatcher;
-import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;

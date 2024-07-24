@@ -4,7 +4,8 @@ import com.google.common.base.Joiner;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import me.desht.modularrouters.logic.settings.ModuleFlags;
+import me.desht.modularrouters.api.matching.IItemMatcher;
+import me.desht.modularrouters.api.matching.IModuleFlags;
 import me.desht.modularrouters.util.TranslatableEnum;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
@@ -35,7 +36,7 @@ public class InspectionMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
+    public boolean matchItem(ItemStack stack, IModuleFlags flags) {
         int matched = 0;
         if (comparisonList.items.isEmpty()) {
             return false;

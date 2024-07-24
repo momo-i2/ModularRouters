@@ -40,11 +40,13 @@ public class ModularRouters {
         ConfigHolder.init(container, modBus);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            ClientSetup.initEarly(container, modBus);
+            ClientSetup.onModConstruction(container, modBus);
         }
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::registerCaps);
+
+        IntegrationHandler.onModConstruction(modBus);
 
         registerDeferred(modBus);
     }
@@ -89,7 +91,7 @@ public class ModularRouters {
         LOGGER.info(MODNAME + " is loading!");
 
         event.enqueueWork(() -> {
-            IntegrationHandler.registerAll();
+            IntegrationHandler.onCommonSetup();
             XPCollection.detectXPTypes();
             ModNameCache.init();
         });

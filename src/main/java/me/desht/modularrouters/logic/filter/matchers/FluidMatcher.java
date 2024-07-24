@@ -1,7 +1,8 @@
 package me.desht.modularrouters.logic.filter.matchers;
 
 import com.google.common.collect.Sets;
-import me.desht.modularrouters.logic.settings.ModuleFlags;
+import me.desht.modularrouters.api.matching.IItemMatcher;
+import me.desht.modularrouters.api.matching.IModuleFlags;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -17,14 +18,14 @@ public class FluidMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
+    public boolean matchItem(ItemStack stack, IModuleFlags flags) {
         return FluidUtil.getFluidContained(stack)
                 .map(fluidStack -> matchFluid(fluidStack.getFluid(), flags))
                 .orElse(false);
     }
 
     @Override
-    public boolean matchFluid(Fluid fluid, ModuleFlags flags) {
+    public boolean matchFluid(Fluid fluid, IModuleFlags flags) {
         return fluid == this.fluid || flags.matchItemTags() && !Sets.intersection(MiscUtil.fluidTags(fluid), MiscUtil.fluidTags(this.fluid)).isEmpty();
     }
 

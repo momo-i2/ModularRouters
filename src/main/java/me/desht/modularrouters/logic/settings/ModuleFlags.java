@@ -3,11 +3,12 @@ package me.desht.modularrouters.logic.settings;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import me.desht.modularrouters.api.matching.IModuleFlags;
 import me.desht.modularrouters.item.module.ModuleItem;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
-public record ModuleFlags(boolean whiteList, boolean matchDamage, boolean matchComponents, boolean matchItemTags, boolean matchAllItems) {
+public record ModuleFlags(boolean whiteList, boolean matchDamage, boolean matchComponents, boolean matchItemTags, boolean matchAllItems) implements IModuleFlags {
     public static final ModuleFlags DEFAULT = new ModuleFlags(false, true, false, false,false);
 
     public static final Codec<ModuleFlags> CODEC = RecordCodecBuilder.create(builder -> builder.group(

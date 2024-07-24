@@ -1,6 +1,8 @@
 package me.desht.modularrouters.logic.filter.matchers;
 
 import com.google.common.collect.Sets;
+import me.desht.modularrouters.api.matching.IItemMatcher;
+import me.desht.modularrouters.api.matching.IModuleFlags;
 import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.MiscUtil;
 import me.desht.modularrouters.util.SetofItemStack;
@@ -25,7 +27,7 @@ public class BulkItemMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
+    public boolean matchItem(ItemStack stack, IModuleFlags flags) {
         if (stacks.contains(stack)) {
             return true;
         } else {

@@ -2,7 +2,7 @@ package me.desht.modularrouters.item.smartfilter;
 
 import me.desht.modularrouters.core.ModDataComponents;
 import me.desht.modularrouters.core.ModItems;
-import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.filter.matchers.RegexMatcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

@@ -38,7 +38,7 @@ public class ClientSetup {
     public static KeyMapping keybindConfigure;
     public static KeyMapping keybindModuleInfo;
 
-    public static void initEarly(ModContainer modContainer, IEventBus modBus) {
+    public static void onModConstruction(ModContainer modContainer, IEventBus modBus) {
         modBus.register(ModelBakeEventHandler.class);
         NeoForge.EVENT_BUS.register(ModuleTargetRenderer.class);
         NeoForge.EVENT_BUS.register(MouseOverHelp.class);
@@ -47,7 +47,7 @@ public class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void init(FMLClientSetupEvent event) {
+    public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             // non-thread-safe work here
             registerItemModelOverrides();

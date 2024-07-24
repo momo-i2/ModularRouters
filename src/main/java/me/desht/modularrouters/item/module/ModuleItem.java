@@ -1,6 +1,7 @@
 package me.desht.modularrouters.item.module;
 
 import com.google.common.collect.Lists;
+import me.desht.modularrouters.api.MRCapabilities;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.client.ClientSetup;
 import me.desht.modularrouters.client.util.ClientUtil;
@@ -16,7 +17,7 @@ import me.desht.modularrouters.item.augment.AugmentItem;
 import me.desht.modularrouters.item.augment.AugmentItem.AugmentCounter;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
-import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.filter.matchers.SimpleItemMatcher;
 import me.desht.modularrouters.logic.settings.*;
 import me.desht.modularrouters.util.MFLocator;
@@ -127,7 +128,9 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
      */
     @Nonnull
     public IItemMatcher getFilterItemMatcher(ItemStack stack) {
-        return new SimpleItemMatcher(stack);
+        return MRCapabilities.getMatcherProvider(stack)
+                .map(p -> p.getMatcher(stack))
+                .orElse(new SimpleItemMatcher(stack));
     }
 
     @Override

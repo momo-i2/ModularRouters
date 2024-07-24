@@ -10,7 +10,7 @@ import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.logic.compiled.CompiledFluidModule1;
 import me.desht.modularrouters.logic.compiled.CompiledFluidModule1.FluidModuleSettings;
 import me.desht.modularrouters.logic.filter.matchers.FluidMatcher;
-import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;

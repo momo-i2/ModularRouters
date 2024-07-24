@@ -1,6 +1,7 @@
 package me.desht.modularrouters.logic.filter.matchers;
 
-import me.desht.modularrouters.logic.settings.ModuleFlags;
+import me.desht.modularrouters.api.matching.IItemMatcher;
+import me.desht.modularrouters.api.matching.IModuleFlags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +16,7 @@ public class TagMatcher implements IItemMatcher {
     }
 
     @Override
-    public boolean matchItem(ItemStack stack, ModuleFlags flags) {
+    public boolean matchItem(ItemStack stack, IModuleFlags flags) {
         return tagList.stream().anyMatch(stack::is);
     }
 }

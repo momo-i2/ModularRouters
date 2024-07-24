@@ -7,7 +7,7 @@ import me.desht.modularrouters.container.handler.BaseModuleHandler;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.BulkFilterHandler;
 import me.desht.modularrouters.core.ModSounds;
 import me.desht.modularrouters.logic.filter.matchers.BulkItemMatcher;
-import me.desht.modularrouters.logic.filter.matchers.IItemMatcher;
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.InventoryUtils;
 import me.desht.modularrouters.util.MFLocator;
