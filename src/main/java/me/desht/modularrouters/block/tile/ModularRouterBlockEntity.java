@@ -141,6 +141,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
     private int tunedSyncValue = -1; // for synchronisation tuning, set by Sync Upgrade
     private boolean executing;       // are we currently executing modules?
     private boolean careAboutItemAttributes;  // whether to bother transferring item attributes to fake player
+    private boolean blockUpdateNeeded;  // for deferred block update sending
 
     public final List<BeamData> beams = new ArrayList<>(); // client-side: beams being rendered
     public final List<BeamData> pendingBeams = new ArrayList<>(); // server-side: beams to be sent to client
@@ -513,11 +514,20 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         // if on server, sync TE data to client; if on client, possibly mark the TE for re-render
         Level level = nonNullLevel();
         if (!level.isClientSide) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+            if (anyPlayerHasThisOpen()) {
+                blockUpdateNeeded = true;
+            } else {
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+            }
         } else if (renderUpdate) {
             requestModelDataUpdate();
             level.setBlocksDirty(worldPosition, Blocks.AIR.defaultBlockState(), getBlockState());
         }
+    }
+
+    private boolean anyPlayerHasThisOpen() {
+        return level.players().stream()
+                .anyMatch(p -> p.containerMenu instanceof RouterMenu menu && menu.getRouter() == this);
     }
 
     @Nonnull
@@ -958,6 +968,13 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
 
     public IFluidHandlerItem getFluidHandler() {
         return bufferHandler.getFluidHandler();
+    }
+
+    public void sendBlockUpdateIfNeeded() {
+        if (!level.isClientSide && blockUpdateNeeded && !anyPlayerHasThisOpen()) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+            blockUpdateNeeded = false;
+        }
     }
 
     public enum EnergyDirection implements TranslatableEnum {
