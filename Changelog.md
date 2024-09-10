@@ -4,9 +4,18 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+## Minecraft 1.21.1
+
+### [13.1.0]
+
+* Updated to Minecraft 1.21.1; NeoForge 21.1.0 or later required
+* Fixed a rounding error in percentage calculation which could affect Inspection Module accuracy
+* Fixed inserting a Camouflage Upgrade causing a client desync (items apparently vanishing from the open router GUI)
+
 ## Minecraft 1.21
 
 ### [13.0.3]
+
 * NeoForge 21.0.110-beta or newer required
 * Added support for FTB Filter System; Smart Filters from that mod can be placed in module filter slots and function as filters
   * Limitation: they can't be configured in-place, so keep the real Smart Filter item around in case reconfiguration is needed
