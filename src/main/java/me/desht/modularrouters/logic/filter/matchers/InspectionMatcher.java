@@ -203,7 +203,7 @@ public class InspectionMatcher implements IItemMatcher {
 
         private static int asPercentage(int val, int max) {
             if (max == 0) return 0;  // https://github.com/desht/ModularRouters/issues/82
-            return (int) (val / (float) max) * 100;
+            return (int) ((val / (float) max) * 100);
         }
 
         @Override
