@@ -7,24 +7,24 @@ import net.neoforged.fml.ModList;
 
 public class IntegrationHandler {
     public static void onModConstruction(IEventBus modBus) {
-        registerFFS(modBus);
+//        registerFFS(modBus);
     }
 
     public static void onCommonSetup() {
-        registerTOP();
+//        registerTOP();
 
         // JEI and HWYLA registration are implicit; annotation-driven
     }
 
-    private static void registerFFS(IEventBus modBus) {
-        if (ModList.get().isLoaded("ftbfiltersystem")) {
-            modBus.addListener(FFSSetup::registerCaps);
-        }
-    }
-
-    private static void registerTOP() {
-        if (ModList.get().isLoaded("theoneprobe")) {
-            TOPCompatibility.register();
-        }
-    }
+//    private static void registerFFS(IEventBus modBus) {
+//        if (ModList.get().isLoaded("ftbfiltersystem")) {
+//            modBus.addListener(FFSSetup::registerCaps);
+//        }
+//    }
+//
+//    private static void registerTOP() {
+//        if (ModList.get().isLoaded("theoneprobe")) {
+//            TOPCompatibility.register();
+//        }
+//    }
 }

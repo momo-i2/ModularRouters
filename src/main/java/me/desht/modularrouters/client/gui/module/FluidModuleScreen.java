@@ -15,6 +15,7 @@ import me.desht.modularrouters.logic.settings.TransferDirection;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -83,7 +84,7 @@ public class FluidModuleScreen extends ModuleScreen {
         super.renderBg(graphics, partialTicks, mouseX, mouseY);
 
         // text entry field custom background - super has already bound the correct texture
-        graphics.blit(GUI_TEXTURE, leftPos + 146, topPos + 20, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14);
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 146, topPos + 20, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14, 256, 256);
 
         graphics.renderItem(routerStack, leftPos + 128, topPos + 44);
         graphics.renderItem(waterStack, leftPos + 168, topPos + 44);

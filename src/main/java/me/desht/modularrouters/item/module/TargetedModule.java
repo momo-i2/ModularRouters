@@ -26,7 +26,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -148,14 +147,19 @@ public abstract class TargetedModule extends ModuleItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> onSneakRightClick(ItemStack stack, Level world, Player player, InteractionHand hand) {
-        if (!world.isClientSide && getTarget(stack) != null && getMaxTargets() == 1) {
-            setTarget(stack, world, null, null);
-            world.playSound(null, player.blockPosition(), ModSounds.SUCCESS.get(), SoundSource.BLOCKS,
-                    ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.1f);
-            player.displayClientMessage(Component.translatable("modularrouters.chatText.misc.targetCleared").withStyle(ChatFormatting.YELLOW), true);
+    public InteractionResult onSneakRightClick(ItemStack stack, Level world, Player player, InteractionHand hand) {
+        if (!world.isClientSide) {
+            if (getTarget(stack) != null && getMaxTargets() == 1) {
+                setTarget(stack, world, null, null);
+                world.playSound(null, player.blockPosition(), ModSounds.SUCCESS.get(), SoundSource.BLOCKS,
+                        ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.1f);
+                player.displayClientMessage(Component.translatable("modularrouters.chatText.misc.targetCleared").withStyle(ChatFormatting.YELLOW), true);
+                return InteractionResult.SUCCESS_SERVER;
+            } else {
+                return InteractionResult.FAIL;
+            }
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        return InteractionResult.SUCCESS;
     }
 
     /**

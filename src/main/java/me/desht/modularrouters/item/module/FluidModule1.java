@@ -26,8 +26,8 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 public class FluidModule1 extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(79, 191, 255);
 
-    public FluidModule1() {
-        super(ModItems.defaultProps(), CompiledFluidModule1::new);
+    public FluidModule1(Properties properties) {
+        super(properties, CompiledFluidModule1::new);
     }
 
     @Override

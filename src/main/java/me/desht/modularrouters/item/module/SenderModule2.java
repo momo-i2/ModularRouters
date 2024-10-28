@@ -15,8 +15,8 @@ import java.util.function.BiFunction;
 public class SenderModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
     private static final TintColor TINT_COLOR = new TintColor(149, 255, 93);
 
-    public SenderModule2() {
-        super(ModItems.moduleProps(), CompiledSenderModule2::new);
+    public SenderModule2(Item.Properties properties) {
+        super(properties, CompiledSenderModule2::new);
     }
 
     protected SenderModule2(Item.Properties properties, BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler) {

@@ -4,22 +4,25 @@ import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModRecipes;
 import me.desht.modularrouters.integration.patchouli.PatchouliHelper;
 import net.minecraft.Util;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
 import net.neoforged.fml.ModList;
 
-public class GuideBookRecipe extends ShapelessRecipe {
+import java.util.List;
+
+public class GuideBookRecipe extends CustomRecipe {
+    private static final List<Ingredient> INGREDIENTS = List.of(
+            Ingredient.of(Items.BOOK),
+            Ingredient.of(ModItems.BLANK_MODULE.get())
+    );
+
     public GuideBookRecipe(CraftingBookCategory category) {
-        super( "modularrouters:guide_book", category, makeGuideBook(),
-                NonNullList.of(Ingredient.EMPTY, Ingredient.of(Items.BOOK), Ingredient.of(ModItems.BLANK_MODULE.get()))
-        );
+        super(category);
     }
 
     public static ItemStack makeGuideBook() {
@@ -30,7 +33,17 @@ public class GuideBookRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public boolean matches(CraftingInput pInput, Level pLevel) {
+        return ModCraftingHelper.allPresent(pInput, INGREDIENTS);
+    }
+
+    @Override
+    public ItemStack assemble(CraftingInput pInput, HolderLookup.Provider pRegistries) {
+        return makeGuideBook();
+    }
+
+    @Override
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
         return ModRecipes.GUIDE_BOOK.get();
     }
 }

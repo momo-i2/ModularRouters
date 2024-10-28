@@ -37,8 +37,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -55,7 +56,7 @@ import static me.desht.modularrouters.block.tile.ModularRouterBlockEntity.*;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class ModularRouterBlock extends CamouflageableBlock implements EntityBlock {
-    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+    public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     public static final BooleanProperty CAN_EMIT = BooleanProperty.create("can_emit");
 
@@ -171,7 +172,7 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
     @Override
     public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult blockRayTraceResult) {
         if (!player.isShiftKeyDown()) {
-            return world.getBlockEntity(pos, ModBlockEntities.MODULAR_ROUTER.get()).map(router -> {
+            if (world.getBlockEntity(pos) instanceof ModularRouterBlockEntity router) {
                 if (player instanceof ServerPlayer sp && router.isPermitted(player)) {
                     // TODO combine into one packet?
                     PacketDistributor.sendToPlayer(sp, RouterSettingsMessage.forRouter(router));
@@ -182,7 +183,9 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
                     player.playSound(ModSounds.ERROR.get(), 1.0f, 1.0f);
                 }
                 return InteractionResult.SUCCESS;
-            }).orElse(InteractionResult.FAIL);
+            } else {
+                return InteractionResult.FAIL;
+            }
         }
         return InteractionResult.PASS;
     }
@@ -209,7 +212,7 @@ public class ModularRouterBlock extends CamouflageableBlock implements EntityBlo
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean b) {
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, Orientation orientation, boolean b) {
         worldIn.getBlockEntity(pos, ModBlockEntities.MODULAR_ROUTER.get()).ifPresent(router -> {
             router.checkForRedstonePulse();
             router.notifyModules();

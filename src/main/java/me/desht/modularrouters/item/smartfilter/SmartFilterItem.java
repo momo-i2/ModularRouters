@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -26,9 +25,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class SmartFilterItem extends MRBaseItem {
-    public SmartFilterItem() {
-        super(ModItems.defaultProps());
-    }
+//    public SmartFilterItem() {
+//        super(ModItems.defaultProps());
+//    }
 
     public SmartFilterItem(Item.Properties properties) {
         super(properties);
@@ -63,7 +62,7 @@ public abstract class SmartFilterItem extends MRBaseItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         SmartFilterItem filter = (SmartFilterItem) stack.getItem();
         MFLocator loc = MFLocator.heldFilter(hand);
@@ -72,7 +71,7 @@ public abstract class SmartFilterItem extends MRBaseItem {
         } else if (world.isClientSide && !hasMenu()) {
             FilterScreenFactory.openFilterGui(loc);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        return world.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 
     public static class FilterMenuProvider implements MenuProvider {

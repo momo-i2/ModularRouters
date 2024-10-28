@@ -4,6 +4,7 @@ import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.ModularRoutersTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -12,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
-    public ModEntityTypeTagsProvider(DataGenerator dataGenerator, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(dataGenerator.getPackOutput(), lookupProvider, ModularRouters.MODID, existingFileHelper);
+    public ModEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, ModularRouters.MODID, existingFileHelper);
     }
 
     @Override

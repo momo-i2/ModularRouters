@@ -5,10 +5,12 @@ import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.logic.filter.Filter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -58,7 +60,7 @@ public class BlockUtil {
 
         try {
             InteractionResult res = toPlace.useOn(useCtx);
-            return res.indicateItemUse() ? world.getBlockState(pos) : null;
+            return res instanceof InteractionResult.Success s && s.wasItemInteraction() ? world.getBlockState(pos) : null;
         } catch (Exception ignored) {
             // just in case some modded item has flawed placement logic...
             return null;
@@ -97,12 +99,15 @@ public class BlockUtil {
             return false;
         }
 
+        if (ConfigHolder.common.module.breakerHarvestLevelLimit.get()) {
+            Tool tool = pickaxe.get(DataComponents.TOOL);
+            if (tool == null || !tool.isCorrectForDrops(state)) {
+                return false;
+            }
+        }
+
         FakePlayer fakePlayer = router.getFakePlayer();
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, pickaxe);
-        Tier tier = pickaxe.getItem() instanceof TieredItem t ? t.getTier() : Tiers.STONE;
-        if (ConfigHolder.common.module.breakerHarvestLevelLimit.get() && state.is(tier.getIncorrectBlocksForDrops())) {
-            return false;
-        }
 
         List<ItemStack> allDrops = Block.getDrops(world.getBlockState(pos), serverWorld, pos, world.getBlockEntity(pos), fakePlayer, pickaxe);
         Map<Boolean, List<ItemStack>> groups = allDrops.stream().collect(Collectors.partitioningBy(matchByBlock ? s -> true : filter));

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -27,8 +28,8 @@ public class EnergyWidget extends AbstractWidget {
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick){
         int amount = getScaled();
 
-        graphics.blit(TEXTURE_LOCATION, getX() + 1, getY(), 1, 0, width - 2, height, 32, 64);
-        graphics.blit(TEXTURE_LOCATION, getX() + 1, getY() + DEFAULT_SCALE - amount, 17, DEFAULT_SCALE - amount, width - 2, amount, 32, 64);
+        graphics.blit(RenderType::guiTextured, TEXTURE_LOCATION, getX() + 1, getY(), 1, 0, width - 2, height, 32, 64);
+        graphics.blit(RenderType::guiTextured, TEXTURE_LOCATION, getX() + 1, getY() + DEFAULT_SCALE - amount, 17, DEFAULT_SCALE - amount, width - 2, amount, 32, 64);
 
         if (isHovered()) {
             // drawing the tooltip directly instead of using setTooltip() - that causes awful flickering if

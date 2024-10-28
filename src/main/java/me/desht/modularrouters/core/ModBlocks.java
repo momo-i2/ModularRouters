@@ -3,17 +3,12 @@ package me.desht.modularrouters.core;
 import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.ModularRouterBlock;
 import me.desht.modularrouters.block.TemplateFrameBlock;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ModularRouters.MODID);
@@ -28,30 +23,34 @@ public class ModBlocks {
             .isValidSpawn((state, world, pos, entityType) -> false)
             .noOcclusion();
 
-    public static final DeferredBlock<ModularRouterBlock> MODULAR_ROUTER = register("modular_router",
-            () -> new ModularRouterBlock(ROUTER_PROPS));
-    public static final Supplier<TemplateFrameBlock> TEMPLATE_FRAME = registerNoItem("template_frame",
-            () -> new TemplateFrameBlock(TEMPLATE_FRAME_PROPS));
+    public static final DeferredBlock<ModularRouterBlock> MODULAR_ROUTER
+            = BLOCKS.registerBlock("modular_router", ModularRouterBlock::new, ROUTER_PROPS);
+    public static final DeferredBlock<TemplateFrameBlock> TEMPLATE_FRAME
+            = BLOCKS.registerBlock("template_frame",TemplateFrameBlock::new, TEMPLATE_FRAME_PROPS);
 
-    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<? extends T> sup) {
-        return register(name, sup, ModBlocks::itemDefault);
+    static {
+        ITEMS.registerSimpleBlockItem("modular_router", MODULAR_ROUTER);
     }
 
-    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<? extends T> sup, Function<Supplier<T>, Supplier<? extends Item>> itemCreator) {
-        DeferredBlock<T> ret = registerNoItem(name, sup);
-        ITEMS.register(name, itemCreator.apply(ret));
-        return ret;
-    }
+//    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<? extends T> sup) {
+//        return register(name, sup, ModBlocks::itemDefault);
+//    }
 
-    private static <T extends Block> DeferredBlock<T> registerNoItem(String name, Supplier<? extends T> sup) {
-        return BLOCKS.register(name, sup);
-    }
+//    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<? extends T> sup, Function<Supplier<T>, Supplier<? extends Item>> itemCreator) {
+//        DeferredBlock<T> ret = registerNoItem(name, sup);
+//        ITEMS.register(name, itemCreator.apply(ret));
+//        return ret;
+//    }
 
-    private static Supplier<BlockItem> itemDefault(final Supplier<? extends Block> block) {
-        return item(block);
-    }
+//    private static <T extends Block> DeferredBlock<T> registerNoItem(String name, Function<? extends BlockBehaviour.Properties, T> sup) {
+//        return BLOCKS.registerBlock(name, sup);
+//    }
 
-    private static Supplier<BlockItem> item(final Supplier<? extends Block> block) {
-        return () -> new BlockItem(block.get(), new Item.Properties());
-    }
+//    private static Supplier<BlockItem> itemDefault(final Supplier<? extends Block> block) {
+//        return item(block);
+//    }
+//
+//    private static Supplier<BlockItem> item(final Supplier<? extends Block> block) {
+//        return () -> new BlockItem(block.get(), new Item.Properties());
+//    }
 }

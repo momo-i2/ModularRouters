@@ -4,6 +4,8 @@ import me.desht.modularrouters.ModularRouters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -104,5 +106,9 @@ public class MiscUtil {
         } else {
             return !stack2.isEmpty() && stack1.is(stack2.getItem());
         }
+    }
+
+    public static HolderSet<Item> getTag(TagKey<Item> key) {
+        return BuiltInRegistries.ITEM.getOrThrow(key);
     }
 }

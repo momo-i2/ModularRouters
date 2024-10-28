@@ -11,6 +11,7 @@ import me.desht.modularrouters.logic.compiled.CompiledPlayerModule.Section;
 import me.desht.modularrouters.logic.settings.TransferDirection;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -51,7 +52,7 @@ public class PlayerModuleScreen extends ModuleScreen {
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         super.renderBg(graphics, partialTicks, mouseX, mouseY);
 
-        graphics.blit(GUI_TEXTURE, leftPos + 167, topPos + 31, BUTTON_XY.x(), BUTTON_XY.y(), 18, 18);  // section "button" background
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 167, topPos + 31, BUTTON_XY.x(), BUTTON_XY.y(), 18, 18, 256, 256);  // section "button" background
 
         graphics.renderItem(ROUTER_STACK, leftPos + 128, topPos + 32);
     }

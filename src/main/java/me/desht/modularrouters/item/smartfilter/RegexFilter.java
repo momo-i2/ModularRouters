@@ -14,9 +14,8 @@ import java.util.List;
 public class RegexFilter extends SmartFilterItem {
     public static final int MAX_SIZE = 6;
 
-    public RegexFilter() {
-        super(ModItems.defaultProps()
-                .component(ModDataComponents.FILTER_STRINGS, List.of()));
+    public RegexFilter(Properties properties) {
+        super(properties.component(ModDataComponents.FILTER_STRINGS, List.of()));
     }
 
     @Override

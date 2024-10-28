@@ -24,9 +24,8 @@ import java.util.List;
 public class FluidModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
     private static final TintColor TINT_COLOR = new TintColor(64, 224, 255);
 
-    public FluidModule2() {
-        super(ModItems.moduleProps()
-                .component(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY), CompiledFluidModule2::new);
+    public FluidModule2(Properties properties) {
+        super(properties.component(ModDataComponents.MODULE_TARGET_LIST, ModuleTargetList.EMPTY), CompiledFluidModule2::new);
     }
 
     @Override

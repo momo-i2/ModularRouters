@@ -2,11 +2,11 @@ package me.desht.modularrouters.client.gui.widgets.button;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.client.util.GuiUtil;
 import me.desht.modularrouters.client.util.XYPoint;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
@@ -27,9 +27,9 @@ public abstract class TexturedButton extends ExtendedButton /*implements IToolti
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             if (drawStandardBackground()) {
-                graphics.blit(TEXTURE, this.getX(), this.getY(), i * 16, 0, this.width, this.height);
+                graphics.blit(RenderType::guiTextured, TEXTURE, this.getX(), this.getY(), i * 16, 0, this.width, this.height, 256, 256);
             }
-            graphics.blit(TEXTURE, this.getX(), this.getY(), getTextureX(), getTextureY(), this.width, this.height);
+            graphics.blit(RenderType::guiTextured, TEXTURE, this.getX(), this.getY(), getTextureX(), getTextureY(), this.width, this.height, 256, 256);
             if (isHoveredOrFocused()) {
                 GuiUtil.drawFrame(graphics, this, 0xffffffff);
             }

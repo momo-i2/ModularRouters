@@ -7,6 +7,10 @@ import net.minecraft.world.item.ItemStack;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class StackAugment extends AugmentItem {
+    public StackAugment(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public int getMaxAugments(ModuleItem moduleType) {
         return moduleType instanceof DetectorModule

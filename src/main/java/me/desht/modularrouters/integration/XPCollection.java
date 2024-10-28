@@ -32,9 +32,9 @@ public class XPCollection {
     private static ItemStack getIconForResource(XPCollectionType type) {
         if (!ICONS.containsKey(type)) {
             if (type.isSolid()) {
-                ICONS.put(type, new ItemStack(BuiltInRegistries.ITEM.get(type.getRegistryName())));
+                ICONS.put(type, new ItemStack(BuiltInRegistries.ITEM.getValue(type.getRegistryName())));
             } else {
-                Fluid fluid = BuiltInRegistries.FLUID.get(type.getRegistryName());
+                Fluid fluid = BuiltInRegistries.FLUID.getValue(type.getRegistryName());
                 ICONS.put(type, fluid == Fluids.EMPTY ?
                         ItemStack.EMPTY :
                         FluidUtil.getFilledBucket(new FluidStack(fluid, 1000)));
@@ -88,7 +88,7 @@ public class XPCollection {
         }
 
         public Fluid getFluid() {
-            return BuiltInRegistries.FLUID.get(registryName);
+            return BuiltInRegistries.FLUID.getValue(registryName);
         }
 
         public String getModId() {

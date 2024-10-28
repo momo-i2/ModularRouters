@@ -18,6 +18,10 @@ import net.minecraft.world.level.block.state.BlockState;
 public class CamouflageUpgrade extends UpgradeItem {
     public static final String NBT_STATE_NAME = "BlockStateName";
 
+    public CamouflageUpgrade(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public void onCompiled(ItemStack stack, ModularRouterBlockEntity router) {
         super.onCompiled(stack, router);

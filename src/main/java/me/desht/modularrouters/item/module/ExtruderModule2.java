@@ -23,9 +23,8 @@ import static me.desht.modularrouters.util.MiscUtil.asMutableComponent;
 public class ExtruderModule2 extends ModuleItem implements IRangedModule {
     private static final TintColor TINT_COLOR = new TintColor(227, 174, 27);
 
-    public ExtruderModule2() {
-        super(ModItems.moduleProps()
-                        .component(ModDataComponents.EXTRUDER2_TEMPLATE, ItemContainerContents.EMPTY),
+    public ExtruderModule2(Properties properties) {
+        super(properties.component(ModDataComponents.EXTRUDER2_TEMPLATE, ItemContainerContents.EMPTY),
                 CompiledExtruderModule2::new);
     }
 

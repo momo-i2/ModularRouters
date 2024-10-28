@@ -7,6 +7,7 @@ import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.filter.matchers.TagMatcher;
 import me.desht.modularrouters.util.MFLocator;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class TagFilter extends SmartFilterItem {
+    public TagFilter(Properties properties) {
+        super(properties.component(ModDataComponents.FILTER_STRINGS, List.of()));
+    }
+
     public static List<TagKey<Item>> getTagList(ItemStack filterStack) {
         List<String> strings = filterStack.getOrDefault(ModDataComponents.FILTER_STRINGS, List.of());
         return strings.stream()

@@ -5,6 +5,7 @@ import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.util.Scheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -14,6 +15,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -121,11 +123,8 @@ public class TemplateFrameBlockEntity extends BlockEntity implements ICamouflage
     }
 
     private BlockState getCamoStateFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        // level isn't necessarily available here
-//        var lookup = level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK);
-        var lookup = provider.lookup(Registries.BLOCK).orElse(BuiltInRegistries.BLOCK.asLookup());
         if (tag.contains(NBT_CAMO_NAME)) {
-            return NbtUtils.readBlockState(lookup, tag.getCompound(NBT_CAMO_NAME));
+            return NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompound(NBT_CAMO_NAME));
         }
         return null;
     }

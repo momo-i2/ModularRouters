@@ -8,6 +8,7 @@ import me.desht.modularrouters.logic.ModuleTarget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -109,7 +110,7 @@ public class ModuleTargetRenderer {
             buffer.endBatch(ModRenderTypes.BLOCK_HILIGHT_FACE);
 
             VertexConsumer lineBuilder = buffer.getBuffer(ModRenderTypes.BLOCK_HILIGHT_LINE);
-            LevelRenderer.renderLineBox(matrixStack, lineBuilder, 0, 0, 0, BOX_SIZE, BOX_SIZE, BOX_SIZE, 0.25f, 0.25f, 0.25f, 0.3125f);
+            ShapeRenderer.renderLineBox(matrixStack, lineBuilder, 0, 0, 0, BOX_SIZE, BOX_SIZE, BOX_SIZE, 0.25f, 0.25f, 0.25f, 0.3125f);
 
             RenderSystem.disableDepthTest();
             buffer.endBatch(ModRenderTypes.BLOCK_HILIGHT_LINE);

@@ -21,9 +21,8 @@ import java.util.List;
 public class BreakerModule extends ModuleItem implements IPickaxeUser {
     private static final TintColor TINT_COLOR = new TintColor(240, 208, 208);
 
-    public BreakerModule() {
-        super(ModItems.moduleProps()
-                        .component(DataComponents.CONTAINER, ItemContainerContents.EMPTY)
+    public BreakerModule(Properties properties) {
+        super(properties.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY)
                         .component(ModDataComponents.BREAKER_SETTINGS, BreakerSettings.DEFAULT),
                 CompiledBreakerModule::new);
     }

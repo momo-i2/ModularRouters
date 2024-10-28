@@ -5,6 +5,7 @@ import me.desht.modularrouters.block.ModularRouterBlock;
 import me.desht.modularrouters.core.ModBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -16,8 +17,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
     };
 
-    public ModBlockStateProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator.getPackOutput(), ModularRouters.MODID, existingFileHelper);
+    public ModBlockStateProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, ModularRouters.MODID, existingFileHelper);
     }
 
     @Override

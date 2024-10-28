@@ -30,6 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -260,12 +261,10 @@ public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         TintColor c = getGuiBackgroundTint();
-        graphics.setColor(c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f, 1.0F);
-        graphics.blit(GUI_TEXTURE, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256, c.getRGB());
         if (!module.isDirectional()) {
-            graphics.blit(GUI_TEXTURE, leftPos + 69, topPos + 17, 204, 0, 52, 52);
+            graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 69, topPos + 17, 204, 0, 52, 52, 256, 256, c.getRGB());
         }
-        graphics.setColor(1f, 1f, 1f, 1f);
     }
 
     protected TintColor getGuiBackgroundTint() {

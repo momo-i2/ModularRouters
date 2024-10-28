@@ -28,7 +28,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +36,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -55,7 +55,12 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
     private final BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler;
 
     public ModuleItem(Properties props, BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler) {
-        super(props);
+        super(props
+                .component(ModDataComponents.COMMON_MODULE_SETTINGS, ModuleSettings.DEFAULT)
+                .component(ModDataComponents.FILTER, ItemContainerContents.EMPTY)
+                .component(ModDataComponents.AUGMENTS, ItemContainerContents.EMPTY)
+                .component(ModDataComponents.RR_COUNTER, 0)
+        );
         this.compiler = compiler;
     }
 
@@ -192,8 +197,8 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
             list.add(xlate(termination.getTranslationKey() + ".header").withStyle(ChatFormatting.YELLOW));
         }
 
-        if (this instanceof IPickaxeUser pickaxeUser) {
-            ItemStack pick = pickaxeUser.getPickaxe(stack);
+        ItemStack pick = IPickaxeUser.getPickaxe(stack);
+        if (this instanceof IPickaxeUser) {
             list.add(xlate("modularrouters.itemText.misc.breakerPick").withStyle(ChatFormatting.YELLOW)
                     .append(pick.getHoverName().plainCopy().withStyle(ChatFormatting.AQUA)));
             pick.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).entrySet().forEach(holder -> {
@@ -277,34 +282,32 @@ public abstract class ModuleItem extends MRBaseItem implements ModItems.ITintabl
 
     @Override
     @Nonnull
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 MFLocator locator = MFLocator.heldModule(hand);
                 player.openMenu(new ModuleMenuProvider(player, locator), locator::toNetwork);
+                return InteractionResult.SUCCESS_SERVER;
             }
         } else {
             return onSneakRightClick(stack, world, player, hand);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        if (stack.getItem() instanceof IPickaxeUser pickaxeUser) {
-            ItemStack pick = pickaxeUser.getPickaxe(stack);
-            return !pick.isEmpty() && EnchantmentHelper.hasAnyEnchantments(pick);
-        }
-        return false;
+        ItemStack pick = IPickaxeUser.getPickaxe(stack);
+        return !pick.isEmpty() && EnchantmentHelper.hasAnyEnchantments(pick);
     }
 
     public String getRegulatorTranslationKey(ItemStack stack) {
         return "modularrouters.guiText.tooltip.regulator.label";
     }
 
-    public InteractionResultHolder<ItemStack> onSneakRightClick(ItemStack stack, Level world, Player player, InteractionHand hand) {
-        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
+    public InteractionResult onSneakRightClick(ItemStack stack, Level world, Player player, InteractionHand hand) {
+        return InteractionResult.PASS;
     }
 
     /**

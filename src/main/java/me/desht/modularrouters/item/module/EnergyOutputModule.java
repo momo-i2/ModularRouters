@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 public class EnergyOutputModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(106, 12, 120);
 
-    public EnergyOutputModule() {
-        super(ModItems.moduleProps(), CompiledEnergyOutputModule::new);
+    public EnergyOutputModule(Properties properties) {
+        super(properties, CompiledEnergyOutputModule::new);
     }
 
     @Override

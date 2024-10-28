@@ -13,11 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class UpgradeItem extends MRBaseItem implements ModItems.ITintable {
-    public UpgradeItem() {
-        super(ModItems.defaultProps());
-    }
-
-    protected UpgradeItem(Item.Properties properties) {
+    public UpgradeItem(Item.Properties properties) {
         super(properties);
     }
 

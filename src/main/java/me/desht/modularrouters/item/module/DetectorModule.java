@@ -21,9 +21,8 @@ public class DetectorModule extends ModuleItem {
 
     private static final TintColor TINT_COLOR = new TintColor(255, 255, 195);
 
-    public DetectorModule() {
-        super(ModItems.moduleProps()
-                .component(ModDataComponents.DETECTOR_SETTINGS, DetectorSettings.DEFAULT),
+    public DetectorModule(Properties properties) {
+        super(properties.component(ModDataComponents.DETECTOR_SETTINGS, DetectorSettings.DEFAULT),
                 CompiledDetectorModule::new);
     }
 

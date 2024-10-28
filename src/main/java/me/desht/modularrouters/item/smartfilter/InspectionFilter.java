@@ -17,10 +17,8 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 public class InspectionFilter extends SmartFilterItem {
     public static final int MAX_SIZE = 6;
 
-    public InspectionFilter() {
-        super(ModItems.defaultProps()
-                .component(ModDataComponents.COMPARISON_LIST, ComparisonList.DEFAULT)
-        );
+    public InspectionFilter(Properties properties) {
+        super(properties.component(ModDataComponents.COMPARISON_LIST, ComparisonList.DEFAULT));
     }
 
     @Override

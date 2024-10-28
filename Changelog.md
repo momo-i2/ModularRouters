@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.21.1
 
+### [14.0.0]
+
+* Ported to Minecraft 1.21.3
+
 ### [13.1.0]
 
 * Updated to Minecraft 1.21.1; NeoForge 21.1.0 or later required

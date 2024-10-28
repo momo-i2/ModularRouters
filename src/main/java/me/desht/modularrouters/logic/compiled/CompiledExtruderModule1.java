@@ -38,7 +38,7 @@ public class CompiledExtruderModule1 extends CompiledModule {
 
         distance = router == null ? 0 : router.getExtensionData().getInt(NBT_EXTRUDER_DIST + getAbsoluteFacing());
         pushingAugments = getAugmentCount(ModItems.PUSHING_AUGMENT);
-        pickaxe = stack.getItem() instanceof IPickaxeUser p ? p.getPickaxe(stack) : ItemStack.EMPTY;
+        pickaxe = IPickaxeUser.getPickaxe(stack);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class CompiledExtruderModule1 extends CompiledModule {
         if (!ConfigHolder.common.module.extruderPushEntities.get()) {
             return;
         }
-        Vec3 v = Vec3.atLowerCornerOf(facing.getNormal()).scale(BASE_PUSH_STRENGTH + pushingAugments * AUGMENT_BOOST);
+        Vec3 v = Vec3.atLowerCornerOf(facing.getUnitVec3i()).scale(BASE_PUSH_STRENGTH + pushingAugments * AUGMENT_BOOST);
         for (Entity entity : world.getEntitiesOfClass(Entity.class, new AABB(placePos))) {
             if (entity.getPistonPushReaction() != PushReaction.IGNORE) {
                 entity.setDeltaMovement(v);

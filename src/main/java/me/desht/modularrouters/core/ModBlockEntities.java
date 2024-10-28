@@ -8,15 +8,16 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ModularRouters.MODID);
 
     public static final Supplier<BlockEntityType<ModularRouterBlockEntity>> MODULAR_ROUTER
-            = register("modular_router", () -> new BlockEntityType<>(ModularRouterBlockEntity::new, ImmutableSet.of(ModBlocks.MODULAR_ROUTER.get()), null));
+            = register("modular_router", () -> new BlockEntityType<>(ModularRouterBlockEntity::new, Set.of(ModBlocks.MODULAR_ROUTER.get())));
     public static final Supplier<BlockEntityType<TemplateFrameBlockEntity>> TEMPLATE_FRAME
-            = register("template_frame", () -> new BlockEntityType<>(TemplateFrameBlockEntity::new, ImmutableSet.of(ModBlocks.TEMPLATE_FRAME.get()), null));
+            = register("template_frame", () -> new BlockEntityType<>(TemplateFrameBlockEntity::new, Set.of(ModBlocks.TEMPLATE_FRAME.get())));
 
     private static <T extends BlockEntityType<?>> Supplier<T> register(String name, Supplier<T> sup) {
         return BLOCK_ENTITIES.register(name, sup);

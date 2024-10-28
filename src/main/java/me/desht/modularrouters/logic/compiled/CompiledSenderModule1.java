@@ -92,7 +92,7 @@ public class CompiledSenderModule1 extends CompiledModule {
 
     private boolean isPassable(Level w, BlockPos pos, Direction face) {
         BlockState state = w.getBlockState(pos);
-        return !MiscUtil.blockHasSolidSide(state, w, pos, face.getOpposite()) || !state.isSolidRender(w, pos);
+        return !MiscUtil.blockHasSolidSide(state, w, pos, face.getOpposite()) || !state.isSolidRender();
     }
 
     public record PositionedItemHandler(BlockPos pos, IItemHandler handler) {

@@ -27,9 +27,8 @@ public class FlingerModule extends DropperModule {
     public static final float MAX_YAW = 60.0f;
     private static final TintColor TINT_COLOR = new TintColor(230, 204, 240);
 
-    public FlingerModule() {
-        super(ModItems.moduleProps()
-                        .component(ModDataComponents.FLINGER_SETTINGS, FlingerSettings.DEFAULT),
+    public FlingerModule(Properties properties) {
+        super(properties.component(ModDataComponents.FLINGER_SETTINGS, FlingerSettings.DEFAULT),
                 CompiledFlingerModule::new);
     }
 

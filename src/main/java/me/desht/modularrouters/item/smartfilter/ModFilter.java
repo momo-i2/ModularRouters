@@ -19,9 +19,8 @@ import java.util.List;
 public class ModFilter extends SmartFilterItem {
     public static final int MAX_SIZE = 6;
 
-    public ModFilter() {
-        super(ModItems.defaultProps()
-                .component(ModDataComponents.FILTER_STRINGS, List.of()));
+    public ModFilter(Properties properties) {
+        super(properties.component(ModDataComponents.FILTER_STRINGS, List.of()));
     }
 
     public static List<String> getModList(ItemStack filterStack) {

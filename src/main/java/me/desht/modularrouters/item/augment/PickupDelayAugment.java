@@ -10,6 +10,10 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 public class PickupDelayAugment extends AugmentItem {
     public static final int TICKS_PER_AUGMENT = 10;
 
+    public PickupDelayAugment(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public int getMaxAugments(ModuleItem moduleType) {
         return moduleType instanceof DropperModule ? 20 : 0;  // includes flinger module

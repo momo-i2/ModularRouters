@@ -9,6 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class RegulatorAugment extends AugmentItem {
+    public RegulatorAugment(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public int getMaxAugments(ModuleItem moduleType) {
         return moduleType instanceof DetectorModule || moduleType instanceof ExtruderModule2 ? 0 : 1;

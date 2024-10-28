@@ -31,7 +31,7 @@ public class CompiledBreakerModule extends CompiledModule {
         super(router, stack);
 
         settings = stack.getOrDefault(ModDataComponents.BREAKER_SETTINGS, BreakerSettings.DEFAULT);
-        pickaxe = stack.getItem() instanceof IPickaxeUser p ? p.getPickaxe(stack) : ItemStack.EMPTY;
+        pickaxe = IPickaxeUser.getPickaxe(stack);
     }
 
     @Override

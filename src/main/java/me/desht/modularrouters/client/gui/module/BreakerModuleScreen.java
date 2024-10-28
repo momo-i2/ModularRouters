@@ -7,6 +7,7 @@ import me.desht.modularrouters.logic.compiled.CompiledBreakerModule;
 import me.desht.modularrouters.logic.compiled.CompiledBreakerModule.MatchType;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -50,6 +51,6 @@ public class BreakerModuleScreen extends ModuleScreen {
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         super.renderBg(graphics, partialTicks, mouseX, mouseY);
 
-        graphics.blit(GUI_TEXTURE, leftPos + 147, topPos + 20, BUTTON_XY.x(), BUTTON_XY.y(), 18, 18);  // match type "button" background
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 147, topPos + 20, BUTTON_XY.x(), BUTTON_XY.y(), 18, 18, 256, 256);  // match type "button" background
     }
 }

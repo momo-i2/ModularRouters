@@ -165,7 +165,7 @@ public class InspectionMatcher implements IItemMatcher {
         private static Optional<Integer> getFoodValue(ItemStack stack) {
             //noinspection ConstantConditions
             return stack.has(DataComponents.FOOD) ?
-                    Optional.of(stack.getFoodProperties(null).nutrition()) :
+                    Optional.of(stack.get(DataComponents.FOOD).nutrition()) :
                     Optional.empty();
         }
 

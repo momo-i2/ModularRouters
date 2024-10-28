@@ -22,9 +22,8 @@ import java.util.List;
 public class DistributorModule extends SenderModule2 {
     private static final TintColor TINT_COLOR = new TintColor(240, 240, 60);
 
-    public DistributorModule() {
-        super(ModItems.moduleProps()
-                .component(ModDataComponents.DISTRIBUTOR_SETTINGS, DistributorSettings.DEFAULT),
+    public DistributorModule(Properties properties) {
+        super(properties.component(ModDataComponents.DISTRIBUTOR_SETTINGS, DistributorSettings.DEFAULT),
                 CompiledDistributorModule::new);
     }
 

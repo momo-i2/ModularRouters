@@ -21,6 +21,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -99,9 +100,9 @@ public class ModularRouterScreen extends AbstractContainerScreen<RouterMenu> imp
 
     @Override
     protected void renderBg(GuiGraphics graphics, float v, int i, int i1) {
-        graphics.blit(TEXTURE_LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderType::guiTextured, TEXTURE_LOCATION, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
         if (menu.getRouter().getEnergyCapacity() > 0) {
-            graphics.blit(TEXTURE_LOCATION, leftPos - 27, topPos, 180, 0, 32, 100);
+            graphics.blit(RenderType::guiTextured, TEXTURE_LOCATION, leftPos - 27, topPos, 180, 0, 32, 100, 256, 256);
         }
     }
 

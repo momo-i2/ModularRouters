@@ -214,9 +214,8 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
 
     private void processClientSync(CompoundTag compound, HolderLookup.Provider provider) {
         // called client-side on receipt of NBT
-        HolderGetter<Block> holderGetter = provider.lookup(Registries.BLOCK).orElse(BuiltInRegistries.BLOCK.asLookup());
         if (compound.contains(CamouflageUpgrade.NBT_STATE_NAME)) {
-            setCamouflage(NbtUtils.readBlockState(holderGetter, compound.getCompound(CamouflageUpgrade.NBT_STATE_NAME)));
+            setCamouflage(NbtUtils.readBlockState(provider.lookupOrThrow(Registries.BLOCK), compound.getCompound(CamouflageUpgrade.NBT_STATE_NAME)));
         } else {
             setCamouflage(null);
         }

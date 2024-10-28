@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 public abstract class AugmentItem extends MRBaseItem {
     public static final int SLOTS = 4;
 
-    public AugmentItem() {
-        super(ModItems.defaultProps());
+    public AugmentItem(Properties properties) {
+        super(properties);
     }
 
     @Override

@@ -12,14 +12,17 @@ import java.util.List;
 public interface IPickaxeUser {
     ItemContainerContents DEFAULT_PICK = ItemContainerContents.fromItems(List.of(new ItemStack(Items.STONE_PICKAXE)));
 
-    default ItemStack getPickaxe(ItemStack moduleStack) {
-        return moduleStack.getOrDefault(ModDataComponents.PICKAXE, DEFAULT_PICK)
-                .copyOne();
+    static ItemStack getPickaxe(ItemStack moduleStack) {
+        return moduleStack.getItem() instanceof IPickaxeUser ?
+                moduleStack.getOrDefault(ModDataComponents.PICKAXE, DEFAULT_PICK).copyOne() :
+                ItemStack.EMPTY;
     }
 
-    default ItemStack setPickaxe(ItemStack moduleStack, ItemStack pickaxeStack) {
-        pickaxeStack.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
-        moduleStack.set(ModDataComponents.PICKAXE, ItemContainerContents.fromItems(List.of(pickaxeStack)));
+    static ItemStack setPickaxe(ItemStack moduleStack, ItemStack pickaxeStack) {
+        if (moduleStack.getItem() instanceof IPickaxeUser) {
+            pickaxeStack.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
+            moduleStack.set(ModDataComponents.PICKAXE, ItemContainerContents.fromItems(List.of(pickaxeStack)));
+        }
         return moduleStack;
     }
 }

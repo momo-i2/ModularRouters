@@ -10,6 +10,7 @@ import me.desht.modularrouters.util.ModNameCache;
 import me.desht.modularrouters.util.WildcardedRLMatcher;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -104,16 +105,17 @@ public class ModularRouters {
             DataGenerator generator = event.getGenerator();
             CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
             ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+            PackOutput output = generator.getPackOutput();
 
-            generator.addProvider(event.includeServer(), new ModRecipeProvider(generator, lookupProvider));
-            ModBlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(generator, lookupProvider, existingFileHelper);
+            generator.addProvider(event.includeServer(), new ModRecipeProvider.Runner(output, lookupProvider));
+            ModBlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(output, lookupProvider, existingFileHelper);
             generator.addProvider(event.includeServer(), blockTagsProvider);
-            generator.addProvider(event.includeServer(), new ModItemTagsProvider(generator, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
-            generator.addProvider(event.includeServer(), new ModLootTableProvider(generator, lookupProvider));
-            generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(generator, lookupProvider, existingFileHelper));
+            generator.addProvider(event.includeServer(), new ModItemTagsProvider(output, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
+            generator.addProvider(event.includeServer(), new ModLootTableProvider(output, lookupProvider));
+            generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(output, lookupProvider, existingFileHelper));
 
-            generator.addProvider(event.includeClient(), new ModBlockStateProvider(generator, existingFileHelper));
-            generator.addProvider(event.includeClient(), new ModItemModelProvider(generator, existingFileHelper));
+            generator.addProvider(event.includeClient(), new ModBlockStateProvider(output, existingFileHelper));
+            generator.addProvider(event.includeClient(), new ModItemModelProvider(output, existingFileHelper));
         }
     }
 }

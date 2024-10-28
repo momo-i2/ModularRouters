@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 public class SenderModule1 extends ModuleItem implements IRangedModule {
     private static final TintColor TINT_COLOR = new TintColor(221, 255, 163);
 
-    public SenderModule1() {
-        super(ModItems.moduleProps(), CompiledSenderModule1::new);
+    public SenderModule1(Properties properties) {
+        super(properties, CompiledSenderModule1::new);
     }
 
     @Override

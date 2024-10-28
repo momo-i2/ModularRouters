@@ -5,6 +5,10 @@ import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.TintColor;
 
 public class StackUpgrade extends UpgradeItem {
+    public StackUpgrade(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public Object[] getExtraUsageParams() {
         int itemsPerTick = ClientUtil.getOpenItemRouter().map(ModularRouterBlockEntity::getItemsPerTick).orElse(1);

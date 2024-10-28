@@ -46,11 +46,11 @@ public abstract class CamouflageableBlock extends Block {
         return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getVisualShape(worldIn, pos, CollisionContext.empty());
     }
 
-    @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        ICamouflageable camo = getCamoState(worldIn, pos);
-        return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getBlockSupportShape(worldIn, pos);
-    }
+//    @Override
+//    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
+//        ICamouflageable camo = getCamoState(worldIn, pos);
+//        return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getBlockSupportShape(worldIn, pos);
+//    }
 
     @Override
     public VoxelShape getVisualShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext ctx) {
@@ -58,11 +58,11 @@ public abstract class CamouflageableBlock extends Block {
         return camo == null ? getUncamouflagedVisualShape(state, worldIn, pos, ctx) : camo.getCamouflage().getVisualShape(worldIn, pos, ctx);
     }
 
-    @Override
-    public int getLightBlock(BlockState state, BlockGetter world, BlockPos pos) {
-        ICamouflageable camo = getCamoState(world, pos);
-        return camo == null ? super.getLightBlock(state, world, pos) : camo.getCamouflage().getLightBlock(world, pos);
-    }
+//    @Override
+//    public int getLightBlock(BlockState state, BlockGetter world, BlockPos pos) {
+//        ICamouflageable camo = getCamoState(world, pos);
+//        return camo == null ? super.getLightBlock(state, world, pos) : camo.getCamouflage().getLightBlock(world, pos);
+//    }
 
     @Override
     public float getDestroyProgress(BlockState state, Player player, BlockGetter worldIn, BlockPos pos) {
@@ -78,11 +78,11 @@ public abstract class CamouflageableBlock extends Block {
                 camo.getCamouflage().getBlock().getExplosionResistance(state, world, pos, explosion);
     }
 
-    @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-        ICamouflageable camo = getCamoState(reader, pos);
-        return camo == null ? super.propagatesSkylightDown(state, reader, pos) : camo.getCamouflage().propagatesSkylightDown(reader, pos);
-    }
+//    @Override
+//    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+//        ICamouflageable camo = getCamoState(reader, pos);
+//        return camo == null ? super.propagatesSkylightDown(state, reader, pos) : camo.getCamouflage().propagatesSkylightDown(reader, pos);
+//    }
 
     ICamouflageable getCamoState(BlockGetter blockAccess, BlockPos pos) {
         if (blockAccess == null || pos == null) return null;

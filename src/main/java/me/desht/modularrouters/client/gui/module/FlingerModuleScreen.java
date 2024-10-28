@@ -11,6 +11,7 @@ import me.desht.modularrouters.logic.compiled.CompiledFlingerModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -70,9 +71,9 @@ public class FlingerModuleScreen extends ModuleScreen {
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         super.renderBg(graphics, partialTicks, mouseX, mouseY);
 
-        graphics.blit(GUI_TEXTURE, leftPos + 148, topPos + 16, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14);
-        graphics.blit(GUI_TEXTURE, leftPos + 148, topPos + 34, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14);
-        graphics.blit(GUI_TEXTURE, leftPos + 148, topPos + 52, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14);
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 148, topPos + 16, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14, 256, 256);
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 148, topPos + 34, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14, 256, 256);
+        graphics.blit(RenderType::guiTextured, GUI_TEXTURE, leftPos + 148, topPos + 52, LARGE_TEXTFIELD_XY.x(), LARGE_TEXTFIELD_XY.y(), 35, 14, 256, 256);
     }
 
     @Override

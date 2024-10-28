@@ -44,9 +44,9 @@ public class ResetModuleRecipe extends CustomRecipe {
 
         if (!moduleStack.isEmpty()) {
             ItemStack newStack = new ItemStack(moduleStack.getItem());
-            if (moduleStack.getItem() instanceof IPickaxeUser pickaxeUser) {
-                ItemStack pick = pickaxeUser.getPickaxe(moduleStack);
-                if (!pick.isEmpty()) pickaxeUser.setPickaxe(newStack, pick);
+            ItemStack pick = IPickaxeUser.getPickaxe(moduleStack);
+            if (!pick.isEmpty()) {
+                IPickaxeUser.setPickaxe(newStack, pick);
             }
             return newStack;
         } else {
@@ -55,12 +55,7 @@ public class ResetModuleRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
         return ModRecipes.MODULE_RESET.get();
     }
 }

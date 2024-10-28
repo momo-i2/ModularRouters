@@ -28,9 +28,8 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 public class PlayerModule extends ModuleItem implements IPlayerOwned {
     private static final TintColor TINT_COLOR = new TintColor(255, 208, 144);
 
-    public PlayerModule() {
-        super(ModItems.moduleProps()
-                        .component(ModDataComponents.PLAYER_SETTINGS, PlayerSettings.DEFAULT),
+    public PlayerModule(Properties properties) {
+        super(properties.component(ModDataComponents.PLAYER_SETTINGS, PlayerSettings.DEFAULT),
                 CompiledPlayerModule::new);
     }
 

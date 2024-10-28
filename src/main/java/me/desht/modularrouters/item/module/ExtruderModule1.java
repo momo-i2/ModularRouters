@@ -18,9 +18,8 @@ public class ExtruderModule1 extends ModuleItem implements IRangedModule, IPicka
 
     private static final TintColor TINT_COLOR = new TintColor(227, 174, 27);
 
-    public ExtruderModule1() {
-        super(ModItems.moduleProps()
-                .component(DataComponents.CONTAINER, ItemContainerContents.EMPTY),
+    public ExtruderModule1(Properties properties) {
+        super(properties.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY),
                 CompiledExtruderModule1::new);
     }
 

@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 public class PullerModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
     private static final TintColor TINT_COLOR = new TintColor(128, 128, 255);
 
-    public PullerModule2() {
-        super(ModItems.moduleProps(), CompiledPullerModule2::new);
+    public PullerModule2(Properties properties) {
+        super(properties, CompiledPullerModule2::new);
     }
 
     @Override

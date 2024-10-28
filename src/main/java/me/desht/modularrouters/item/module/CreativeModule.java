@@ -11,8 +11,8 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 public class CreativeModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(187, 38, 185);
 
-    public CreativeModule() {
-        super(ModItems.moduleProps(), CompiledCreativeModule::new);
+    public CreativeModule(Properties properties) {
+        super(properties, CompiledCreativeModule::new);
     }
 
     @Override

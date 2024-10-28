@@ -9,6 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class FluidUpgrade extends UpgradeItem {
+    public FluidUpgrade(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public Object[] getExtraUsageParams() {
         return new Object[] { ConfigHolder.common.router.mBperFluidUpgrade.get() };

@@ -11,7 +11,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,8 +21,8 @@ import static me.desht.modularrouters.client.util.ClientUtil.colorText;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class SyncUpgrade extends UpgradeItem {
-    public SyncUpgrade() {
-        super(ModItems.defaultProps().component(ModDataComponents.SYNC_TUNING, 1));
+    public SyncUpgrade(Properties properties) {
+        super(properties.component(ModDataComponents.SYNC_TUNING, 1));
     }
 
     @Override
@@ -55,11 +54,11 @@ public class SyncUpgrade extends UpgradeItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (world.isClientSide && !player.isSteppingCarefully()) {
+        if (world.isClientSide && !player.isShiftKeyDown()) {
             SyncUpgradeScreen.openSyncGui(stack, hand);
-        } else if (player.isSteppingCarefully()) {
+        } else if (player.isShiftKeyDown()) {
             if (!world.isClientSide) {
                 setTunedValue(stack, world.random.nextInt(ConfigHolder.common.router.baseTickRate.get()));
                 player.displayClientMessage(Component.translatable("modularrouters.itemText.sync.tuning", getTunedValue(stack)), true);
@@ -67,6 +66,6 @@ public class SyncUpgrade extends UpgradeItem {
                 player.playSound(ModSounds.SUCCESS.get(), ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.5f);
             }
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        return world.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 }

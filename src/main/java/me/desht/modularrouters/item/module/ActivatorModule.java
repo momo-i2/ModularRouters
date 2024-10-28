@@ -20,8 +20,8 @@ import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 public class ActivatorModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(255, 255, 195);
 
-    public ActivatorModule() {
-        super(ModItems.moduleProps().component(ModDataComponents.ACTIVATOR_SETTINGS, ActivatorSettings.DEFAULT), CompiledActivatorModule::new);
+    public ActivatorModule(Properties properties) {
+        super(properties.component(ModDataComponents.ACTIVATOR_SETTINGS, ActivatorSettings.DEFAULT), CompiledActivatorModule::new);
     }
 
     @Override

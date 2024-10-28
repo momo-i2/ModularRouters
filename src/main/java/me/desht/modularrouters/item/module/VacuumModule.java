@@ -23,9 +23,8 @@ import java.util.List;
 public class VacuumModule extends ModuleItem implements IRangedModule {
     private static final TintColor TINT_COLOR = new TintColor(120, 48, 191);
 
-    public VacuumModule() {
-        super(ModItems.moduleProps()
-                        .component(ModDataComponents.VACUUM_SETTINGS.get(), VacuumSettings.DEFAULT),
+    public VacuumModule(Properties properties) {
+        super(properties.component(ModDataComponents.VACUUM_SETTINGS.get(), VacuumSettings.DEFAULT),
                 CompiledVacuumModule::new);
     }
 

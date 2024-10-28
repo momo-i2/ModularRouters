@@ -6,7 +6,7 @@ import me.desht.modularrouters.item.augment.AugmentItem;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.item.upgrade.UpgradeItem;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
@@ -22,8 +22,8 @@ import static me.desht.modularrouters.datagen.ModBlockStateProvider.modid;
 public class ModItemModelProvider extends ItemModelProvider {
     private static final ResourceLocation GENERATED = ResourceLocation.parse("item/generated");
 
-    public ModItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator.getPackOutput(), ModularRouters.MODID, existingFileHelper);
+    public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, ModularRouters.MODID, existingFileHelper);
     }
 
     @Nonnull
@@ -56,14 +56,14 @@ public class ModItemModelProvider extends ItemModelProvider {
                                 modid("item/module/" + name));
                     }
                 }
-                case UpgradeItem upgradeItem -> simpleItem(registryObject,
+                case UpgradeItem ignored -> simpleItem(registryObject,
                         modid("item/upgrade/upgrade_layer0"),
                         modid("item/upgrade/upgrade_layer1"),
                         modid("item/upgrade/" + name));
-                case AugmentItem augmentItem -> simpleItem(registryObject,
+                case AugmentItem ignored -> simpleItem(registryObject,
                         modid("item/augment/augment_layer0"),
                         modid("item/augment/" + name));
-                case SmartFilterItem smartFilterItem -> simpleItem(registryObject, modid("item/filter/" + name));
+                case SmartFilterItem ignored -> simpleItem(registryObject, modid("item/filter/" + name));
                 default -> {
                 }
             }

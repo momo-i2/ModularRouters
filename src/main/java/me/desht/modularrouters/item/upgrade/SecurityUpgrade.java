@@ -20,7 +20,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,10 +32,8 @@ import java.util.stream.Collectors;
 public class SecurityUpgrade extends UpgradeItem implements IPlayerOwned {
     private static final int MAX_PLAYERS = 6;
 
-    public SecurityUpgrade() {
-        super(ModItems.defaultProps()
-                .component(ModDataComponents.SECURITY_LIST, SecurityList.DEFAULT)
-        );
+    public SecurityUpgrade(Properties properties) {
+        super(properties.component(ModDataComponents.SECURITY_LIST, SecurityList.DEFAULT));
     }
 
     @Override
@@ -115,15 +112,15 @@ public class SecurityUpgrade extends UpgradeItem implements IPlayerOwned {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.getCommandSenderWorld().isClientSide && player.isSteppingCarefully()) {
             setOwner(stack, player);
             Component displayName = Objects.requireNonNullElse(player.getDisplayName(), Component.literal("?"));
             player.displayClientMessage(Component.translatable("modularrouters.itemText.security.owner", displayName.getString()), false);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -134,10 +131,11 @@ public class SecurityUpgrade extends UpgradeItem implements IPlayerOwned {
             if (player.level().isClientSide) {
                 player.playSound(res.isError() ? ModSounds.ERROR.get() : ModSounds.SUCCESS.get(),
                         ConfigHolder.common.sound.bleepVolume.get().floatValue(), 1.0f);
+                return InteractionResult.SUCCESS;
             } else {
                 player.displayClientMessage(Component.translatable(res.getTranslationKey(), profile.getName()), false);
+                return InteractionResult.SUCCESS_SERVER;
             }
-            return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }

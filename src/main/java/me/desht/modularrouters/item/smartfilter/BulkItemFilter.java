@@ -29,6 +29,10 @@ import java.util.Optional;
 public class BulkItemFilter extends SmartFilterItem {
     public static final int FILTER_SIZE = 54;
 
+    public BulkItemFilter(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public @NotNull IItemMatcher compile(ItemStack filterStack, ItemStack moduleStack) {
         ModuleFlags flags = ModuleFlags.forItem(moduleStack);

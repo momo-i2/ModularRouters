@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 public class VoidModule extends ModuleItem {
     private static final TintColor TINT_COLOR = new TintColor(255, 0, 0);
 
-    public VoidModule() {
-        super(ModItems.moduleProps(), CompiledVoidModule::new);
+    public VoidModule(Properties properties) {
+        super(properties, CompiledVoidModule::new);
     }
 
     @Override
