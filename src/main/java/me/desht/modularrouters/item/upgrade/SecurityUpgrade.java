@@ -8,7 +8,6 @@ import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.core.ModDataComponents;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModSounds;
 import me.desht.modularrouters.item.IPlayerOwned;
 import me.desht.modularrouters.util.TranslatableEnum;

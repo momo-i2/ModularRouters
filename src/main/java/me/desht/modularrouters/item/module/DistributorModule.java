@@ -6,7 +6,6 @@ import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModDataComponents;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.logic.ModuleTarget;
 import me.desht.modularrouters.logic.compiled.CompiledDistributorModule;

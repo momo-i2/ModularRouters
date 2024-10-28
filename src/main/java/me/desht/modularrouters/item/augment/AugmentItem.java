@@ -1,7 +1,6 @@
 package me.desht.modularrouters.item.augment;
 
 import me.desht.modularrouters.container.handler.AugmentHandler;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.item.MRBaseItem;
 import me.desht.modularrouters.item.module.ModuleItem;
 import net.minecraft.network.chat.Component;

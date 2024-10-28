@@ -5,7 +5,6 @@ import me.desht.modularrouters.client.gui.upgrade.SyncUpgradeScreen;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.core.ModDataComponents;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

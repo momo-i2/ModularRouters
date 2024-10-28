@@ -1,6 +1,5 @@
 package me.desht.modularrouters.client.gui.upgrade;
 
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.client.gui.widgets.button.ItemStackButton;
 import me.desht.modularrouters.client.gui.widgets.textfield.IntegerTextField;
 import me.desht.modularrouters.client.util.ClientUtil;

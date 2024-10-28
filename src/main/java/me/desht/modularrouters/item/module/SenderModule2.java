@@ -4,7 +4,6 @@ import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.client.render.area.IPositionProvider;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
 import me.desht.modularrouters.logic.compiled.CompiledSenderModule2;
 import net.minecraft.world.item.Item;

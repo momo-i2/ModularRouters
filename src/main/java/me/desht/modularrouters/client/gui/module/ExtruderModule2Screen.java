@@ -1,7 +1,6 @@
 package me.desht.modularrouters.client.gui.module;
 
 import me.desht.modularrouters.client.gui.widgets.button.InfoButton;
-import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.container.ModuleMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;

@@ -3,7 +3,6 @@ package me.desht.modularrouters.item.module;
 import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledExtruderModule1;
 import me.desht.modularrouters.logic.settings.ModuleSettings;
 import net.minecraft.ChatFormatting;

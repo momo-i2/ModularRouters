@@ -1,6 +1,5 @@
 package me.desht.modularrouters.network.messages;
 
-import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.util.MiscUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

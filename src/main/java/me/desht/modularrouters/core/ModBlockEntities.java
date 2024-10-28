@@ -1,6 +1,5 @@
 package me.desht.modularrouters.core;
 
-import com.google.common.collect.ImmutableSet;
 import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.tile.ModularRouterBlockEntity;
 import me.desht.modularrouters.block.tile.TemplateFrameBlockEntity;

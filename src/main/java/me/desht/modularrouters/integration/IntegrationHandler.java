@@ -1,9 +1,6 @@
 package me.desht.modularrouters.integration;
 
-import me.desht.modularrouters.integration.ffs.FFSSetup;
-import me.desht.modularrouters.integration.top.TOPCompatibility;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
 
 public class IntegrationHandler {
     public static void onModConstruction(IEventBus modBus) {

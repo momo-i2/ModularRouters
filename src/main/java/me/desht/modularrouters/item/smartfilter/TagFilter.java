@@ -1,13 +1,12 @@
 package me.desht.modularrouters.item.smartfilter;
 
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.container.AbstractSmartFilterMenu;
 import me.desht.modularrouters.container.TagFilterMenu;
 import me.desht.modularrouters.core.ModDataComponents;
-import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.filter.matchers.TagMatcher;
 import me.desht.modularrouters.util.MFLocator;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -1,10 +1,10 @@
 package me.desht.modularrouters.logic.filter;
 
 import com.google.common.collect.Lists;
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.ModuleFilterHandler;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
-import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.settings.ModuleFlags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;

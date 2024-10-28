@@ -6,7 +6,6 @@ import me.desht.modularrouters.container.Extruder2ModuleMenu;
 import me.desht.modularrouters.container.Extruder2ModuleMenu.TemplateHandler;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModDataComponents;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledExtruderModule2;
 import me.desht.modularrouters.util.MFLocator;
 import net.minecraft.ChatFormatting;

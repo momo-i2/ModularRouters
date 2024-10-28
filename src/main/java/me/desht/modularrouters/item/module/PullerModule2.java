@@ -3,7 +3,6 @@ package me.desht.modularrouters.item.module;
 import me.desht.modularrouters.client.render.area.IPositionProvider;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledPullerModule2;
 import net.minecraft.world.item.ItemStack;
 

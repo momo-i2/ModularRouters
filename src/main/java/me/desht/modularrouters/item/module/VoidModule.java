@@ -2,7 +2,6 @@ package me.desht.modularrouters.item.module;
 
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledVoidModule;
 import net.minecraft.world.item.ItemStack;
 

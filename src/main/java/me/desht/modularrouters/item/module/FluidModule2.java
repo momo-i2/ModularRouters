@@ -1,17 +1,16 @@
 package me.desht.modularrouters.item.module;
 
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.client.render.area.IPositionProvider;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.ModuleMenu;
 import me.desht.modularrouters.core.ModDataComponents;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.core.ModMenuTypes;
 import me.desht.modularrouters.item.smartfilter.SmartFilterItem;
 import me.desht.modularrouters.logic.ModuleTargetList;
 import me.desht.modularrouters.logic.compiled.CompiledFluidModule2;
 import me.desht.modularrouters.logic.filter.matchers.FluidMatcher;
-import me.desht.modularrouters.api.matching.IItemMatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;

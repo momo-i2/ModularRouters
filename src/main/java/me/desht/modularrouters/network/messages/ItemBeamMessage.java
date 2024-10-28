@@ -1,6 +1,5 @@
 package me.desht.modularrouters.network.messages;
 
-import me.desht.modularrouters.client.util.ClientUtil;
 import me.desht.modularrouters.core.ModBlockEntities;
 import me.desht.modularrouters.util.BeamData;
 import me.desht.modularrouters.util.MiscUtil;

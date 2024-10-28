@@ -1,6 +1,5 @@
 package me.desht.modularrouters.client.gui.filter;
 
-import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.client.gui.filter.Buttons.DeleteButton;
 import me.desht.modularrouters.client.gui.widgets.button.BackButton;
 import me.desht.modularrouters.client.gui.widgets.textfield.IntegerTextField;

@@ -1,5 +1,6 @@
 package me.desht.modularrouters.item.smartfilter;
 
+import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.config.ConfigHolder;
 import me.desht.modularrouters.container.AbstractSmartFilterMenu;
 import me.desht.modularrouters.container.BulkItemFilterMenu;
@@ -7,7 +8,6 @@ import me.desht.modularrouters.container.handler.BaseModuleHandler;
 import me.desht.modularrouters.container.handler.BaseModuleHandler.BulkFilterHandler;
 import me.desht.modularrouters.core.ModSounds;
 import me.desht.modularrouters.logic.filter.matchers.BulkItemMatcher;
-import me.desht.modularrouters.api.matching.IItemMatcher;
 import me.desht.modularrouters.logic.settings.ModuleFlags;
 import me.desht.modularrouters.util.InventoryUtils;
 import me.desht.modularrouters.util.MFLocator;

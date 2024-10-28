@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import me.desht.modularrouters.client.render.area.IPositionProvider;
 import me.desht.modularrouters.client.util.TintColor;
 import me.desht.modularrouters.config.ConfigHolder;
-import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.ModuleTarget;
 import me.desht.modularrouters.logic.compiled.CompiledEnergyDistributorModule;
 import net.minecraft.world.item.ItemStack;

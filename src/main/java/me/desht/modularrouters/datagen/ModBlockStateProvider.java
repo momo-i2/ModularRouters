@@ -4,7 +4,6 @@ import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.block.ModularRouterBlock;
 import me.desht.modularrouters.core.ModBlocks;
 import net.minecraft.core.Direction;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;

@@ -3,7 +3,6 @@ package me.desht.modularrouters.datagen;
 import me.desht.modularrouters.ModularRouters;
 import me.desht.modularrouters.core.ModBlocks;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
