@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:fluid_module"
-    },
-    {
-      "item": "modularrouters:fluid_module"
-    },
-    {
-      "item": "modularrouters:fluid_module"
-    },
-    {
-      "item": "modularrouters:fluid_module"
-    },
-    {
-      "item": "minecraft:prismarine_shard"
-    }
+    "modularrouters:fluid_module",
+    "modularrouters:fluid_module",
+    "modularrouters:fluid_module",
+    "modularrouters:fluid_module",
+    "minecraft:prismarine_shard"
   ],
   "result": {
     "count": 4,

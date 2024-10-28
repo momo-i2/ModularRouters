@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:bulk_item_filter"
-    },
-    {
-      "item": "minecraft:comparator"
-    }
+    "modularrouters:bulk_item_filter",
+    "minecraft:comparator"
   ],
   "result": {
     "count": 1,

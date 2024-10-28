@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "modularrouters:blank_upgrade"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "U": {
-      "item": "minecraft:bucket"
-    }
+    "B": "modularrouters:blank_upgrade",
+    "G": "#c:glass_blocks",
+    "U": "minecraft:bucket"
   },
   "pattern": [
     " U ",

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:bulk_item_filter"
-    },
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "tag": "c:dyes/black"
-    }
+    "modularrouters:bulk_item_filter",
+    "minecraft:paper",
+    "#c:dyes/black"
   ],
   "result": {
     "count": 1,

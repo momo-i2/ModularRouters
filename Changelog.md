@@ -4,11 +4,13 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.21.1
+## Minecraft 1.21.3
 
 ### [14.0.0]
 
 * Ported to Minecraft 1.21.3
+
+## Minecraft 1.21.1
 
 ### [13.1.0]
 

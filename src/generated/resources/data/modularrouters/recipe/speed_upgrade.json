@@ -2,24 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "modularrouters:blank_upgrade"
-    },
-    "G": {
-      "tag": "c:gunpowders"
-    },
-    "I": {
-      "tag": "c:ingots/gold"
-    },
-    "N": {
-      "tag": "c:nuggets/gold"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    },
-    "Z": {
-      "tag": "c:rods/blaze"
-    }
+    "B": "modularrouters:blank_upgrade",
+    "G": "#c:gunpowders",
+    "I": "#c:ingots/gold",
+    "N": "#c:nuggets/gold",
+    "R": "#c:dusts/redstone",
+    "Z": "#c:rods/blaze"
   },
   "pattern": [
     "RIR",

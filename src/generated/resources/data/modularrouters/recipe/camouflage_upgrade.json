@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:blank_upgrade"
-    },
-    {
-      "tag": "c:dyes/red"
-    },
-    {
-      "tag": "c:dyes/green"
-    },
-    {
-      "tag": "c:dyes/blue"
-    }
+    "modularrouters:blank_upgrade",
+    "#c:dyes/red",
+    "#c:dyes/green",
+    "#c:dyes/blue"
   ],
   "result": {
     "count": 1,

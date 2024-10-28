@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:range_up_augment"
-    }
+    "modularrouters:range_up_augment"
   ],
   "result": {
     "count": 1,

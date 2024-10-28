@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:blank_upgrade"
-    },
-    {
-      "tag": "minecraft:stone_bricks"
-    },
-    {
-      "tag": "c:bricks"
-    }
+    "modularrouters:blank_upgrade",
+    "#minecraft:stone_bricks",
+    "#c:bricks"
   ],
   "result": {
     "count": 1,

@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:energy_output_module"
-    },
-    {
-      "item": "modularrouters:distributor_module"
-    }
+    "modularrouters:energy_output_module",
+    "modularrouters:distributor_module"
   ],
   "result": {
     "count": 1,

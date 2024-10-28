@@ -6,49 +6,44 @@ import me.desht.modularrouters.item.augment.*;
 import me.desht.modularrouters.item.module.*;
 import me.desht.modularrouters.item.smartfilter.*;
 import me.desht.modularrouters.item.upgrade.*;
-import me.desht.modularrouters.logic.settings.ModuleSettings;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ModularRouters.MODID);
-
-    public static final List<DeferredItem<? extends Item>> REGISTRY_OBJECTS = new ArrayList<>();
 
     public static final DeferredItem<Item> BLANK_MODULE = register("blank_module", Item::new);
     public static final DeferredItem<Item> BLANK_UPGRADE = register("blank_upgrade", Item::new);
     public static final DeferredItem<Item> OVERRIDE_CARD = register("override_card", Item::new);
     public static final DeferredItem<Item> AUGMENT_CORE = register("augment_core", Item::new);
 
-    public static final DeferredItem<Item> ACTIVATOR_MODULE = registerModule("activator_module", ActivatorModule::new);
-    public static final DeferredItem<Item> BREAKER_MODULE = registerModule("breaker_module", BreakerModule::new);
-    public static final DeferredItem<Item> CREATIVE_MODULE = registerModule("creative_module", CreativeModule::new);
-    public static final DeferredItem<Item> DETECTOR_MODULE = registerModule("detector_module", DetectorModule::new);
-    public static final DeferredItem<Item> DISTRIBUTOR_MODULE = registerModule("distributor_module", DistributorModule::new);
-    public static final DeferredItem<Item> DROPPER_MODULE = registerModule("dropper_module", DropperModule::new);
-    public static final DeferredItem<Item> ENERGY_DISTRIBUTOR_MODULE = registerModule("energy_distributor_module", EnergyDistributorModule::new);
-    public static final DeferredItem<Item> ENERGY_OUTPUT_MODULE = registerModule("energy_output_module", EnergyOutputModule::new);
-    public static final DeferredItem<Item> EXTRUDER_MODULE_1 = registerModule("extruder_module_1", ExtruderModule1::new);
-    public static final DeferredItem<Item> EXTRUDER_MODULE_2 = registerModule("extruder_module_2", ExtruderModule2::new);
-    public static final DeferredItem<Item> FLINGER_MODULE = registerModule("flinger_module", FlingerModule::new);
-    public static final DeferredItem<Item> FLUID_MODULE = registerModule("fluid_module", FluidModule1::new);
-    public static final DeferredItem<Item> FLUID_MODULE_2 = registerModule("fluid_module_2", FluidModule2::new);
-    public static final DeferredItem<Item> PLACER_MODULE = registerModule("placer_module", PlacerModule::new);
-    public static final DeferredItem<Item> PLAYER_MODULE = registerModule("player_module", PlayerModule::new);
-    public static final DeferredItem<Item> PULLER_MODULE_1 = registerModule("puller_module_1", PullerModule1::new);
-    public static final DeferredItem<Item> PULLER_MODULE_2 = registerModule("puller_module_2", PullerModule2::new);
-    public static final DeferredItem<Item> SENDER_MODULE_1 = registerModule("sender_module_1", SenderModule1::new);
-    public static final DeferredItem<Item> SENDER_MODULE_2 = registerModule("sender_module_2", SenderModule2::new);
-    public static final DeferredItem<Item> SENDER_MODULE_3 = registerModule("sender_module_3", SenderModule3::new);
-    public static final DeferredItem<Item> VACUUM_MODULE = registerModule("vacuum_module", VacuumModule::new);
-    public static final DeferredItem<Item> VOID_MODULE = registerModule("void_module", VoidModule::new);
+    public static final DeferredItem<Item> ACTIVATOR_MODULE = register("activator_module", ActivatorModule::new);
+    public static final DeferredItem<Item> BREAKER_MODULE = register("breaker_module", BreakerModule::new);
+    public static final DeferredItem<Item> CREATIVE_MODULE = register("creative_module", CreativeModule::new);
+    public static final DeferredItem<Item> DETECTOR_MODULE = register("detector_module", DetectorModule::new);
+    public static final DeferredItem<Item> DISTRIBUTOR_MODULE = register("distributor_module", DistributorModule::new);
+    public static final DeferredItem<Item> DROPPER_MODULE = register("dropper_module", DropperModule::new);
+    public static final DeferredItem<Item> ENERGY_DISTRIBUTOR_MODULE = register("energy_distributor_module", EnergyDistributorModule::new);
+    public static final DeferredItem<Item> ENERGY_OUTPUT_MODULE = register("energy_output_module", EnergyOutputModule::new);
+    public static final DeferredItem<Item> EXTRUDER_MODULE_1 = register("extruder_module_1", ExtruderModule1::new);
+    public static final DeferredItem<Item> EXTRUDER_MODULE_2 = register("extruder_module_2", ExtruderModule2::new);
+    public static final DeferredItem<Item> FLINGER_MODULE = register("flinger_module", FlingerModule::new);
+    public static final DeferredItem<Item> FLUID_MODULE = register("fluid_module", FluidModule1::new);
+    public static final DeferredItem<Item> FLUID_MODULE_2 = register("fluid_module_2", FluidModule2::new);
+    public static final DeferredItem<Item> PLACER_MODULE = register("placer_module", PlacerModule::new);
+    public static final DeferredItem<Item> PLAYER_MODULE = register("player_module", PlayerModule::new);
+    public static final DeferredItem<Item> PULLER_MODULE_1 = register("puller_module_1", PullerModule1::new);
+    public static final DeferredItem<Item> PULLER_MODULE_2 = register("puller_module_2", PullerModule2::new);
+    public static final DeferredItem<Item> SENDER_MODULE_1 = register("sender_module_1", SenderModule1::new);
+    public static final DeferredItem<Item> SENDER_MODULE_2 = register("sender_module_2", SenderModule2::new);
+    public static final DeferredItem<Item> SENDER_MODULE_3 = register("sender_module_3", SenderModule3::new);
+    public static final DeferredItem<Item> VACUUM_MODULE = register("vacuum_module", VacuumModule::new);
+    public static final DeferredItem<Item> VOID_MODULE = register("void_module", VoidModule::new);
 
     public static final DeferredItem<UpgradeItem> BLAST_UPGRADE = register("blast_upgrade", BlastUpgrade::new);
     public static final DeferredItem<UpgradeItem> CAMOUFLAGE_UPGRADE = register("camouflage_upgrade", CamouflageUpgrade::new);
@@ -78,26 +73,8 @@ public class ModItems {
     public static final DeferredItem<Item> REGEX_FILTER = register("regex_filter", RegexFilter::new);
     public static final DeferredItem<Item> TAG_FILTER = register("tag_filter", TagFilter::new);
 
-    private static <T extends Item> DeferredItem<T> register(final String name, final Function<Item.Properties, ? extends T> sup, Item.Properties properties) {
-        DeferredItem<T> ro = ITEMS.registerItem(name, sup, properties);
-        REGISTRY_OBJECTS.add(ro);
-        return ro;
-    }
-
     private static <T extends Item> DeferredItem<T> register(final String name, final Function<Item.Properties, ? extends T> sup) {
-        return register(name, sup, defaultProps());
-    }
-
-    private static <T extends Item> DeferredItem<T> registerModule(final String name, final Function<Item.Properties, ? extends T> sup) {
-        return register(name, sup, moduleProps());
-    }
-
-    public static Item.Properties defaultProps() {
-        return new Item.Properties();
-    }
-
-    public static Item.Properties moduleProps() {
-        return defaultProps();
+        return ITEMS.registerItem(name, sup);
     }
 
     public interface ITintable {

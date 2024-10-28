@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "tag": "c:gems/diamond"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "M": {
-      "item": "modularrouters:blank_module"
-    }
+    "D": "#c:gems/diamond",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/iron",
+    "M": "modularrouters:blank_module"
   },
   "pattern": [
     "IGI",

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "modularrouters:blank_upgrade"
-    },
-    "I": {
-      "item": "minecraft:iron_bars"
-    },
-    "O": {
-      "tag": "c:obsidians"
-    }
+    "B": "modularrouters:blank_upgrade",
+    "I": "minecraft:iron_bars",
+    "O": "#c:obsidians"
   },
   "pattern": [
     "IOI",

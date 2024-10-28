@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:blank_module"
-    },
-    {
-      "item": "modularrouters:blank_upgrade"
-    }
+    "modularrouters:blank_module",
+    "modularrouters:blank_upgrade"
   ],
   "result": {
     "count": 4,

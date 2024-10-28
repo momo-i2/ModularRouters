@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:augment_core"
-    },
-    {
-      "tag": "c:slimeballs"
-    }
+    "modularrouters:augment_core",
+    "#c:slime_balls"
   ],
   "result": {
     "count": 1,

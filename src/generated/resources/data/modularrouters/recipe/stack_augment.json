@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:augment_core"
-    },
-    {
-      "item": "modularrouters:stack_upgrade"
-    }
+    "modularrouters:augment_core",
+    "modularrouters:stack_upgrade"
   ],
   "result": {
     "count": 1,

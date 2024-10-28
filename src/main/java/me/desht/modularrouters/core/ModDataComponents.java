@@ -16,6 +16,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -132,7 +133,7 @@ public class ModDataComponents {
     public static final Supplier<DataComponentType<BlockState>> CAMOUFLAGE
             = COMPONENTS.registerComponentType("camouflage", builder -> builder
             .persistent(BlockState.CODEC)
-            .networkSynchronized(ByteBufCodecs.fromCodec(BlockState.CODEC))
+            .networkSynchronized(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY))
     );
     // the tuning value for a sync upgrade
     public static final Supplier<DataComponentType<Integer>> SYNC_TUNING

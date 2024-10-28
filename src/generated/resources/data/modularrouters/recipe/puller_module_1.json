@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:blank_module"
-    },
-    {
-      "item": "minecraft:sticky_piston"
-    }
+    "modularrouters:blank_module",
+    "minecraft:sticky_piston"
   ],
   "result": {
     "count": 1,

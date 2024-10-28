@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:augment_core"
-    },
-    {
-      "item": "minecraft:clock"
-    }
+    "modularrouters:augment_core",
+    "minecraft:clock"
   ],
   "result": {
     "count": 1,

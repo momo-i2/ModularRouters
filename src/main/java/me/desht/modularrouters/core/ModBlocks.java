@@ -31,26 +31,4 @@ public class ModBlocks {
     static {
         ITEMS.registerSimpleBlockItem("modular_router", MODULAR_ROUTER);
     }
-
-//    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<? extends T> sup) {
-//        return register(name, sup, ModBlocks::itemDefault);
-//    }
-
-//    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<? extends T> sup, Function<Supplier<T>, Supplier<? extends Item>> itemCreator) {
-//        DeferredBlock<T> ret = registerNoItem(name, sup);
-//        ITEMS.register(name, itemCreator.apply(ret));
-//        return ret;
-//    }
-
-//    private static <T extends Block> DeferredBlock<T> registerNoItem(String name, Function<? extends BlockBehaviour.Properties, T> sup) {
-//        return BLOCKS.registerBlock(name, sup);
-//    }
-
-//    private static Supplier<BlockItem> itemDefault(final Supplier<? extends Block> block) {
-//        return item(block);
-//    }
-//
-//    private static Supplier<BlockItem> item(final Supplier<? extends Block> block) {
-//        return () -> new BlockItem(block.get(), new Item.Properties());
-//    }
 }

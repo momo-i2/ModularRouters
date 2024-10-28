@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:dropper_module"
-    },
-    {
-      "item": "minecraft:gunpowder"
-    }
+    "modularrouters:dropper_module",
+    "minecraft:gunpowder"
   ],
   "result": {
     "count": 1,

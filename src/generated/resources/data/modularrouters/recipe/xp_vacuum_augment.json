@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:augment_core"
-    },
-    {
-      "item": "minecraft:soul_sand"
-    }
+    "modularrouters:augment_core",
+    "minecraft:soul_sand"
   ],
   "result": {
     "count": 1,

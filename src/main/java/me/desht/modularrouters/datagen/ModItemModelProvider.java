@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 import javax.annotation.Nonnull;
@@ -34,7 +35,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for (DeferredItem<? extends Item> registryObject : ModItems.REGISTRY_OBJECTS) {
+        for (var registryObject : ModItems.ITEMS.getEntries()) {
             String name = registryObject.getId().getPath();
             switch (registryObject.get()) {
                 case ModuleItem moduleItem -> {
@@ -77,7 +78,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent("manual", GENERATED).texture("layer0", modid("item/manual"));
     }
 
-    private ItemModelBuilder simpleItem(DeferredItem<? extends Item> item, String... textures) {
+    private ItemModelBuilder simpleItem(DeferredHolder<Item, ? extends Item> item, String... textures) {
         return simpleItem(item.getId(), textures);
     }
 

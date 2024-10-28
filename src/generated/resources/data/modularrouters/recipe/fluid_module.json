@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "minecraft:cauldron"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "M": {
-      "item": "modularrouters:blank_module"
-    }
+    "C": "minecraft:cauldron",
+    "G": "#c:glass_blocks",
+    "M": "modularrouters:blank_module"
   },
   "pattern": [
     " C ",

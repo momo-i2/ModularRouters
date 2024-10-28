@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "modularrouters:blank_upgrade"
-    },
-    "G": {
-      "tag": "c:ingots/gold"
-    },
-    "Q": {
-      "tag": "c:gems/quartz"
-    },
-    "R": {
-      "tag": "c:storage_blocks/redstone"
-    }
+    "B": "modularrouters:blank_upgrade",
+    "G": "#c:ingots/gold",
+    "Q": "#c:gems/quartz",
+    "R": "#c:storage_blocks/redstone"
   },
   "pattern": [
     "QRQ",

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "M": {
-      "item": "modularrouters:augment_core"
-    },
-    "Q": {
-      "tag": "c:gems/quartz"
-    },
-    "S": {
-      "tag": "c:rods/wooden"
-    }
+    "M": "modularrouters:augment_core",
+    "Q": "#c:gems/quartz",
+    "S": "#c:rods/wooden"
   },
   "pattern": [
     " S ",

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": {
-      "tag": "c:nuggets/gold"
-    },
-    "P": {
-      "item": "minecraft:paper"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    }
+    "G": "#c:nuggets/gold",
+    "P": "minecraft:paper",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     " R ",

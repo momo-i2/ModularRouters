@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:augment_core"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:dusts/redstone"
-    },
-    {
-      "tag": "c:dusts/glowstone"
-    }
+    "modularrouters:augment_core",
+    "#c:obsidians",
+    "#c:dusts/redstone",
+    "#c:dusts/glowstone"
   ],
   "result": {
     "count": 1,

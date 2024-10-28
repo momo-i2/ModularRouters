@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "M": {
-      "item": "modularrouters:augment_core"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    },
-    "T": {
-      "item": "minecraft:redstone_torch"
-    }
+    "M": "modularrouters:augment_core",
+    "R": "#c:dusts/redstone",
+    "T": "minecraft:redstone_torch"
   },
   "pattern": [
     " T ",

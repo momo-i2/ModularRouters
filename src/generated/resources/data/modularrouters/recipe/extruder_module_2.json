@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:blank_module"
-    },
-    {
-      "tag": "c:chests/wooden"
-    }
+    "modularrouters:blank_module",
+    "#c:chests/wooden"
   ],
   "result": {
     "count": 1,

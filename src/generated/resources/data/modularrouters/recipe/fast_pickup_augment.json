@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "modularrouters:augment_core"
-    },
-    {
-      "item": "minecraft:fishing_rod"
-    }
+    "modularrouters:augment_core",
+    "minecraft:fishing_rod"
   ],
   "result": {
     "count": 1,
