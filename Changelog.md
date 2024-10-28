@@ -9,8 +9,11 @@ Changes are in reverse chronological order; newest changes at the top.
 ### [13.1.0]
 
 * Updated to Minecraft 1.21.1; NeoForge 21.1.0 or later required
+* Routers are now owned by the placing player for the purposes of Activator Modules
+  * Makes Security Modules unnecessary for operating in claim-protected areas (e.g. FTB Chunks)
 * Fixed a rounding error in percentage calculation which could affect Inspection Module accuracy
 * Fixed inserting a Camouflage Upgrade causing a client desync (items apparently vanishing from the open router GUI)
+* Fixed textfield in Detector Module GUI not working
 
 ## Minecraft 1.21
 
