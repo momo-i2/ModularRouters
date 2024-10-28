@@ -4,17 +4,20 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.21.1
+# Minecraft 1.21.1
 
-### [13.1.0]
+## [13.1.0]
 
 * Updated to Minecraft 1.21.1; NeoForge 21.1.0 or later required
+* Routers are now owned by the placing player for the purposes of Activator Modules
+  * Makes Security Modules unnecessary for operating in claim-protected areas (e.g. FTB Chunks)
 * Fixed a rounding error in percentage calculation which could affect Inspection Module accuracy
 * Fixed inserting a Camouflage Upgrade causing a client desync (items apparently vanishing from the open router GUI)
+* Fixed textfield in Detector Module GUI not working
 
-## Minecraft 1.21
+# Minecraft 1.21
 
-### [13.0.3]
+## [13.0.3]
 
 * NeoForge 21.0.110-beta or newer required
 * Added support for FTB Filter System; Smart Filters from that mod can be placed in module filter slots and function as filters
@@ -24,56 +27,56 @@ Changes are in reverse chronological order; newest changes at the top.
 * Patchouli integration has been updated
   * Note that Patchouli doesn't have an official release yet for 1.21
 
-### [13.0.2]
+## [13.0.2]
 
 * Updated to work with Neoforge 21.0.40+
 * Placer Module has been reworked internally to simplify the code and act more like a player placing the block. Couple of minor player-noticeable changes:
   * Directional blocks are now oriented along the placing axis
   * If placing is prevented (e.g. by a protection mod such as FTB Chunks), the place sound will still play even though the block is not placed. This can be a useful indicator that the placement is being attempted and failing. (Using a Security Module in your router is the correct action here)
 
-### [13.0.1]
+## [13.0.1]
 
 * Fixed init crash while setting up creative tabs.
 
-### [13.0.0]
+## [13.0.0]
 
 * Ported to Minecraft 1.21.  Equivalent in functionality to last 1.20.4 release.
 
-## Minecraft 1.20.4
+# Minecraft 1.20.4
 
-### [12.3.3]
+## [12.3.3]
 
 * Router fake player will now accept XP given to it, and use it to create experience orbs near the router
 
-### [12.3.2]
+## [12.3.2]
 
 * Fixed items losing NeoForge attachment data when dropped from a router that's just been broken
 
-### [12.3.1]
+## [12.3.1]
 
 * Fixed a couple of bugs with Template Frame (Extruder Mk2 fake blocks) NBT load/save
 
-### [12.3.0]
+## [12.3.0]
 
 * Initial port to Minecraft 1.20.4
   * This release is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
-## Minecraft 1.20.2
+# Minecraft 1.20.2
 
-### [12.2.0]
+## [12.2.0]
 
 * Initial port to Minecraft 1.20.2
   * This release will _not_ work on 1.20.1!
   * This release is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
-## Minecraft 1.20.1
+# Minecraft 1.20.1
 
-### [12.1.0]
+## [12.1.0]
 
 * Added a new smart filter: the Tag Filter!
   * Can be used to select [item tags](https://minecraft.fandom.com/wiki/Tag) which can be filtered against
 
-### [12.0.2]
+## [12.0.2]
 
 * As of Modular Routers 12.0.2, the mod is built with [Neoforge](https://neoforged.net/)
   * While Modular Routers is likely to remain compatible with [Forge](https://files.minecraftforge.net/) for now, future compatibility is not guaranteed in any way
@@ -84,46 +87,46 @@ Changes are in reverse chronological order; newest changes at the top.
   * Fix will also apply to any block requiring a tool other than a pickaxe
 * Cosmetic tooltip fix for Router items which contain modules and/or upgrades
 
-### [12.0.1]
+## [12.0.1]
 
 * Patchouli manual now works properly
   * Note: there isn't a public 1.20.1 release of Patchouli yet at the time of this release
 
-### [12.0.0]
+## [12.0.0]
 
 * Beta build for Minecraft 1.20.1
 * Functionally the same as 10.2.0
 * Forge 47.0.1 or later required
 
-## Minecraft 1.19
+# Minecraft 1.19
 
-### [11.0.0]
+## [11.0.0]
 
 * Beta build for Minecraft 1.19.3 - *will not run* on Minecraft 1.19.2!
 * Functionally the same as 10.2.0, but no JEI support at this time
 * Forge 44.0.36 or later required
 
-### [10.2.0]
+## [10.2.0]
 
 * Build for Minecraft 1.19.2
   * Might work on earlier 1.19 releases but no support provided there
 * Added XP Vacuum support for Create's XP nuggets and Sophisticated Core XP fluid
 * Added JEI ghost item dragging support to the Bulk Filter GUI
 
-### [10.1.0] (19 Jul 2022)
+## [10.1.0] (19 Jul 2022)
 
 * Build for Forge 41.0.94+
   * This version *will not run* on Forge versions 41.0.93 and earlier!
   * Version 10.0.0 (previous release) *will not run* on Forge versions 41.0.64 and later!
 
-### [10.0.0] (17 Jun 2022)
+## [10.0.0] (17 Jun 2022)
 
 * Port of 9.1.1 version (for MC 1.18) to Minecraft 1.19
 * JEI: it is now possible to drag items from JEI into the Bulk and Mod Filter GUI's (in addition to the Module GUI filter slots)
 
-## Minecraft 1.18.2
+# Minecraft 1.18.2
 
-### [9.1.1] (1 May 2022)
+## [9.1.1] (1 May 2022)
 
 * Added fr_fr translation (thanks @dracnis)
 * Added ko_kr translation (thanks @gjeodnd12165)
@@ -131,16 +134,16 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed router inventory capabilities not being invalidated when router was broken (https://github.com/desht/ModularRouters/issues/148)
 * Worked around known Forge issue with EntityPlaceEvent (fired by Placer & Extruder modules) not containing correct blockstate (https://github.com/desht/ModularRouters/issues/158)
 
-### [9.1.0] (5 Mar 2022)
+## [9.1.0] (5 Mar 2022)
 
 * Just a port to Minecraft 1.18.2; this release is *not* compatible with 1.18.1. No new player-visible features.
 * The config settings `activatorEntityBlacklist` and `activatorEntityAttackBlacklist` are removed, and replaced by entity type tags in `data/modularrouters/tags/entity_types`:
   * `modularrouters:activator_interact_blacklist` defines entities which may not be right-clicked by the Activator module (as before, it contains Villagers and Wandering Traders by default)
   * `modularrouters:activator_attack_blacklist` defines entities which may not be attacked by the Activator module (as before, it is empty by default)
 
-## Minecraft 1.18.1
+# Minecraft 1.18.1
 
-### [9.0.2] (24 Jan 2022)
+## [9.0.2] (24 Jan 2022)
 
 * This release adds compatibility with most recent 1.18.1 Forge builds (39.0.59 at time of writing)
   * Forge 39.0.55 minimum is required
@@ -158,21 +161,21 @@ Changes are in reverse chronological order; newest changes at the top.
   * One issue to be aware of: if a Detector is already emitting, switching router into "Redstone high" mode won't stop it running, but removing and replacing the Detector module will work around this.
 * Fixed graphical glitch in GUI energy widget related to integer arithmetic overflow (only visible with boosted energy values in mod config)
 
-### [9.0.1] (20 Dec 2021)
+## [9.0.1] (20 Dec 2021)
 
 * Now building with Forge 39.x (for MC 1.18.1)
   * Note that previous 9.0.0 release for MC 1.18 will run on MC 1.18.1, but Patchouli support is broken in that release
   * Patchouli book now works properly
 
-## Minecraft 1.18
+# Minecraft 1.18
 
-### [9.0.0] (6 Dec 2021)
+## [9.0.0] (6 Dec 2021)
 
 * Just a direct port of 8.0.1 to Minecraft 1.18. No new features or functionality.
 
-## Minecraft 1.17.1
+# Minecraft 1.17.1
 
-### [8.0.1] (2 Sep 2021)
+## [8.0.1] (2 Sep 2021)
 
 * This version *requires* Forge 37.0.34 or later
 * Breaker Module recipe should now work with any item claiming to act like a pickaxe
@@ -184,7 +187,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Router should now be rotatable by other mods' wrenches  
 * A lot of internal code cleanup
 
-### [8.0.0] (26 Jul 2021)
+## [8.0.0] (26 Jul 2021)
 
 * Initial alpha release for Minecraft 1.17.1!
 * Only basic testing has been done so far; this should be considered very much an unstable alpha at this point
@@ -192,9 +195,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Patchouli also unavailable for now
 * Feature-wise, this is identical to the last 1.16.5 release with one limitation: only vanilla pickaxes are currently supported in the Breaker Module recipe
 
-## Minecraft 1.16.3 / 1.16.4 / 1.16.5
+# Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
-### [7.5.0] (19 May 2021)
+## [7.5.0] (19 May 2021)
 * New Upgrade: the Energy Upgrade!
   * Gives the router an internal energy buffer; each upgrade adds 50,000 FE capacity and 1,000 FE transfer per router tick
   * Can have up to 64 in a router
@@ -227,7 +230,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * In 7.4.0 this required Look Below and only worked for blocks horizontally adjacent, which was very unintuitive
 * Lots of updates to the Patchouli manual to reflect new and updated functionality
   
-### [7.4.0] (26 Mar 2021)
+## [7.4.0] (26 Mar 2021)
 * Activator Module rework
   * No longer any separate Item/Block modes (just activate item or right-click entity)
   * Now acts just as if an ordinary player right-clicks an item, using same vanilla logic
@@ -249,14 +252,14 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed typing into the regulation field (when using Regulator Augment) not properly updating the module
 * Fixed server crash related to unconfigured Security Upgrades (e.g. pulled straight from JEI)  
 
-### [7.3.1] (21 Jan 2021)
+## [7.3.1] (21 Jan 2021)
 * Fixed crash (intermod compat issue) when placing block with Extruder Mk2 and Mimic Augment
 * Activator Module in Entity mode now ignores Villagers and Wandering Traders
   * Activating them locks up their GUI, making it impossible to trade with them
   * Entity blacklist is editable in config: see `activatorEntityBlacklist` in modularrouters-common.toml
 * Corrected Regex Filter tooltip: make it clear that regex filters are applied to the item's *registry name*, not its display name
 
-### [7.3.0] (4 Jan 2021)
+## [7.3.0] (4 Jan 2021)
 * A full texture update for the mod, courtesy of texture artist Ridanisaurus!
   * This is a new set of 16x16 textures with a nice Minecrafty feel; integrates much more naturally with vanilla textures (IMHO)
 * Holding an Item Router in main or offhand now highlights nearby (<16 blocks) camouflaged Item Routers - https://github.com/desht/ModularRouters/issues/100
@@ -268,31 +271,31 @@ Changes are in reverse chronological order; newest changes at the top.
 * Updated the Regex Filter Patchouli manual page to make it clear that regex matches happen against item *registry* names, not *display* names
   * Remember, you can use F3+H to show any item's registry name in the item tooltip
 
-### [7.2.0] (4 Nov 2020)
+## [7.2.0] (4 Nov 2020)
 * Added the Creative Module
   * Creative-only module which just adds items it sees in the module filter to the router's buffer, a way to infinitely produce items
 * Support for Minecraft 1.16.4, which appears to be very much compatible with 1.16.3.
   * This release will run on both 1.16.3 and 1.16.4
 
-## Minecraft 1.16.3
+# Minecraft 1.16.3
 
-### [7.1.1] (22 Oct 2020)
+## [7.1.1] (22 Oct 2020)
 * Fixed the "x" delete buttons sometimes not showing on filter GUI's (mod, regex, inspection)
 * Fixed sync issue with configuring a filter which is in an uninstalled module (i.e. module in hand, not router)
 
 7.1.0 is pretty much the same as 7.0.2 for MC 1.16.1 with one fix
 
-### [7.1.0] (4 Oct 2020)
+## [7.1.0] (4 Oct 2020)
 * Fixed client crash when dragging fluids from JEI into the filter slots of a Fluid Module
   * It now places a bucket of that fluid into the filter, if possible
 
-## Minecraft 1.16.1
+# Minecraft 1.16.1
 
-### [7.0.3] (unreleased)
+## [7.0.3] (unreleased)
 * Fixed client crash when dragging fluids from JEI into the Fluid Module filter
   * This will now put a bucket of that fluid into the filter if possible
   
-### [7.0.2] (21 Sep 2020)
+## [7.0.2] (21 Sep 2020)
 * Activator Module can now run with no item in the router (only really useful when in "Right Click Block" mode, of course)
 * Activator Module: internal raytracing improvements
   * In particular, activating an empty bottle against water will now produce a water bottle, as expected
@@ -303,25 +306,25 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fluid Module with Regulator Augment can now regulate by absolute fluid amount (mB) in addition to percentage of tank capacity
   * Selectable in Fluid Module GUI when Regulator Augment is installed
 
-### [7.0.1] (12 Aug 2020)
+## [7.0.1] (12 Aug 2020)
 * Update zh_cn translations
 * Added back Waila/Hwyla support
 * Fix crash with Puller Module pulling from Industrial Foregoing Mob Slaughter Factory (possibly other inventories too)
 * Fix crash with unconfigured Fluid Module Mk2 under some circumstances
 
-### [7.0.0] (11 Jul 2020)
+## [7.0.0] (11 Jul 2020)
 * Initial release for Minecraft 1.16!  This is largely feature-equivalent to the last 1.15.2 release (6.1.1)
 * Support for JEI, The One Probe and Patchouli is in place.  Support for Hwyla will be added back when it gets a 1.16.1 Forge port.
 * Items can now be dragged from JEI directly to filter slots in module GUI's.  No need to have those items in your inventory anymore.
 
-## Minecraft 1.15.2
+# Minecraft 1.15.2
 
-### [6.1.1] (22 Jun 2020)
+## [6.1.1] (22 Jun 2020)
 * Fixed energy/fluid dupe issues with more than one of a stackable energy or fluid containing item in the router's buffer
   * Fluid/energy capabilities are now only offered with a single item in the buffer
 * Fixed recipes for Breaker and Extruder Mk1 modules not showing in JEI
 
-### [6.1.0] (12 May 2020)
+## [6.1.0] (12 May 2020)
 * Added support for Cyclic XP Juice in the Vacuum Module (XP augment)
 * Added config option to not display "flying" items when they're being transferred
   * Large numbers of these could hurt the frame rate
@@ -335,7 +338,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed NPE triggered by other mods passing a null world/pos to certain Block methods they shouldn't - https://github.com/desht/ModularRouters/issues/72
 * Fixed the "show module info" keybind (bound to "I" by default) not working in Router and Module GUI's (worked OK in default inventory screen)
 
-### [6.0.1] (28 Apr 2020)
+## [6.0.1] (28 Apr 2020)
 
 * Changed the way Breaker Module and Extruder Module Mk1 harvest levels are determined
   * Instead of just being able to harvest anything, the pickaxe used in crafting a Breaker Module now determines its harvest level. E.g. if you want to break Obsidian, use a Diamond Pickaxe to craft the module.
@@ -348,7 +351,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Activator Module now respects its filter items
 * Fixed some culling issues when router/template frame blocks are camouflaged
 
-### [6.0.0] (26 Mar 2020)
+## [6.0.0] (26 Mar 2020)
 
 * Initial 1.15.2 port!
 * Added a Patchouli guidebook
@@ -359,13 +362,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Add hard item limits on the number of upgrades/augments which can be added to routers/modules
   * e.g. it's no longer possible to put more than 9 Speed Upgrades in an Item Router, or more than 1 XP Vacuum Augment in a Vacuum Module
 
-## Minecraft 1.14.4
+# Minecraft 1.14.4
 
-### [5.1.4] (1 Feb 2020)
+## [5.1.4] (1 Feb 2020)
 
 * Fixed item dupe bug
 
-### [5.1.2] (30 Nov 2019)
+## [5.1.2] (30 Nov 2019)
 
 * Server-side config is now common config.  If you made any changes to `saves/<world>/serverconfig/modularrouters-server.toml` you will need to modify `config/modularrouters-common.toml` after this update.  Sorry!
 * Fixed NPE with Sender Mk2/Sender Mk3/Distributor when inventory was invalid or module not configured
@@ -374,7 +377,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Better initial placement rotation for rotatable blocks by the Extruder.
 * Tooltips referring to "Ctrl" now use "Cmd" on Mac.
 
-### [5.1.1] (30 Oct 2019)
+## [5.1.1] (30 Oct 2019)
 
 * Fixed matching by item tag not always working.
 * Fixed Fluid Module filter accepting empty fluid containers (only container with fluids should be accepted)
@@ -382,7 +385,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Fluid Module being able to pick up flowing fluids (e.g. water flowing past a router) as if it were a source block.
 * A fair bit of internal code cleanup.
 
-### [5.1.0] (22 Oct 2019)
+## [5.1.0] (22 Oct 2019)
 
 * First update to 1.14.4!
 * Fluid module is now functional, although only tested with vanilla water and lava buckets.
@@ -399,9 +402,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Redid all module, upgrade, and augment textures.
 * Completely removed all java.awt.* code (good news for Mac users)
 
-## Minecraft 1.14.2
+# Minecraft 1.14.2
 
-### [5.0.0] (15 Jun 2019)
+## [5.0.0] (15 Jun 2019)
 
 * Initial 1.14.2 port!
 * Tested on SSP and dedicated server SMP.  Still early days for Forge so expect instability and bugs.
@@ -413,16 +416,16 @@ Changes are in reverse chronological order; newest changes at the top.
 * Those filter settings in the module GUI have been replaced by Tag matching and Item Damage matching, respectively
 * Otherwise this should be functionally equivalent to the most recent Modular Routers on 1.12.2
 
-## Minecraft 1.12.2
+# Minecraft 1.12.2
 
-### [3.2.1] (1 Oct 2018)
+## [3.2.1] (1 Oct 2018)
 
 * Camouflage: connected textures are now supported for router camo and Extruder Mk2 blocks!
 * Added checkbox to Fluid Module: control whether fluid should be poured out of the router when there is already a fluid of the same type present. https://github.com/desht/ModularRouters/issues/49
 * Fixed NPE when inserting an unconfigure Puller Mk2 module into a router. https://github.com/desht/ModularRouters/issues/46
 * Forge build 2705 or newer required
 
-### [3.2.0] (23 Aug 2018)
+## [3.2.0] (23 Aug 2018)
 
 * Added the Distributor Module, a way to distribute items across multiple target inventories.  Can do round-robin, random, nearest-first or furthest-first.
 * Extruder Mk2 Module is now cheaper to craft (just needs an Extruder Mk1 and a chest).
@@ -431,11 +434,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix last module in router slot (slot 9) not being configurable
 * Fix possible client disconnect in conjunction with TheOneProbe
 
-### [3.1.5] (30 May 2018)
+## [3.1.5] (30 May 2018)
 
 * Fix item dupe with Dropper/Flinger in some circumstances; cross-mod incompatibility with Realistic Item Drops and its "Dupe Workaround" disabled, which is the case in Sevtech Ages at this time (https://github.com/DarkPacks/SevTech-Ages/issues/2649)
 
-### [3.1.4] (28 Apr 2018)
+## [3.1.4] (28 Apr 2018)
 
 * Blocks extruded by Extruder Mk1/2 now push entities along the direction of extrusion.
 * Added Pushing Augment for Extruder Mk1/2 to increase the push force of extruding blocks.  Pushing Augments can stack, and large numbers of augments can push entities a long way...
@@ -444,24 +447,24 @@ Changes are in reverse chronological order; newest changes at the top.
 * Improved rendering for certain blocks extruded by Extruder Mk2 (in particular blocks which connect to each other, like iron bars or glass panes)
 * Now using a mod-local tick counter for router synchronisation instead of world tick time; should resolve router sync issues when used in conjunction with mods which modify day length or otherwise tweak server times.
 
-### [3.1.3] (25 Mar 2018)
+## [3.1.3] (25 Mar 2018)
 
 * Fixed crash when running with TheOneProbe 1.4.21+
 * Added the Mimic Augment, to be added to the Extruder Mk2 module.  With this augment, extruded fake blocks also mimic block hardness, blast resistance, redstone emission and light emission of the mimicked block.
 * Routers now ignore redstone signals from sides currently extruding blocks (from Extruder Mk1 or Extruder Mk2) - e.g. extruding a redstone block will no longer lock the router and prevent the extruded block from being retracted again.
 
-### [3.1.2] (26 Jan 2018)
+## [3.1.2] (26 Jan 2018)
 
 * Fixed Vacuum Module GUI crashes (https://github.com/desht/ModularRouters/issues/32)
 * Vacuum Module XP mode: Actually Additions Solidified Experience is now an option when choosing XP type
 * Vacuum Module XP mode: it's now possible to auto-eject XP fluids to a tank adjacent to the router; this may be useful if you don't have a mod which provides a tank that can be filled while in item form in the router's buffer
 
-### [3.1.1] (11 Jan 2018)
+## [3.1.1] (11 Jan 2018)
 
 * Vacuum Module XP augment enhancements: more XP fluids are now supported (Cyclic, Industrial Foregoing, Thermal Expansion), and the Vacuum Module GUI now allows selection of the desired XP fluid type (as well as vanilla Bottles o' Enchanting).
 * Some tooltip formatting improvements (wrapped some over-long lines of text)
 
-### [3.1.0] (9 Dec 2017)
+## [3.1.0] (9 Dec 2017)
 
 * Added the Activator Module which allows simulates right-clicking blocks or entities with the item in the router's buffer.
 * The Extruder Mk2 can now have non-block items placed in its template; these act as spacers, "placing" an air block when extruding.
@@ -472,20 +475,20 @@ Changes are in reverse chronological order; newest changes at the top.
 * Known issue: connected Chisel textures don't work with camouflaged or Extruder Mk2 extruded blocks
 * Fixed a potential Puller module deadlock when pulling from inventories where not all slots can be extracted from.  https://github.com/desht/ModularRouters/issues/28
 
-### [3.0.3] (10 Sep 2017)
+## [3.0.3] (10 Sep 2017)
 
 * Fixed possible server crash when placing blocks with Placer or Extruder Mk1 modules.  https://github.com/desht/ModularRouters/issues/25
 
-### [3.0.2] (28 Aug 2017)
+## [3.0.2] (28 Aug 2017)
 
 * Fixed possible client crash with Extruder module (https://github.com/desht/ModularRouters/issues/24)
 
-### [3.0.1] (11 Aug 2017)
+## [3.0.1] (11 Aug 2017)
 
 * Fixed item dupe issue with shulker boxes (https://github.com/desht/ModularRouters/issues/23)
 * Guidebook (GuideAPI) is now working again.  GuideAPI 2.1.4-56 or later needed.
 
-### [3.0.0] (4 Jul 2017)
+## [3.0.0] (4 Jul 2017)
 
 * This release is for Minecraft 1.12, and requires Forge 14.21.1.2387 or later. Significant internal rewrite to support 1.12 block/item/recipe registration changes. This version will *not* work well with worlds from older releases of the mod, sorry.
 * Re-did module & upgrade item textures, to be hopefully cleaner & easier to distinguish.
@@ -500,20 +503,20 @@ Changes are in reverse chronological order; newest changes at the top.
 * Camouflage and Extruder improvements and fixes from v1.4.1 and v2.2.1 are also included.
 * The GuideAPI guidebook is currently not functional, but should added back in the near future (working out some compatibility issues with GuideAPI and the new Forge item registration system).
 
-## Minecraft 1.11.2
+# Minecraft 1.11.2
 
-### [2.2.2] (28 Aug 2017)
+## [2.2.2] (28 Aug 2017)
 
 * Fix possible client crash with Extruder module (https://github.com/desht/ModularRouters/issues/24)
 * Fix item dupe issue with shulker boxes (https://github.com/desht/ModularRouters/issues/23)
 
-### [2.2.1] (29 Jun 2017)
+## [2.2.1] (29 Jun 2017)
 
 * Camouflage upgrade now properly mimics the colour of tintable blocks (in particular grass blocks no longer appear grey)
 * Camouflage upgrade and Extruder Mk2 template blocks can now mimic Chisel blocks (and any blocks which render in a layer other than CUTOUT_MIPPED) - https://github.com/desht/ModularRouters/issues/19
 * Fixed bug where Inspection Filter could not match conditions where the target value was zero (e.g. "enchantment = 0" or "enchantment < 1") - https://github.com/desht/ModularRouters/issues/20
 
-### [2.2.0] (12 Jun 2017)
+## [2.2.0] (12 Jun 2017)
 
 * Added XP enhancement to Vacuum Module. With XP enhancement added, the Vacuum Module will absorb XP orbs instead of items. Orbs are converted to EnderIO XP juice if EnderIO is installed and the router holds a fluid container item (e.g. EnderIO tank); otherwise orbs are converted to Bottles o' Enchanting (1 bottle per 7 xp absorbed).
 * Made several recipes oredict-aware
@@ -524,7 +527,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed bug where a brand new Bulk Item Filter placed in a module in a router would not remember its filter contents after the GUI was closed.
 * Fixed NPE when placing items in Mod Filter GUI.
 
-### [2.1.1] (13 Mar 2017)
+## [2.1.1] (13 Mar 2017)
 
 * Added the Range Downgrade, which reduces a router's range by one block per "upgrade".  This will likely be most useful for limiting the range of the Vacuum Module.  A Range Upgrade can be crafted directly into a Range Downgrade, and vice versa.
 * Fix to infinite water source detection by the fluid module.
@@ -532,7 +535,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix to the regex filter where it did not always properly match on the displayed item name (wrongly using the internal unlocalised name instead).
 * The Extruder Mk2 recipe now uses oredicted chests ("chestWood") so chests other than vanilla oak chests should be accepted.
 
-### [2.1.0] (1 Mar 2017)
+## [2.1.0] (1 Mar 2017)
 
 * Added the Extruder Mk2 module, which can place blocks from a configurable pattern, allowing for multiple types of block to be extruded.  These blocks are "virtual" in that they're created out of nowhere, but also drop nothing if broken, and can't be crafted normally.
 * The Inspection Filter can now inspect food values of items (the value of food items is the number of half-shanks restored, and the value of non-food items is 0).
@@ -541,13 +544,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed NPE when left-clicking the regulation icon in the GUI of a module with the regulation enhancement enabled.
 * Puller Mk1/Mk2 can now pull properly from locked storage drawers (previously any locked drawer with an empty slot would cause the puller modules to get confused and stop pulling).
 
-### [2.0.2] (6 Feb 2017)
+## [2.0.2] (6 Feb 2017)
 
 * Feature: Extruder Module can now place cocoa beans if extruding alongside jungle logs (either horizontally or vertically); cocoa bean farming is now possible.
 * Fix: broken texture for Blast Upgrade
 * Fix: when breaking a router with items in the buffer, not all items were always getting dropped
 
-### [2.0.1] (18 Jan 2017)
+## [2.0.1] (18 Jan 2017)
 
 * Routers can now place skulls
 * Added Puller Mk2 module to pull at a distance (up to 12 blocks, or 24 with range upgrades)
@@ -556,25 +559,25 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added zh_CN translation
 * Couple of minor bug fixes
 
-### [2.0.0] (3 Jan 2017)
+## [2.0.0] (3 Jan 2017)
 *Archived*
 
 * Pretty much the same as v1.2.0 (for MC-1.10.2), but runs on MC-1.11.2
 * One new feature: Placer and Extruder modules can now plant crops (modded crops should in general work too - tested successfully with Actually Additions crops)
 
-## Minecraft 1.10.2
+# Minecraft 1.10.2
 
-### [1.4.2] (28 Aug 2017)
+## [1.4.2] (28 Aug 2017)
 
 * Fix possible client crash with Extruder module (https://github.com/desht/ModularRouters/issues/24)
 
-### [1.4.1] (29 Jun 2017)
+## [1.4.1] (29 Jun 2017)
 
 * Camouflage upgrade now properly mimics the colour of tintable blocks (in particular grass blocks no longer appear grey)
 * Camouflage upgrade and Extruder Mk2 template blocks can now mimic Chisel blocks (and any blocks which render in a layer other than CUTOUT_MIPPED) - https://github.com/desht/ModularRouters/issues/19
 * Fixed bug where Inspection Filter could not match conditions where the target value was zero (e.g. "enchantment = 0" or "enchantment < 1") - https://github.com/desht/ModularRouters/issues/20
 
-### [1.4.0] (12 Jun 2017)
+## [1.4.0] (12 Jun 2017)
 
 * Added XP enhancement to Vacuum Module. With XP enhancement added, the Vacuum Module will absorb XP orbs instead of items. Orbs are converted to EnderIO XP juice if EnderIO is installed and the router holds a fluid container item (e.g. EnderIO tank); otherwise orbs are converted to Bottles o' Enchanting (1 bottle per 7 xp absorbed).
 * Made several recipes oredict-aware
@@ -584,7 +587,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed server crash if Dropper/Flinger modules encountered a buggy 0-sized itemstack (shouldn't happen, but bugs in other mods can cause it).
 * Fixed bug where a brand new Bulk Item Filter placed in a module in a router would not remember its filter contents after the GUI was closed.
 
-### [1.3.1] (13 Mar 2017)
+## [1.3.1] (13 Mar 2017)
 
 * Added the Range Downgrade, which reduces a router's range by one block per "upgrade".  This will likely be most useful for limiting the range of the Vacuum Module.  A Range Upgrade can be crafted directly into a Range Downgrade, and vice versa.
 * Fix to infinite water source detection by the fluid module.
@@ -592,7 +595,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix to the regex filter where it did not always properly match on the displayed item name (wrongly using the internal unlocalised name instead).
 * The Extruder Mk2 recipe now uses oredicted chests ("chestWood") so chests other than vanilla oak chests should be accepted.
 
-### [1.3.0] (1 Mar 2017) 
+## [1.3.0] (1 Mar 2017) 
 
 * Added the Extruder Mk2 module, which can place blocks from a configurable pattern, allowing for multiple types of block to be extruded.  These blocks are "virtual" in that they're created out of nowhere, but also drop nothing if broken, and can't be crafted normally.
 * The Inspection Filter can now inspect food values of items (the value of food items is the number of half-shanks restored, and the value of non-food items is 0).
@@ -601,38 +604,38 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed NPE when left-clicking the regulation icon in the GUI of a module with the regulation enhancement enabled.
 * Puller Mk1/Mk2 can now pull properly from locked storage drawers (previously any locked drawer with an empty slot would cause the puller modules to get confused and stop pulling).
 
-### [1.2.5] (6 Feb 2017)
+## [1.2.5] (6 Feb 2017)
 
 * Feature: Extruder Module can now place cocoa beans if router is placed alongside jungle logs, either horizontally or vertically.
 
-### [1.2.4] (23 Jan 2017)
+## [1.2.4] (23 Jan 2017)
 
 * Placer, Extruder & Breaker modules now have support for more block types, in particular Chisels & Bits blocks (note that asymmetrically-chiseled blocks don't always appear to place/break facing the same way - I'm looking for ways to better handle that).
 * Fixed potential infinite recursion bug for routers in pulsed mode when placing/breaking blocks.
 * Added zh_CN translation.
 
-### [1.2.3] (12 Jan 2017)
+## [1.2.3] (12 Jan 2017)
 
 * Added the Puller Mk2 module - pull items from inventories within 12 blocks (24 with range upgrades).  Can be adjusted in config/modularrouters.cfg if desired.
 * Colour for sender & puller particle beams changed: sender mk1/2 beam is orange, sender mk3 is magenta, puller beam is blue.
 * Removed spurious debug messages (pertaining to explosions) mistakenly left in the 1.2.2 release.
 * Increased the default range of Sender Mk2 from 16 to 24 blocks (max range 32 -> 48).  Can be adjusted in config/modularrouters.cfg if desired.
 
-### [1.2.2] (9 Jan 2017)
+## [1.2.2] (9 Jan 2017)
 *Archived*
 
 * Extruder module no longer stops in confusion if it encounters an empty (or liquid) block while retracting; it will now just skip over gaps.
 * Placer module can now place down skulls, correctly positioned on blocks like soul sand...
 * Added the Blast Upgrade, giving the router immunity from explosion damage and block-breaking by certain entities...
 
-### [1.2.1] (4 Jan 2017)
+## [1.2.1] (4 Jan 2017)
 *Archived*
 
 * Placer and Extruder modules can now plant crops (backport of feature from v2.0.0 release for MC-1.11.2)
 * This release is basically feature-equivalent to the v2.0.0 release now
 * Couple of other minor fixes
 
-### [1.2.0] (19 Dec 2016)
+## [1.2.0] (19 Dec 2016)
 *Archived*
 
 * Added the Fluid Module: routers can use this to transfer fluids to/from a fluid container item in the buffer (e.g. vanilla buckets and tanks from other mods). Fluid Module can pull or send to fluid blocks in the world, or in tanks from other mods. The Regulator enhancement works with Fluid Modules, but uses a percentage of the tank's capacity rather than number of items.
@@ -650,11 +653,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Breaker Module improvement: filtering now applies to actual drops from the broken block, not just the block's default drops. E.g. if you filter on an empty tank, the breaker will now only break the tank when it's actually empty.
 * Placer Module improvement: the placer will now attempt to restore NBT from any item it places. E.g. the fluid level of a tank, or the energy level on any energy storage block...
 
-### [1.1.3] (19 Nov 2016)
+## [1.1.3] (19 Nov 2016)
 
 * CRITICAL RELEASE: this release fixes a couple of item duping exploits introduced in 1.1.0.  If you are using 1.1.0, 1.1.1 or 1.1.2, UPDATE NOW.  1.0.x releases do not have the exploits.
 
-### [1.1.2] (17 Nov 2016)
+## [1.1.2] (17 Nov 2016)
 *Archived*
 
 * Fixed problem with pressure plates not being placeable on top of item routers (this worked in 1.0.x, camouflage features in 1.1.0 broke it)
@@ -662,7 +665,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Minor rendering performance improvement (rendering faces are now culled properly, based on whether the router is camouflaged or not).
 * Fixed bug where router upgrades did not always get properly saved when a router is broken.
 
-### [1.1.1] (10 Nov 2016)
+## [1.1.1] (10 Nov 2016)
 *Archived*
  
 * Added the Sync Upgrade, which can be used to make routers run at the same time.  https://github.com/desht/ModularRouters/wiki/Upgrades#sync-upgrade
@@ -670,7 +673,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Made the Speed Upgrade recipe a bit more expensive
 * A bit of GUI polishing in several places
 
-### [1.1.0] (7 Nov 2016)
+## [1.1.0] (7 Nov 2016)
 *Archived*
 
 * Modules can now be enhanced to have invidual redstone modes - https://github.com/desht/ModularRouters/wiki/Module-Enhancements#redstone-enhancement
@@ -686,24 +689,24 @@ Changes are in reverse chronological order; newest changes at the top.
 * Deprecated the Mod Sorter Module in favour of the Mod Filter (Mod Sorter Modules still work but can't be crafted anymore - you can craft a Mod Sorter Module into a Mod Filter) Flinger module now has a sound & smoke effect when it flings items (can be disabled in config)
 * Lots of other minor bugfixes, polishing, performance improvements... see https://github.com/desht/ModularRouters/commits/master for full details.
 
-### [1.0.3] (16 Sep 2016)
+## [1.0.3] (16 Sep 2016)
 *Archived*
 
 * Fixed player's hand being rendered partially transparent: https://github.com/desht/ModularRouters/issues/3
 * Added "Router Eco Mode": allow routers to slow down if idle for a certain amount of time; intended to save CPU on busy servers.  See https://github.com/desht/ModularRouters/wiki#eco-mode for more info.
 * The Player Module can now also interact with a player's (vanilla) ender inventory.  Allows auto-inserting/extracting to/from vanilla ender chests.
 
-### [1.0.2] (5 Sep 2016)
+## [1.0.2] (5 Sep 2016)
 *Archived*
 
 * Fixed startup crash if Waila isn't installed
 
-### [1.0.1] (5 Sep 2016)
+## [1.0.1] (5 Sep 2016)
 *Archived*
 
 * Fixed crash on startup if TheOneProbe isn't installed
 
-### [1.0.0] (5 Sep 2016)
+## [1.0.0] (5 Sep 2016)
 *Archived*
 
 * Initial release
