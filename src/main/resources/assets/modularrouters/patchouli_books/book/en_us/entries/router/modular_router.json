@@ -12,7 +12,7 @@
       "images": [
         "modularrouters:textures/patchouli/router_gui.png"
       ],
-      "text": "$(italic)An Modular Router GUI with several modules and upgrades installed",
+      "text": "$(italic)A Modular Router GUI with several modules and upgrades installed",
       "border": true
     },
     {
@@ -44,6 +44,11 @@
       "type": "text",
       "title": "Eco Mode (cont)",
       "text": "This is primarily intended for busy servers, to save on CPU cycles, but it's potentially nice-to-have for any router that only runs rarely and where rapid item transfer isn't that important (e.g. a sheep farm where you might have a $(l:modules/vacuum)Vacuum Module/$ gathering sheared wool periodically)."
+    },
+    {
+      "type": "text",
+      "title": "Fake Players",
+      "text": "Several modules ($(l:modules/placer)Placer/$, $(l:modules/breaker)Breaker/$, $(l:modules/activator)Activator/$) do their work as a $(thing)fake player/$. This fake player uses the game profile of the player who placed the router; this is important to know on multiplayer servers which use claim protection mods such as FTB Chunks."
     },
     {
       "type": "crafting",

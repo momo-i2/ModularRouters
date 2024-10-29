@@ -16,7 +16,6 @@ import me.desht.modularrouters.event.TickEventHandler;
 import me.desht.modularrouters.item.module.DetectorModule.SignalType;
 import me.desht.modularrouters.item.module.ModuleItem;
 import me.desht.modularrouters.item.upgrade.CamouflageUpgrade;
-import me.desht.modularrouters.item.upgrade.SecurityUpgrade;
 import me.desht.modularrouters.item.upgrade.UpgradeItem;
 import me.desht.modularrouters.logic.compiled.CompiledExtruderModule1;
 import me.desht.modularrouters.logic.compiled.CompiledModule;
@@ -402,20 +401,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
     }
 
     private GameProfile getOwnerProfile() {
-        if (ownerID != null) {
-            return ownerID;
-        }
-
-        // legacy compat - continue to allow security upgrades to set the owner for now
-        // TODO remove in 1.22
-        for (int i = 0; i < getUpgrades().getSlots(); i++) {
-            ItemStack stack = getUpgrades().getStackInSlot(i);
-            if (stack.getItem() instanceof SecurityUpgrade securityUpgrade) {
-                Optional<GameProfile> opt = securityUpgrade.getOwnerProfile(stack);
-                if (opt.isPresent()) return opt.get();
-            }
-        }
-        return DEFAULT_FAKEPLAYER_PROFILE;
+        return Objects.requireNonNullElse(ownerID, DEFAULT_FAKEPLAYER_PROFILE);
     }
 
     private void executeModules(boolean pulsed) {

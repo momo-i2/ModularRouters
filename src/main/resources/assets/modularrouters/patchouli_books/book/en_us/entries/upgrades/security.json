@@ -14,11 +14,6 @@
     },
     {
       "type": "text",
-      "title": "Fake Players",
-      "text": "Several modules ($(l:modules/placer)Placer/$, $(l:modules/breaker)Breaker/$, $(l:modules/activator)Activator/$) do their work as a $(thing)fake player/$. By default this is a player with the username $(thing)[Modular Routers]/$, but when a security upgrade is installed, those modules operate as the upgrade's owner. This is much safer on multiplayer servers with claim protection than simply allowing $(thing)[Modular Routers]/$ to do anything with your claims."
-    },
-    {
-      "type": "text",
       "title": "Activator Attack Mode",
       "text": "When the $(l:modules/activator)Activator Module/$ is in $(thing)Attack Mode/$, it will ignore any players whitelisted by a Security Upgrade installed in the Router. This is generally a good idea to avoid pain & suffering if you have a high-damage weapon in your Router..."
     },

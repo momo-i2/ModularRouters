@@ -9,6 +9,8 @@ Changes are in reverse chronological order; newest changes at the top.
 ## [14.0.0]
 
 * Ported to Minecraft 1.21.3
+* Security Upgrades no longer work to set the fakeplayer owner
+  * Router is automatically "owned" by player who placed it, and the fake player always uses the owner's profile
 
 # Minecraft 1.21.1
 
