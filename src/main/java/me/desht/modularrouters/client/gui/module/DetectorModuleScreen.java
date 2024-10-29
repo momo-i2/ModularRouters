@@ -41,6 +41,7 @@ public class DetectorModuleScreen extends ModuleScreen {
         intField.setResponder((str) -> sendModuleSettingsDelayed(5));
         intField.setIncr(1, 4);
         intField.useGuiTextBackground();
+        addRenderableWidget(intField);
 
         Component label = xlate("modularrouters.itemText.misc.strongSignal." + cdm.isStrongSignal());
         isStrong = cdm.isStrongSignal();
