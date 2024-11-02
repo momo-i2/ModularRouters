@@ -9,8 +9,10 @@ Changes are in reverse chronological order; newest changes at the top.
 ### [12.1.2]
 
 * Router fake player will now accept XP given to it, and use it to create experience orbs near the router
+* Fixed Sync upgrades not working correctly in singleplayer
 
 ### [12.1.1]
+
 * Fixed bug in Breaker Module crafting causing pickaxe type to always be iron (bug introduced in 12.1.0)
 * Fixed NPE if an unconfigured Player Module (e.g. as pulled from creative/JEI) is inserted into a router
 
