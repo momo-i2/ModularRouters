@@ -286,11 +286,6 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
                     .ifPresent(tag -> nbt.put(NBT_OWNER_PROFILE, tag));
         }
         if (!getExtensionData().isEmpty()) nbt.put(NBT_EXTRA, getExtensionData());
-//        nbt.put(NBT_EXTRA, Util.make(new CompoundTag(), tag -> {
-//            CompoundTag ext1 = getExtensionData();
-//            //noinspection ConstantConditions
-//            ext1.getAllKeys().forEach(key -> tag.put(key, ext1.get(key)));
-//        }));
     }
 
     @Override
@@ -405,7 +400,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         }
 
         // legacy compat - continue to allow security upgrades to set the owner for now
-        // TODO remove in 1.22
+        // TODO remove in 1.21.3
         for (int i = 0; i < getUpgrades().getSlots(); i++) {
             ItemStack stack = getUpgrades().getStackInSlot(i);
             if (stack.getItem() instanceof SecurityUpgrade securityUpgrade) {
@@ -660,8 +655,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
         int tuning = tunedSyncValue % tickRate;
         int delta = tuning - compileTime;
         if (delta <= 0) delta += tickRate;
-
-        ModularRouters.LOGGER.info("sync counter for {}: tc={} ct={} tuning={} delta={} counter={}", getBlockPos(), TickEventHandler.TickCounter, compileTime,tuning, delta, tickRate - delta);
+//        ModularRouters.LOGGER.info("sync counter for {}: tc={} ct={} tuning={} delta={} counter={}", getBlockPos(), TickEventHandler.TickCounter, compileTime,tuning, delta, tickRate - delta);
         return tickRate - delta;
     }
 

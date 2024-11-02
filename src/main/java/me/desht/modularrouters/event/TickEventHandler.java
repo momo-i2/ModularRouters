@@ -13,7 +13,7 @@ public class TickEventHandler {
 
     @SubscribeEvent
     public static void onWorldTick(LevelTickEvent.Post event) {
-        if (event.getLevel().dimension() == Level.OVERWORLD) {
+        if (event.getLevel().dimension() == Level.OVERWORLD && !event.getLevel().isClientSide) {
             TickCounter++;
         }
     }
