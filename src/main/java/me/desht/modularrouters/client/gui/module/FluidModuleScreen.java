@@ -57,6 +57,7 @@ public class FluidModuleScreen extends ModuleScreen {
         maxTransferField.setResponder(str -> sendModuleSettingsDelayed(5));
         maxTransferField.setIncr(100, 10, 10);
         maxTransferField.useGuiTextBackground();
+        addRenderableWidget(maxTransferField);
 
         addRenderableWidget(new TooltipButton(leftPos + 130, topPos + 19, 16, 16, bucketStack));
         addRenderableWidget(fluidDirButton = new FluidDirectionButton(leftPos + 148, topPos + 44, cfm.getFluidDirection()));
