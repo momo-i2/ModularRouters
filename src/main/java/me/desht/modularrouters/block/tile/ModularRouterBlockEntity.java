@@ -3,6 +3,7 @@ package me.desht.modularrouters.block.tile;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import me.desht.modularrouters.ModularRouters;
+import me.desht.modularrouters.api.event.RouterCompiledEvent;
 import me.desht.modularrouters.block.CamouflageableBlock;
 import me.desht.modularrouters.block.ModularRouterBlock;
 import me.desht.modularrouters.config.ConfigHolder;
@@ -592,6 +593,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
                     if (cms.careAboutItemAttributes()) careAboutItemAttributes = true;
                 }
             }
+            NeoForge.EVENT_BUS.post(new RouterCompiledEvent.Modules(this));
         }
     }
 
@@ -626,6 +628,8 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
                 }
                 notifyWatchingPlayers();
             }
+
+            NeoForge.EVENT_BUS.post(new RouterCompiledEvent.Upgrades(this));
         }
     }
 
@@ -1063,7 +1067,7 @@ public class ModularRouterBlockEntity extends BlockEntity implements ICamouflage
                 if (inSlot.isEmpty() || slot == i) continue;
                 // can't have the same upgrade in more than one slot
                 // incompatible upgrades can't coexist
-                if (stack.getItem() == inSlot.getItem() || !((UpgradeItem) inSlot.getItem()).isCompatibleWith(item)) {
+                if (stack.getItem() == inSlot.getItem() || !((UpgradeItem) inSlot.getItem()).isCompatibleWith(item) || !item.isCompatibleWith((UpgradeItem) inSlot.getItem())) {
                     return false;
                 }
             }
