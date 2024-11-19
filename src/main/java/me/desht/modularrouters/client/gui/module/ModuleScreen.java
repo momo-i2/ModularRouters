@@ -52,19 +52,19 @@ import java.util.Optional;
 import static me.desht.modularrouters.client.util.ClientUtil.xlate;
 
 public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements ContainerListener, IMouseOverHelpProvider, ISendToServer {
-    static final ResourceLocation GUI_TEXTURE = MiscUtil.RL("textures/gui/module.png");
+    protected static final ResourceLocation GUI_TEXTURE = MiscUtil.RL("textures/gui/module.png");
 
     // locations of extra textures on the gui module texture sheet
-    static final XYPoint SMALL_TEXTFIELD_XY = new XYPoint(0, 198);
-    static final XYPoint LARGE_TEXTFIELD_XY = new XYPoint(0, 212);
-    static final XYPoint BUTTON_XY = new XYPoint(0, 226);
+    protected static final XYPoint SMALL_TEXTFIELD_XY = new XYPoint(0, 198);
+    protected static final XYPoint LARGE_TEXTFIELD_XY = new XYPoint(0, 212);
+    protected static final XYPoint BUTTON_XY = new XYPoint(0, 226);
 
     private static final int GUI_HEIGHT = 198;
     private static final int GUI_WIDTH = 192;
     private static final int BUTTON_WIDTH = 16;
     private static final int BUTTON_HEIGHT = 16;
 
-    final ItemStack moduleItemStack;
+    protected final ItemStack moduleItemStack;
     private final ModuleItem module;
     private final BlockPos routerPos;
     private final int moduleSlotIndex;
@@ -72,7 +72,7 @@ public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements
     private final ModuleSettings settings;
     private int sendDelay;
     private final MouseOverHelp mouseOverHelp;
-    final AugmentItem.AugmentCounter augmentCounter;
+    protected final AugmentItem.AugmentCounter augmentCounter;
 
     private int regulatorAmount;
     private RelativeDirection facing;
@@ -81,7 +81,7 @@ public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements
     private final EnumMap<RelativeDirection,DirectionButton> directionButtons = new EnumMap<>(RelativeDirection.class);
     private MouseOverHelp.Button mouseOverHelpButton;
     private TexturedToggleButton matchAllButton;
-    IntegerTextField regulatorTextField;
+    protected IntegerTextField regulatorTextField;
     private TerminationButton terminationButton;
     private ModuleToggleButton whiteListButton;
     private ModuleToggleButton matchDamageButton;
@@ -214,7 +214,7 @@ public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements
      *
      * @param delay delay in ticks
      */
-    void sendModuleSettingsDelayed(int delay) {
+    protected void sendModuleSettingsDelayed(int delay) {
         sendDelay = delay;
     }
 
@@ -335,7 +335,7 @@ public class ModuleScreen extends AbstractContainerScreen<ModuleMenu> implements
         }
     }
 
-    Optional<ModularRouterBlockEntity> getItemRouter() {
+    protected Optional<ModularRouterBlockEntity> getItemRouter() {
         return routerPos != null ? Minecraft.getInstance().level.getBlockEntity(routerPos, ModBlockEntities.MODULAR_ROUTER.get()) : Optional.empty();
     }
 
