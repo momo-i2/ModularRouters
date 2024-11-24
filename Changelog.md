@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [13.2.0]
+* Multiple changes from @Matyrobbrt :
+  * Some significant internal reworking to benefit addon mods
+  * Added gametest framework and tests for several modules, more to come
+  * Added JEI search aliases for modules/augments/upgrades
+  * Several other technical (non-player-visible) improvements
+* Added ja_jp translations (including Patchouli manual) - thanks @momo-i2
+* Fixed client crash in Bulk Item Filter when installed in a Detector Module 
+
 ## [13.1.1]
 * Fixed textfield in Fluid Module GUI not working
 
