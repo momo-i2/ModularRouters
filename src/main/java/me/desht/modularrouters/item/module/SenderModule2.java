@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.function.BiFunction;
 
-public class SenderModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
+public class SenderModule2 extends ModuleItem implements IRangedModule, IPositionProvider, ITargetedModule {
     private static final TintColor TINT_COLOR = new TintColor(149, 255, 93);
 
     public SenderModule2() {
@@ -22,12 +22,6 @@ public class SenderModule2 extends TargetedModule implements IRangedModule, IPos
     protected SenderModule2(Item.Properties properties, BiFunction<ModularRouterBlockEntity, ItemStack, ? extends CompiledModule> compiler) {
         super(properties, compiler);
     }
-
-    @Override
-    public boolean isDirectional() {
-        return false;
-    }
-
     @Override
     public int getBaseRange() {
         return ConfigHolder.common.module.sender2BaseRange.get();

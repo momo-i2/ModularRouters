@@ -7,16 +7,11 @@ import me.desht.modularrouters.core.ModItems;
 import me.desht.modularrouters.logic.compiled.CompiledPullerModule2;
 import net.minecraft.world.item.ItemStack;
 
-public class PullerModule2 extends TargetedModule implements IRangedModule, IPositionProvider {
+public class PullerModule2 extends ModuleItem implements IRangedModule, IPositionProvider, ITargetedModule {
     private static final TintColor TINT_COLOR = new TintColor(128, 128, 255);
 
     public PullerModule2() {
         super(ModItems.moduleProps(), CompiledPullerModule2::new);
-    }
-
-    @Override
-    public boolean isDirectional() {
-        return false;
     }
 
     @Override
